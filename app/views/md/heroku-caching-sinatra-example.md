@@ -6,7 +6,7 @@ To deploy this application to your own Heroku account, perform the following.
 
 Ensure you have installed the [Heroku Toolbelt](https://toolbelt.heroku.com) or all prerequisites included. Then:
 
-    ```term
+```console
     $ git clone https://github.com/heroku/devcenter-client-caching-sinatra-example.
 
     Cloning into devcenter-client-caching-sinatra-example...
@@ -42,7 +42,7 @@ Ensure you have installed the [Heroku Toolbelt](https://toolbelt.heroku.com) or 
     -----> Installing dependencies using Bundler version 1.2.0.pre
 
            Running: bundle install --without development:test --path vendor/bundle --binstubs bin/ --deployment
-       
+
            Fetching gem metadata from http://rubygems.org/.....
 
            Installing daemons (1.1.8)
@@ -78,6 +78,6 @@ Ensure you have installed the [Heroku Toolbelt](https://toolbelt.heroku.com) or 
     -----> Launching... done, v3
 
            http://floating-wind-3377.herokuapp.com deployed to Heroku
-
+```
 
 Then open `http://floating-wind-3377.herokuapp.com/founders` using your Heroku app-name.
