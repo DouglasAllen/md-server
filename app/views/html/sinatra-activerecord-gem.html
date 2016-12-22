@@ -1,0 +1,83 @@
+<h1 id="sinatra-activerecord-extension">Sinatra ActiveRecord Extension</h1>
+<p>Extends <a href="http://www.sinatrarb.com/">Sinatra</a> with extension methods and Rake tasks for dealing with an SQL database using the <a href="https://github.com/rails/rails/tree/master/activerecord">ActiveRecord ORM</a>.</p>
+<h2 id="setup">Setup</h2>
+<p>Put it in your <code>Gemfile</code>, along with the adapter of your database. For simplicity, let's assume you're using SQLite:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">gem <span class="st">&quot;sinatra-activerecord&quot;</span>
+gem <span class="st">&quot;sqlite3&quot;</span>
+gem <span class="st">&quot;rake&quot;</span></code></pre></div>
+<p>Now require it in your Sinatra application, and establish the database connection:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># app.rb</span>
+require <span class="st">&quot;sinatra/activerecord&quot;</span>
+
+set <span class="st">:database</span>, {<span class="st">adapter: &quot;sqlite3&quot;</span>, <span class="st">database: &quot;foo.sqlite3&quot;</span>}
+<span class="co"># or set :database_file, &quot;path/to/database.yml&quot;</span></code></pre></div>
+<p>If you have a <code>config/database.yml</code>, it will automatically be loaded, no need to specify it. Also, in production, the <code>$DATABASE_URL</code> environment variable will automatically be read as the database (if you haven't specified otherwise).</p>
+<p>Note that in <strong>modular</strong> Sinatra applications you will need to first register the extension:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">YourApplication</span> &lt; <span class="dt">Sinatra</span>::<span class="dt">Base</span>
+  register <span class="dt">Sinatra</span>::<span class="dt">ActiveRecordExtension</span>
+<span class="kw">end</span></code></pre></div>
+<p>Now require the rake tasks and your app in your <code>Rakefile</code>:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># Rakefile</span>
+require <span class="st">&quot;sinatra/activerecord/rake&quot;</span>
+
+namespace <span class="st">:db</span> <span class="kw">do</span>
+  task <span class="st">:load_config</span> <span class="kw">do</span>
+    require <span class="st">&quot;./app&quot;</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<p>In the Terminal test that it works:</p>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash">$ <span class="ex">bundle</span> exec rake -T
+<span class="ex">rake</span> db:create            <span class="co"># Create the database from DATABASE_URL or config/database.yml for the current Rails.env (use db:create:all to create all dbs in the config)</span>
+<span class="ex">rake</span> db:create_migration  <span class="co"># Create a migration (parameters: NAME, VERSION)</span>
+<span class="ex">rake</span> db:drop              <span class="co"># Drops the database using DATABASE_URL or the current Rails.env (use db:drop:all to drop all databases)</span>
+<span class="ex">rake</span> db:fixtures:load     <span class="co"># Load fixtures into the current environment&#39;s database</span>
+<span class="ex">rake</span> db:migrate           <span class="co"># Migrate the database (options: VERSION=x, VERBOSE=false)</span>
+<span class="ex">rake</span> db:migrate:status    <span class="co"># Display status of migrations</span>
+<span class="ex">rake</span> db:rollback          <span class="co"># Rolls the schema back to the previous version (specify steps w/ STEP=n)</span>
+<span class="ex">rake</span> db:schema:dump       <span class="co"># Create a db/schema.rb file that can be portably used against any DB supported by AR</span>
+<span class="ex">rake</span> db:schema:load       <span class="co"># Load a schema.rb file into the database</span>
+<span class="ex">rake</span> db:seed              <span class="co"># Load the seed data from db/seeds.rb</span>
+<span class="ex">rake</span> db:setup             <span class="co"># Create the database, load the schema, and initialize with the seed data (use db:reset to also drop the db first)</span>
+<span class="ex">rake</span> db:structure:dump    <span class="co"># Dump the database structure to db/structure.sql</span>
+<span class="ex">rake</span> db:version           <span class="co"># Retrieves the current schema version number</span></code></pre></div>
+<p>And that's it, you're all set :)</p>
+<h2 id="usage">Usage</h2>
+<p>You can create a migration:</p>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash">$ <span class="ex">bundle</span> exec rake db:create_migration NAME=create_users</code></pre></div>
+<p>This will create a migration file in your migrations directory (<code>./db/migrate</code> by default), ready for editing.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">CreateUsers</span> &lt; <span class="dt">ActiveRecord</span>::<span class="dt">Migration</span>
+  <span class="kw">def</span> change
+    create_table <span class="st">:users</span> <span class="kw">do</span> |t|
+      t.string <span class="st">:name</span>
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<p>Now migrate the database:</p>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash">$ <span class="ex">bundle</span> exec rake db:migrate</code></pre></div>
+<p>You can also write models:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">User</span> &lt; <span class="dt">ActiveRecord</span>::<span class="dt">Base</span>
+  validates_presence_of <span class="st">:name</span>
+<span class="kw">end</span></code></pre></div>
+<p>You can put your models anywhere you want, only remember to require them if they're in a separate file, and that they're loaded after <code>require &quot;sinatra/activerecord&quot;</code>.</p>
+<p>Now everything just works:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/users&#39;</span> <span class="kw">do</span>
+  <span class="ot">@users</span> = <span class="dt">User</span>.all
+  erb <span class="st">:index</span>
+<span class="kw">end</span>
+
+get <span class="st">&#39;/users/:id&#39;</span> <span class="kw">do</span>
+  <span class="ot">@user</span> = <span class="dt">User</span>.find(params[<span class="st">:id</span>])
+  erb <span class="st">:show</span>
+<span class="kw">end</span></code></pre></div>
+<p>A nice thing is that the <code>ActiveRecord::Base</code> class is available to you through the <code>database</code> variable:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">if</span> database.table_exists?(<span class="st">&#39;users&#39;</span>)
+  <span class="co"># Do stuff</span>
+<span class="kw">else</span>
+  raise <span class="st">&quot;The table &#39;users&#39; doesn&#39;t exist.&quot;</span>
+<span class="kw">end</span></code></pre></div>
+<h2 id="history">History</h2>
+<p>This gem was made in 2009 by Blake Mizerany, creator of Sinatra.</p>
+<h2 id="social">Social</h2>
+<p>You can follow me on Twitter, I'm <span class="citation">[@jankomarohnic]</span>(http://twitter.com/jankomarohnic).</p>
+<h2 id="license">License</h2>
+<p><a href="https://github.com/janko-m/sinatra-activerecord/blob/master/LICENSE">MIT</a></p>

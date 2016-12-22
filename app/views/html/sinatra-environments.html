@@ -1,0 +1,12 @@
+<h2 id="environments">Environments</h2>
+<p>There are three predefined <code>environments</code>: <code>&quot;development&quot;</code>, <code>&quot;production&quot;</code> and <code>&quot;test&quot;</code>. Environments can be set through the <code>RACK_ENV</code> environment variable. The default value is <code>&quot;development&quot;</code>. In the <code>&quot;development&quot;</code> environment all templates are reloaded between requests, and special <code>not_found</code> and <code>error</code> handlers display stack traces in your browser. In the <code>&quot;production&quot;</code> and <code>&quot;test&quot;</code> environments, templates are cached by default.</p>
+<p>To run different environments, set the <code>RACK_ENV</code> environment variable:</p>
+<pre class="shell"><code>RACK_ENV=production ruby my_app.rb</code></pre>
+<p>You can use predefined methods: <code>development?</code>, <code>test?</code> and <code>production?</code> to check the current environment setting:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  <span class="kw">if</span> settings.development?
+    <span class="st">&quot;development!&quot;</span>
+  <span class="kw">else</span>
+    <span class="st">&quot;not development!&quot;</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>

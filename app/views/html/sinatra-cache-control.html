@@ -1,0 +1,44 @@
+<h3 id="cache-control">Cache Control</h3>
+<p>Setting your headers correctly is the foundation for proper HTTP caching.</p>
+<p>You can easily set the Cache-Control header like this:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  cache_control <span class="st">:public</span>
+  <span class="st">&quot;cache it!&quot;</span>
+<span class="kw">end</span></code></pre></div>
+<p>Pro tip: Set up caching in a before filter:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">before <span class="kw">do</span>
+  cache_control <span class="st">:public</span>, <span class="st">:must_revalidate</span>, <span class="st">:max_age</span> =&gt; <span class="dv">60</span>
+<span class="kw">end</span></code></pre></div>
+<p>If you are using the <code>expires</code> helper to set the corresponding header, <code>Cache-Control</code> will be set automatically for you:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">before <span class="kw">do</span>
+  expires <span class="dv">500</span>, <span class="st">:public</span>, <span class="st">:must_revalidate</span>
+<span class="kw">end</span></code></pre></div>
+<p>To properly use caches, you should consider using <code>etag</code> or <code>last_modified</code>. It is recommended to call those helpers <em>before</em> doing any heavy lifting, as they will immediately flush a response if the client already has the current version in its cache:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&quot;/article/:id&quot;</span> <span class="kw">do</span>
+  <span class="ot">@article</span> = <span class="dt">Article</span>.find params[<span class="st">&#39;id&#39;</span>]
+  last_modified <span class="ot">@article</span>.updated_at
+  etag <span class="ot">@article</span>.sha1
+  erb <span class="st">:article</span>
+<span class="kw">end</span></code></pre></div>
+<p>It is also possible to use a <a href="http://en.wikipedia.org/wiki/HTTP_ETag#Strong_and_weak_validation">weak ETag</a>:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">etag <span class="ot">@article</span>.sha1, <span class="st">:weak</span></code></pre></div>
+<p>These helpers will not do any caching for you, but rather feed the necessary information to your cache. If you are looking for a quick reverse-proxy caching solution, try <a href="https://github.com/rtomayko/rack-cache">rack-cache</a>:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">require <span class="st">&quot;rack/cache&quot;</span>
+require <span class="st">&quot;sinatra&quot;</span>
+
+use <span class="dt">Rack</span>::<span class="dt">Cache</span>
+
+get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  cache_control <span class="st">:public</span>, <span class="st">:max_age</span> =&gt; <span class="dv">36000</span>
+  sleep <span class="dv">5</span>
+  <span class="st">&quot;hello&quot;</span>
+<span class="kw">end</span></code></pre></div>
+<p>Use the <code>:static_cache_control</code> setting (see below) to add <code>Cache-Control</code> header info to static files.</p>
+<p>According to RFC 2616, your application should behave differently if the If-Match or If-None-Match header is set to <code>*</code>, depending on whether the resource requested is already in existence. Sinatra assumes resources for safe (like get) and idempotent (like put) requests are already in existence, whereas other resources (for instance post requests) are treated as new resources. You can change this behavior by passing in a <code>:new_resource</code> option:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/create&#39;</span> <span class="kw">do</span>
+  etag <span class="st">&#39;&#39;</span>, <span class="st">:new_resource</span> =&gt; <span class="dv">true</span>
+  <span class="dt">Article</span>.create
+  erb <span class="st">:new_article</span>
+<span class="kw">end</span></code></pre></div>
+<p>If you still want to use a weak ETag, pass in a <code>:kind</code> option:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">etag <span class="st">&#39;&#39;</span>, <span class="st">:new_resource</span> =&gt; <span class="dv">true</span>, <span class="st">:kind</span> =&gt; <span class="st">:weak</span></code></pre></div>

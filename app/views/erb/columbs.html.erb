@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>_why's Estate - Seeing Metaclasses Clearly</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" 
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    
+    <style>
+    /*
+
+    <link href="/stylesheets/erb.css" media="all" 
+      rel="stylesheet" type="text/css" >
+    
+    <link href="http://meyerweb.com/eric/tools/css/reset/reset.css" media="all"
+      rel="stylesheet" type="text/css" />*/
+    
+      /* reset Eric Meyer */
+      /* http://meyerweb.com/eric/tools/css/reset/ */
+/*      html, body, div, span, applet, object, iframe,
+      h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+      a, abbr, acronym, address, big, cite, code,
+      del, dfn, em, font, img, ins, kbd, q, s, samp,
+      small, strike, strong, sub, sup, tt, var,
+      dl, dt, dd, ol, ul, li,
+      fieldset, form, label, legend,
+      table, caption, tbody, tfoot, thead, tr, th, td {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        outline: 0;
+        font-weight: inherit;
+        font-style: inherit;
+        font-size: 100%;
+        font-family: inherit;
+        vertical-align: baseline;
+      }
+      */
+
+      /* HTML5 display-role reset for older browsers */
+/*      article, aside, details, figcaption, figure, 
+      footer, header, hgroup, menu, nav, section {
+	display: block;
+      }
+      body {
+	    line-height: 1;
+           }
+      ol, ul {
+	      list-style: none;
+             }
+      blockquote, q {
+	             quotes: none;
+                    }
+      blockquote:before, blockquote:after,
+      q:before, q:after {
+	                  content: '';
+	                  content: none;
+                        }
+      table {
+	      border-collapse: collapse;
+	      border-spacing: 0;
+            }
+
+      body {
+            font-family: Utopia, Georgia, Times, serif;
+            line-height: 150%;
+            margin:38px;
+            padding: 0;
+            background-color: #dfdad7;
+           }
+
+      #container {
+             width: 800px;
+             margin: 0 auto;
+             padding: 1px 1em;
+             background-color: #fff;
+           }
+      .container {
+                  padding-right: 15px;
+                  padding-left: 15px;
+                  margin-right: auto;
+                  margin-left: auto;
+                 }
+        
+            .row {
+                  margin-right: -15px;
+                  margin-left: -15px;
+                 }
+
+            .col-xs-6 {
+                  padding-right: 15px;
+                  padding-left: 15px;
+                 }
+      .domain {
+                font-style: italic;
+                font-size: 10pt;
+              }
+
+      h1 {
+            color: #390;
+         }
+
+      h2 {
+            color: #F39;
+         }
+
+      h3 {
+            margin-top: 30px;
+            color: #F39;
+         }
+
+      hr {
+            height: 3px;
+            border: none;
+            border-top: solid 1px #EEE;
+            border-bottom: solid 1px #F39;
+         }
+
+      pre {
+              font: normal 10pt Monaco, Liberation Mono, monospace;
+              background: #CE6;
+              color: #500;
+              font-weight: bold;
+             }
+
+      pre.soccer {
+                      background: #eee;
+                      color: #000;
+                      font-weight: normal;
+                 }
+
+      .footnote, .footnote a {
+                                  color: #F39;
+                            }
+
+      .tweet {
+                  padding: 5px;
+                  color: #222;
+                 }
+
+      .tweet a {
+                    color: #a60;
+               }
+
+      .tweet a:hover {
+                        text-decoration: none;
+                     }
+
+      #jump {
+                 font-size: 17px;
+                 padding: 0.5em;
+                 background-color: #eee;
+            }
+
+      #jump a {
+                   color: #F39;
+              }
+
+      .lyrics_unsure {
+                          color: #aaa;
+                     }
+
+      .lyrics_parenthetical {
+                                  color: #F39;
+                            }
+
+      .ruby-symbol { color: #ff3300; }
+      .ruby-comment { color: #090; }
+      .ruby-regexp { color: maroon; }
+      .ruby-string { color: teal; }
+      .ruby-keywords { color: navy; font-weight: bold; }
+      .ruby-variables { color: blue; }
+      .ruby-numbers { color: red; }
+      .ruby-builtin { color: #d9830c; } */
+    </style>
+  </head>
+  <body>
+<div class="container">
+ <div class="row">
+ <div class="col-xs-6">
+ Spicy jalapeno bacon ipsum dolor amet pork chop leberkas burgdoggen flank meatloaf drumstick chuck bacon, bresaola spare ribs tongue rump sausage. Meatloaf beef turducken short loin, sirloin tail porchetta leberkas bacon short ribs brisket. Turducken venison drumstick, turkey brisket kevin pork chop. Cow pork belly biltong porchetta landjaeger, hamburger ham hock filet mignon tri-tip prosciutto spare ribs frankfurter brisket doner jerky. Ball tip brisket pork belly, ground round filet mignon ribeye bacon alcatra biltong chuck meatball boudin.
+
+Tenderloin hamburger andouille, cupim salami turkey chicken pork cow venison. Kevin shankle sirloin, brisket alcatra corned beef jerky tongue pancetta shoulder pig strip steak sausage tenderloin pork. Leberkas bresaola turkey ham hock jerky prosciutto ham shoulder beef ribs cupim tail. Jowl kielbasa ham hock bacon shoulder shank sausage prosciutto.
+
+Tri-tip ham hock chuck rump sirloin beef pancetta ball tip fatback alcatra venison. Short loin tri-tip pork loin venison boudin kielbasa. Kielbasa pork belly cow turkey beef, landjaeger meatball. Frankfurter chuck pork belly, meatloaf prosciutto kevin tenderloin beef bacon pancetta venison leberkas. Bacon ham chuck flank burgdoggen. Tri-tip flank ground round venison capicola jowl, meatloaf cupim ribeye.
+
+Capicola pork loin shoulder jerky tongue drumstick pork belly porchetta ham hock turkey bacon strip steak leberkas. Meatloaf venison leberkas swine capicola ground round chicken strip steak chuck cupim pastrami. Burgdoggen landjaeger frankfurter sirloin beef ribs turducken prosciutto doner capicola pancetta andouille filet mignon cupim tongue ham hock. Alcatra andouille bacon picanha pork loin. Jerky bresaola ham hock, pork chop short loin burgdoggen kevin swine capicola. Biltong beef burgdoggen, ground round chuck shoulder landjaeger. Cow short loin boudin jowl, pork belly jerky spare ribs drumstick burgdoggen shankle rump.
+
+Drumstick shank bresaola kevin, capicola swine sausage ham hock bacon picanha. Pig ham spare ribs sausage strip steak. Kevin pork chop meatball, hamburger tongue strip steak pig chicken ball tip. Jerky cupim prosciutto chuck frankfurter beef jowl. Beef ribs sausage bacon, hamburger salami tri-tip venison short loin drumstick turkey. Tail fatback pork chop, flank ground round ball tip prosciutto beef landjaeger shank filet mignon hamburger shankle chicken salami.
+ </div>
+ <div class="col-xs-6">
+ Spicy jalapeno bacon ipsum dolor amet pork chop leberkas burgdoggen flank meatloaf drumstick chuck bacon, bresaola spare ribs tongue rump sausage. Meatloaf beef turducken short loin, sirloin tail porchetta leberkas bacon short ribs brisket. Turducken venison drumstick, turkey brisket kevin pork chop. Cow pork belly biltong porchetta landjaeger, hamburger ham hock filet mignon tri-tip prosciutto spare ribs frankfurter brisket doner jerky. Ball tip brisket pork belly, ground round filet mignon ribeye bacon alcatra biltong chuck meatball boudin.
+
+Tenderloin hamburger andouille, cupim salami turkey chicken pork cow venison. Kevin shankle sirloin, brisket alcatra corned beef jerky tongue pancetta shoulder pig strip steak sausage tenderloin pork. Leberkas bresaola turkey ham hock jerky prosciutto ham shoulder beef ribs cupim tail. Jowl kielbasa ham hock bacon shoulder shank sausage prosciutto.
+
+Tri-tip ham hock chuck rump sirloin beef pancetta ball tip fatback alcatra venison. Short loin tri-tip pork loin venison boudin kielbasa. Kielbasa pork belly cow turkey beef, landjaeger meatball. Frankfurter chuck pork belly, meatloaf prosciutto kevin tenderloin beef bacon pancetta venison leberkas. Bacon ham chuck flank burgdoggen. Tri-tip flank ground round venison capicola jowl, meatloaf cupim ribeye.
+
+Capicola pork loin shoulder jerky tongue drumstick pork belly porchetta ham hock turkey bacon strip steak leberkas. Meatloaf venison leberkas swine capicola ground round chicken strip steak chuck cupim pastrami. Burgdoggen landjaeger frankfurter sirloin beef ribs turducken prosciutto doner capicola pancetta andouille filet mignon cupim tongue ham hock. Alcatra andouille bacon picanha pork loin. Jerky bresaola ham hock, pork chop short loin burgdoggen kevin swine capicola. Biltong beef burgdoggen, ground round chuck shoulder landjaeger. Cow short loin boudin jowl, pork belly jerky spare ribs drumstick burgdoggen shankle rump.
+
+Drumstick shank bresaola kevin, capicola swine sausage ham hock bacon picanha. Pig ham spare ribs sausage strip steak. Kevin pork chop meatball, hamburger tongue strip steak pig chicken ball tip. Jerky cupim prosciutto chuck frankfurter beef jowl. Beef ribs sausage bacon, hamburger salami tri-tip venison short loin drumstick turkey. Tail fatback pork chop, flank ground round ball tip prosciutto beef landjaeger shank filet mignon hamburger shankle chicken salami.
+ </div>
+ </div>
+</div>
+</body>
+</html>

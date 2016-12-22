@@ -1,0 +1,777 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8"/>
+  <title>Practicing Ruby</title>
+  <style>
+    body {
+      font-family: "Helvetica Neue", arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      padding-top: 10px;
+      padding-bottom: 10px;
+      background-color: white;
+      padding: 30px;
+      color: #333;
+      border: 1px solid #aaa;
+      max-width: 900px;
+      margin: 20px auto;
+    }
+
+    body > *:first-child {
+      margin-top: 0 !important;
+    }
+
+    body > *:last-child {
+      margin-bottom: 0 !important;
+    }
+
+    a {
+      color: #4183C4;
+      text-decoration: none;
+    }
+
+    a.absent {
+      color: #cc0000;
+    }
+
+    a.anchor {
+      display: block;
+      padding-left: 30px;
+      margin-left: -30px;
+      cursor: pointer;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      margin: 20px 0 10px;
+      padding: 0;
+      font-weight: bold;
+      -webkit-font-smoothing: antialiased;
+      cursor: text;
+      position: relative;
+    }
+
+    h2:first-child, h1:first-child, h1:first-child + h2, h3:first-child, h4:first-child, h5:first-child, h6:first-child {
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    h1:hover a.anchor, h2:hover a.anchor, h3:hover a.anchor, h4:hover a.anchor, h5:hover a.anchor, h6:hover a.anchor {
+      text-decoration: none;
+    }
+
+    h1 tt, h1 code {
+      font-size: inherit;
+    }
+
+    h2 tt, h2 code {
+      font-size: inherit;
+    }
+
+    h3 tt, h3 code {
+      font-size: inherit;
+    }
+
+    h4 tt, h4 code {
+      font-size: inherit;
+    }
+
+    h5 tt, h5 code {
+      font-size: inherit;
+    }
+
+    h6 tt, h6 code {
+      font-size: inherit;
+    }
+
+    h1 {
+      font-size: 28px;
+      color: black;
+    }
+
+    h2 {
+      font-size: 24px;
+      border-bottom: 1px solid #cccccc;
+      color: black;
+    }
+
+    h3 {
+      font-size: 18px;
+    }
+
+    h4 {
+      font-size: 16px;
+    }
+
+    h5 {
+      font-size: 14px;
+    }
+
+    h6 {
+      color: #777777;
+      font-size: 14px;
+    }
+
+    p, blockquote, ul, ol, dl, li, table, pre {
+      margin: 3px 0;
+    }
+
+    hr {
+      background: transparent url("http://tinyurl.com/bq5kskr") repeat-x 0 0;
+      border: 0 none;
+      color: #cccccc;
+      height: 4px;
+      padding: 0;
+    }
+
+    body > h2:first-child {
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    body > h1:first-child {
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    body > h1:first-child + h2 {
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    body > h3:first-child, body > h4:first-child, body > h5:first-child, body > h6:first-child {
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    a:first-child h1, a:first-child h2, a:first-child h3, a:first-child h4, a:first-child h5, a:first-child h6 {
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    h1 p, h2 p, h3 p, h4 p, h5 p, h6 p {
+      margin-top: 0;
+    }
+
+    li p.first {
+      display: inline-block;
+    }
+
+    ul, ol {
+      padding-left: 30px;
+    }
+
+    ul :first-child, ol :first-child {
+      margin-top: 0;
+    }
+
+    ul :last-child, ol :last-child {
+      margin-bottom: 0;
+    }
+
+    dl {
+      padding: 0;
+    }
+
+    dl dt {
+      font-size: 14px;
+      font-weight: bold;
+      font-style: italic;
+      padding: 0;
+      margin: 15px 0 5px;
+    }
+
+    dl dt:first-child {
+      padding: 0;
+    }
+
+    dl dt > :first-child {
+      margin-top: 0;
+    }
+
+    dl dt > :last-child {
+      margin-bottom: 0;
+    }
+
+    dl dd {
+      margin: 0 0 15px;
+      padding: 0 15px;
+    }
+
+    dl dd > :first-child {
+      margin-top: 0;
+    }
+
+    dl dd > :last-child {
+      margin-bottom: 0;
+    }
+
+    blockquote {
+      border-left: 4px solid #dddddd;
+      padding: 0 15px;
+      color: #777777;
+    }
+
+    blockquote > :first-child {
+      margin-top: 0;
+    }
+
+    blockquote > :last-child {
+      margin-bottom: 0;
+    }
+
+    table {
+      padding: 0;
+    }
+    table tr {
+      border-top: 1px solid #cccccc;
+      background-color: white;
+      margin: 0;
+      padding: 0;
+    }
+
+    table tr:nth-child(2n) {
+      background-color: #f8f8f8;
+    }
+
+    table tr th {
+      font-weight: bold;
+      border: 1px solid #cccccc;
+      text-align: left;
+      margin: 0;
+      padding: 6px 13px;
+    }
+
+    table tr td {
+      border: 1px solid #cccccc;
+      text-align: left;
+      margin: 0;
+      padding: 6px 13px;
+    }
+
+    table tr th :first-child, table tr td :first-child {
+      margin-top: 0;
+    }
+
+    table tr th :last-child, table tr td :last-child {
+      margin-bottom: 0;
+    }
+
+    img {
+      max-width: 100%;
+    }
+
+    span.frame {
+      display: block;
+      overflow: hidden;
+    }
+
+    span.frame > span {
+      border: 1px solid #dddddd;
+      display: block;
+      float: left;
+      overflow: hidden;
+      margin: 13px 0 0;
+      padding: 7px;
+      width: auto;
+    }
+
+    span.frame span img {
+      display: block;
+      float: left;
+    }
+
+    span.frame span span {
+      clear: both;
+      color: #333333;
+      display: block;
+      padding: 5px 0 0;
+    }
+
+    span.align-center {
+      display: block;
+      overflow: hidden;
+      clear: both;
+    }
+
+    span.align-center > span {
+      display: block;
+      overflow: hidden;
+      margin: 13px auto 0;
+      text-align: center;
+    }
+
+    span.align-center span img {
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    span.align-right {
+      display: block;
+      overflow: hidden;
+      clear: both;
+    }
+
+    span.align-right > span {
+      display: block;
+      overflow: hidden;
+      margin: 13px 0 0;
+      text-align: right;
+    }
+
+    span.align-right span img {
+      margin: 0;
+      text-align: right;
+    }
+
+    span.float-left {
+      display: block;
+      margin-right: 13px;
+      overflow: hidden;
+      float: left;
+    }
+
+    span.float-left span {
+      margin: 13px 0 0;
+    }
+
+    span.float-right {
+      display: block;
+      margin-left: 13px;
+      overflow: hidden;
+      float: right;
+    }
+
+    span.float-right > span {
+      display: block;
+      overflow: hidden;
+      margin: 13px auto 0;
+      text-align: right;
+    }
+
+    code, tt {
+      font-family: "Lucida Console", "Courier New", courier;
+      font-size: 12px;
+      margin: 0 2px;
+      padding: 3px 5px;
+      white-space: nowrap;
+      border: 1px solid #eaeaea;
+      background-color: #f8f8f8;
+      border-radius: 3px;
+    }
+
+    pre code {
+      margin: 0;
+      padding: 0;
+      white-space: pre;
+      border: none;
+      background: transparent;
+    }
+
+    .highlight pre {
+      background-color: #f8f8f8;
+      border: 1px solid #cccccc;
+      font-size: 13px;
+      line-height: 19px;
+      overflow: auto;
+      padding: 6px 10px;
+      border-radius: 3px;
+    }
+
+    pre {
+      background-color: #f8f8f8;
+      border: 1px solid #cccccc;
+      font-size: 13px;
+      line-height: 19px;
+      overflow: auto;
+      padding: 6px 10px;
+      border-radius: 3px;
+    }
+
+    pre code, pre tt {
+      background-color: transparent;
+      border: none;
+    }
+
+    span.line-numbers {
+      margin-right: 10px;
+    }
+
+    img.logo {
+      display: block;
+      margin: 10px auto;
+    }
+
+    h1.logo {
+      text-align: center;
+      font-size: 40px;
+    }
+  </style>
+</head>
+<body>
+  <div id="containter">
+    <h1 class="logo">Practicing Ruby</h1>
+    <img class="logo" src="header.png" />
+     <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Safely evaluating user-defined formulas and calculations </h1>
+    <p class="post-meta"><time datetime="2015-09-10T00:00:00+00:00" itemprop="datePublished">Sep 10, 2015</time> • Solomon White and Gregory Brown</p>
+  </header>
+    <blockquote>
+  <p>This article was written in collaboration with Solomon White (<a href="http://twitter.com/rubysolo">@rubysolo</a>). Solomon is a software developer from Denver, where he builds web applications with Ruby and ENV.JAVASCRIPT_FRAMEWORK.  He likes code, caffeine, and capsaicin.</p>
+</blockquote>
+
+<p>Imagine that you&#8217;re a programmer for a company that sells miniature zen gardens, and you&#8217;ve been asked to create a  small calculator program that will help determine the material costs of the various different garden designs in the company&#8217;s product line.</p>
+
+<p>The tool itself is simple: The dimensions of the garden to be built will be entered via a web form, and then calculator will output the quantity and weight of all the materials that are needed to construct the garden.</p>
+
+<p>In practice, the problem is a little more complicated, because the company offers many different kinds of gardens. Even though only a handful of basic materials are used throughout the entire product line, the gardens themselves can consist of anything from a plain rectangular design to very intricate and complicated layouts. For this reason, figuring out how much material is needed for each garden type requires the use of custom formulas.</p>
+
+<blockquote>
+  <p>MATH WARNING: You don&#8217;t need to think through the geometric computations being done throughout this article, unless you enjoy that sort of thing; just notice how all the formulas are ordinary arithmetic expressions that operate on a handful of variables.</p>
+</blockquote>
+
+<p>The following diagram shows the formulas used for determining the material quantities for two popular products. <em>Calm</em> is a minimal rectangular garden, while <em>Yinyang</em> is a more complex shape that requires working with circles and semicircles:</p>
+
+<p><img src="//i.imgur.com/JlKz2kC.png" alt="" /></p>
+
+<p>In the past, material quantities and weights for new product designs were computed using Excel spreadsheets, which worked fine when the company only had a few different garden layouts. But to keep up with the incredibly high demand for bespoke desktop Zen Gardens, the business managers have insisted that their workflow become more Agile by moving all product design activities to a web application in THE CLOUD™.</p>
+
+<p>The major design challenge for building this calculator is that it would not be practical to have a programmer update the codebase whenever a new product idea was dreamt up by the product design team. Some days, the designers have been known to attempt at least 32 different variants on a &#8220;snowman with top-hat&#8221; zen garden, and in the end only seven or so make it to the marketplace. Dealing with these rapidly changing requirements would drive any reasonable programmer insane.</p>
+
+<p>After reviewing the project requirements, you decide to build a program that will allow the product design team to specify project requirements in a simple, Excel-like format and then safely execute the formulas they define within the context of a Ruby-based web application.</p>
+
+<p>Fortunately, the <a href="https://github.com/rubysolo/dentaku">Dentaku</a> formula parsing and evaluation library was built with this exact use case in mind. Just like you, Solomon White also really hates figuring out snowman geometry, and would prefer to leave that as an exercise for the user.</p>
+
+<h2 id="first-steps-with-the-dentaku-formula-evaluator">First steps with the Dentaku formula evaluator</h2>
+
+<p>The purpose of Dentaku is to provide a safe way to execute user-defined mathematical formulas within a Ruby application.  For example, consider the following code:</p>
+
+<div class="language-ruby highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="line-numbers"><a href="#n1" name="n1">1</a></span>require <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">dentaku</span><span style="color:#710">&quot;</span></span>
+<span class="line-numbers"><a href="#n2" name="n2">2</a></span>
+<span class="line-numbers"><a href="#n3" name="n3">3</a></span>calc = <span style="color:#036;font-weight:bold">Dentaku</span>::<span style="color:#036;font-weight:bold">Calculator</span>.new
+<span class="line-numbers"><a href="#n4" name="n4">4</a></span>volume = calc.evaluate(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">length * width * height</span><span style="color:#710">&quot;</span></span>, 
+<span class="line-numbers"><a href="#n5" name="n5">5</a></span>                       <span style="color:#A60">:length</span> =&gt; <span style="color:#00D">10</span>, <span style="color:#A60">:width</span> =&gt; <span style="color:#00D">5</span>, <span style="color:#A60">:height</span> =&gt; <span style="color:#00D">3</span>)
+<span class="line-numbers"><a href="#n6" name="n6">6</a></span>
+<span class="line-numbers"><a href="#n7" name="n7">7</a></span>p volume <span style="color:#777">#=&gt; 150</span>
+</pre></div>
+</div>
+</div>
+
+<p>Not much is going on here &#8211; we have some named variables, some numerical values, and a simple formula: <code>length * width * height</code>.  Nothing in this example appears to be sensitive data, so on the surface it may not be clear why safety is a key concern here.</p>
+
+<p>To understand the risks, you consider an alternative implementation that allows mathematical formulas to be evaluated directly as plain Ruby code. You implement the equivalent formula evaluator without the use of an external library, just to see what it would look like:</p>
+
+<div class="language-ruby highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="line-numbers"> <a href="#n1" name="n1">1</a></span><span style="color:#080;font-weight:bold">def</span> <span style="color:#06B;font-weight:bold">evaluate_formula</span>(expression, variables)
+<span class="line-numbers"> <a href="#n2" name="n2">2</a></span>   obj = <span style="color:#036;font-weight:bold">Object</span>.new
+<span class="line-numbers"> <a href="#n3" name="n3">3</a></span>
+<span class="line-numbers"> <a href="#n4" name="n4">4</a></span>   <span style="color:#080;font-weight:bold">def</span> obj.<span style="color:#06B;font-weight:bold">context</span>
+<span class="line-numbers"> <a href="#n5" name="n5">5</a></span>     binding
+<span class="line-numbers"> <a href="#n6" name="n6">6</a></span>   <span style="color:#080;font-weight:bold">end</span>
+<span class="line-numbers"> <a href="#n7" name="n7">7</a></span>
+<span class="line-numbers"> <a href="#n8" name="n8">8</a></span>   context = obj.context
+<span class="line-numbers"> <a href="#n9" name="n9">9</a></span>
+<span class="line-numbers"><strong><a href="#n10" name="n10">10</a></strong></span>   variables.each { |k,v| eval(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="background-color:hsla(0,0%,0%,0.07);color:black"><span style="font-weight:bold;color:#666">#{</span>k<span style="font-weight:bold;color:#666">}</span></span><span style="color:#D20"> = </span><span style="background-color:hsla(0,0%,0%,0.07);color:black"><span style="font-weight:bold;color:#666">#{</span>v<span style="font-weight:bold;color:#666">}</span></span><span style="color:#710">&quot;</span></span>, context) }
+<span class="line-numbers"><a href="#n11" name="n11">11</a></span>   eval(expression, context)
+<span class="line-numbers"><a href="#n12" name="n12">12</a></span><span style="color:#080;font-weight:bold">end</span>
+<span class="line-numbers"><a href="#n13" name="n13">13</a></span>
+<span class="line-numbers"><a href="#n14" name="n14">14</a></span>volume = evaluate_formula(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">length * width * height</span><span style="color:#710">&quot;</span></span>,
+<span class="line-numbers"><a href="#n15" name="n15">15</a></span>                  <span style="color:#A60">:length</span> =&gt; <span style="color:#00D">10</span>, <span style="color:#A60">:width</span> =&gt; <span style="color:#00D">5</span>, <span style="color:#A60">:height</span> =&gt; <span style="color:#00D">3</span>) 
+<span class="line-numbers"><a href="#n16" name="n16">16</a></span>
+<span class="line-numbers"><a href="#n17" name="n17">17</a></span>p volume <span style="color:#777">#=&gt; 150</span>
+</pre></div>
+</div>
+</div>
+
+<p>Although conceptually similar, it turns out these two code samples are worlds apart when you consider the implementation details:</p>
+
+<ul>
+  <li>
+    <p>When using Dentaku, you&#8217;re working with a very basic external domain specific language, which only knows how to represent simple numbers, variables, mathematical operations, etc. No direct access to the running Ruby process or its data is provided, and so formulas can only operate on what is explicitly provided to them whenever a <code>Calculator</code> object is instantiated.</p>
+  </li>
+  <li>
+    <p>When using <code>eval</code> to run formulas as Ruby code, by default any valid Ruby code will be executed. Every instantiated object in the process can be accessed, system commands can be run, etc. This isn&#8217;t much different than giving users access to the running application via an <code>irb</code> console.</p>
+  </li>
+</ul>
+
+<p>This isn&#8217;t to say that building a safe way to execute user-defined Ruby scripts isn&#8217;t possible (it can even be practical in certain circumstances), but if you go that route, safe execution is something you need to specifically design for. By contrast, Dentaku is safe to use with minimally trusted users, because you have very fine-grained control over the data and actions those users will be able to work with.</p>
+
+<p>You sit quietly for a moment and ponder the implications of all of this. After exactly four minutes of very serious soul searching, you decide that for the existing and forseeable future needs of our overworked but relentlessly optimistic Zen garden designers&#8230; Dentaku should work just fine. To be sure that you&#8217;re  on the right path, you begin working on a functional prototype to share with the product team.</p>
+
+<h2 id="building-the-web-interface">Building the web interface</h2>
+
+<p>You spend a little bit of time building out the web interface for the calculator, using Sinatra and Bootstrap. It consists of only two screens, both of which are shown below:</p>
+
+<p><img src="//i.imgur.com/h0ftlcF.png" alt="" /></p>
+
+<p>People who mostly work with Excel spreadsheets all day murmur that you must be some sort of wizard, and compliment you on your beautiful design. You pay no attention to this, because your mind has already started to focus on the more interesting parts of the problem.</p>
+
+<blockquote>
+  <p><strong>SOURCE FILES:</strong> <a href="https://github.com/PracticingDeveloper/dentaku-zen-garden/blob/32e518f80b5499990a4f92af6a261594baaba88a/app.rb">app.rb</a> // <a href="https://github.com/PracticingDeveloper/dentaku-zen-garden/blob/32e518f80b5499990a4f92af6a261594baaba88a/views/app.erb">app.erb</a> // <a href="https://github.com/PracticingDeveloper/dentaku-zen-garden/blob/32e518f80b5499990a4f92af6a261594baaba88a/views/index.erb">index.erb</a> // <a href="https://github.com/PracticingDeveloper/dentaku-zen-garden/blob/32e518f80b5499990a4f92af6a261594baaba88a/views/materials.erb">materials.erb</a></p>
+</blockquote>
+
+<h2 id="defining-garden-layouts-as-simple-data-tables">Defining garden layouts as simple data tables</h2>
+
+<p>With a basic idea in mind for how you&#8217;ll implement the calculator, your next task is to figure out how to define the various garden layouts as a series of data tables.</p>
+
+<p>You start with the weight calculations table, because it involves the most basic computations. The formulas all boil down to variants on the <code>mass = volume * density</code> equation:</p>
+
+<p><img src="//i.imgur.com/1VIrDO1.png" alt="" /></p>
+
+<p>This material weight lookup table is suitable for use in all of the product definitions, but the <code>quantity</code> value will vary based both on the dimensions of the garden to be built and the physical layout of the garden.</p>
+
+<p>With that in mind, you turn your attention to the tables that determine how much material is needed for each project, starting with the Calm rectangular garden as an example.</p>
+
+<p>Going back to the diagram from earlier, you can see that the quantity of materials needed by the Calm project can be completely determined by the length, width, height, and desired fill level for the sandbox:</p>
+
+<p><img src="//i.imgur.com/BfHgoPB.png" alt="" /></p>
+
+<p>You could directly use these formulas in project specifications, but it would feel a little too low-level. Project designers will need to work with various box-like shapes often, and so it would feel more natural to describe the problem with terms like perimeter, area, volume, etc. Knowing that the Dentaku formula processing engine provides support for creating helper functions, you come up with the following definitions for the materials used in the Calm project:</p>
+
+<p><img src="//i.imgur.com/xyYtuAM.png" alt="" /></p>
+
+<p>With this work done, you turn your attention to the Yinyang circular garden project. Even though it is much more complex than the basic rectangular design, you notice that it too is defined entirely in terms of a handful of simple variables &#8211; diameter, height, and fill level:</p>
+
+<p><img src="//i.imgur.com/1G0vaNx.png" alt="" /></p>
+
+<p>As was the case before, it would be better from a product design perspective to describe things in terms of circular area, cylindrical volume, and circumference rather than the primary dimensional variables, so you design the project definition with that in mind:</p>
+
+<p><img src="//i.imgur.com/d71MgSp.png" alt="" /></p>
+
+<p>To make the system easily customizable by the product designers, the common formulas used in the various garden layouts will also be stored in a data table rather than hard-coding them in the web application. The following table lists the names and definitions for all the formulas used in the <em>Calm</em> and <em>Yinyang</em> projects:</p>
+
+<p><img src="//i.imgur.com/ovOhwEX.png" alt="" /></p>
+
+<p>Now that you have a rough sense of what the data model will look like, you&#8217;re ready to start working on implementing the calculator program. You may need to change the domain model at some point in the future to support more complex use cases, but many different garden layouts can already be represented in this format.</p>
+
+<blockquote>
+  <p><strong>SOURCE FILES:</strong> <a href="https://github.com/PracticingDeveloper/dentaku-zen-garden/blob/32e518f80b5499990a4f92af6a261594baaba88a/db/projects/calm.csv">calm.csv</a> // <a href="https://github.com/PracticingDeveloper/dentaku-zen-garden/blob/32e518f80b5499990a4f92af6a261594baaba88a/db/projects/yinyang.csv">yinyang.csv</a> // <a href="https://github.com/PracticingDeveloper/dentaku-zen-garden/blob/32e518f80b5499990a4f92af6a261594baaba88a/db/materials.csv">materials.csv</a> // <a href="https://github.com/PracticingDeveloper/dentaku-zen-garden/blob/32e518f80b5499990a4f92af6a261594baaba88a/db/common_formulas.csv">common_formulas.csv</a></p>
+</blockquote>
+
+<h2 id="implementing-the-formula-processor">Implementing the formula processor</h2>
+
+<p>You start off by building a utility class for reading all the relevant bits of project data that will be needed by the calculator. For the most part, this is another boring chore &#8211; it involves nothing more than loading CSV and JSON data into some arrays and hashes.</p>
+
+<p>After a bit of experimentation, you end up implementing the following interface:</p>
+
+<div class="language-ruby highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="line-numbers"> <a href="#n1" name="n1">1</a></span>p <span style="color:#036;font-weight:bold">Project</span>.available_projects 
+<span class="line-numbers"> <a href="#n2" name="n2">2</a></span><span style="color:#777">#=&gt; [&quot;calm&quot;, &quot;yinyang”]</span>
+<span class="line-numbers"> <a href="#n3" name="n3">3</a></span>
+<span class="line-numbers"> <a href="#n4" name="n4">4</a></span>p <span style="color:#036;font-weight:bold">Project</span>.variables(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">calm</span><span style="color:#710">&quot;</span></span>) 
+<span class="line-numbers"> <a href="#n5" name="n5">5</a></span><span style="color:#777">#=&gt; [&quot;length&quot;, &quot;width&quot;, &quot;height”]</span>
+<span class="line-numbers"> <a href="#n6" name="n6">6</a></span>
+<span class="line-numbers"> <a href="#n7" name="n7">7</a></span>p <span style="color:#036;font-weight:bold">Project</span>.weight_formulas[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">black sand</span><span style="color:#710">&quot;</span></span>] 
+<span class="line-numbers"> <a href="#n8" name="n8">8</a></span><span style="color:#777">#=&gt; &quot;quantity * 2.000”</span>
+<span class="line-numbers"> <a href="#n9" name="n9">9</a></span>
+<span class="line-numbers"><strong><a href="#n10" name="n10">10</a></strong></span>p <span style="color:#036;font-weight:bold">Project</span>.quantity_formulas(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">yinyang</span><span style="color:#710">&quot;</span></span>)
+<span class="line-numbers"><a href="#n11" name="n11">11</a></span>          .select { |e| e[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">name</span><span style="color:#710">&quot;</span></span>] == <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">black sand</span><span style="color:#710">&quot;</span></span> } <span style="color:#777">#=&gt;</span>
+<span class="line-numbers"><a href="#n12" name="n12">12</a></span><span style="color:#777"># [{&quot;name&quot; =&gt; &quot;black sand&quot;, </span>
+<span class="line-numbers"><a href="#n13" name="n13">13</a></span><span style="color:#777">#    &quot;formula&quot; =&gt; &quot;cylinder_volume * 0.5 * fill&quot;, </span>
+<span class="line-numbers"><a href="#n14" name="n14">14</a></span><span style="color:#777">#    &quot;unit&quot; =&gt; &quot;cu cm”}]</span>
+<span class="line-numbers"><a href="#n15" name="n15">15</a></span>
+<span class="line-numbers"><a href="#n16" name="n16">16</a></span>p <span style="color:#036;font-weight:bold">Project</span>.common_formulas[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">cylinder_volume</span><span style="color:#710">&quot;</span></span>]
+<span class="line-numbers"><a href="#n17" name="n17">17</a></span><span style="color:#777">#=&gt; &quot;circular_area * height”</span>
+</pre></div>
+</div>
+</div>
+
+<p>Down the line, the <code>Project</code> class will probably read from a database rather than text files, but this is largely an implementation detail. Rather than getting bogged down in ruminations about the future, you shift your attention to the heart of the problem &#8211; the Dentaku-powered <code>Calculator</code> class.</p>
+
+<p>This class will be instantiated with the name of a particular garden layout and a set of dimensional parameters that will be used to determine how much of each material is needed, and how much the entire garden kit will weigh. Sketching this concept out in code, you decide that the <code>Calculator</code> class should work as shown below:</p>
+
+<div class="language-ruby highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="line-numbers"> <a href="#n1" name="n1">1</a></span>calc = <span style="color:#036;font-weight:bold">Calculator</span>.new(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">yinyang</span><span style="color:#710">&quot;</span></span>, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">diameter</span><span style="color:#710">&quot;</span></span> =&gt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">20</span><span style="color:#710">&quot;</span></span>, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">height</span><span style="color:#710">&quot;</span></span> =&gt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">5</span><span style="color:#710">&quot;</span></span>)
+<span class="line-numbers"> <a href="#n2" name="n2">2</a></span>
+<span class="line-numbers"> <a href="#n3" name="n3">3</a></span>p calc.materials.map { |e| [e[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">name</span><span style="color:#710">'</span></span>], e[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">quantity</span><span style="color:#710">'</span></span>].ceil, e[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">unit</span><span style="color:#710">'</span></span>]] } <span style="color:#777">#=&gt;</span>
+<span class="line-numbers"> <a href="#n4" name="n4">4</a></span><span style="color:#777"># [[&quot;1cm thick flexible strip&quot;, 472, &quot;sq cm&quot;],</span>
+<span class="line-numbers"> <a href="#n5" name="n5">5</a></span><span style="color:#777">#  [&quot;granite slab&quot;, 315, &quot;sq cm&quot;],</span>
+<span class="line-numbers"> <a href="#n6" name="n6">6</a></span><span style="color:#777">#  [&quot;white sand&quot;, 550, &quot;cu cm&quot;],</span>
+<span class="line-numbers"> <a href="#n7" name="n7">7</a></span><span style="color:#777">#  [&quot;black sand&quot;, 550, &quot;cu cm&quot;]]</span>
+<span class="line-numbers"> <a href="#n8" name="n8">8</a></span>
+<span class="line-numbers"> <a href="#n9" name="n9">9</a></span>p calc.shipping_weight <span style="color:#777">#=&gt; 4006</span>
+</pre></div>
+</div>
+</div>
+
+<p>With that goal in mind, the constructor for the <code>Calculator</code> class needs to do two chores:</p>
+
+<ol>
+  <li>
+    <p>Convert the string-based dimension parameters provided via the web form into numeric values that Dentaku understands. An easy way to do this is to treat the strings as Dentaku expressions and evaluate them, so that a string like <code>"3.1416"</code> ends up getting converted to a <code>BigDecimal</code> object under the hood.</p>
+  </li>
+  <li>
+    <p>Load any relevant formulas needed to compute the material quantities and weights &#8211; relying on the <code>Project</code> class to figure out how to extract these values from the various user-provided CSV files.</p>
+  </li>
+</ol>
+
+<p>The resulting code ends up looking like this:</p>
+
+<div class="language-ruby highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="line-numbers"> <a href="#n1" name="n1">1</a></span><span style="color:#080;font-weight:bold">class</span> <span style="color:#B06;font-weight:bold">Calculator</span>
+<span class="line-numbers"> <a href="#n2" name="n2">2</a></span>  <span style="color:#080;font-weight:bold">def</span> <span style="color:#06B;font-weight:bold">initialize</span>(project_name, params={})
+<span class="line-numbers"> <a href="#n3" name="n3">3</a></span>    <span style="color:#33B">@params</span> = <span style="color:#036;font-weight:bold">Hash</span>[params.map { |k,v| [k,Dentaku(v)] }]  <span style="color:#777">#1</span>
+<span class="line-numbers"> <a href="#n4" name="n4">4</a></span>
+<span class="line-numbers"> <a href="#n5" name="n5">5</a></span>    <span style="color:#33B">@quantity_formulas</span> = <span style="color:#036;font-weight:bold">Project</span>.quantity_formulas(project_name)  <span style="color:#777">#2</span>
+<span class="line-numbers"> <a href="#n6" name="n6">6</a></span>    <span style="color:#33B">@common_formulas</span>   = <span style="color:#036;font-weight:bold">Project</span>.common_formulas
+<span class="line-numbers"> <a href="#n7" name="n7">7</a></span>    <span style="color:#33B">@weight_formulas</span>   = <span style="color:#036;font-weight:bold">Project</span>.weight_formulas
+<span class="line-numbers"> <a href="#n8" name="n8">8</a></span>  <span style="color:#080;font-weight:bold">end</span>
+<span class="line-numbers"> <a href="#n9" name="n9">9</a></span>
+<span class="line-numbers"><strong><a href="#n10" name="n10">10</a></strong></span>  <span style="color:#777"># ...</span>
+<span class="line-numbers"><a href="#n11" name="n11">11</a></span><span style="color:#080;font-weight:bold">end</span>
+</pre></div>
+</div>
+</div>
+
+<p>Because a decent amount of work has already been done to massage all the relevant bits of data into exactly the right format, the actual work of computing required material quantities is surprisingly simple:</p>
+
+<ol>
+  <li>Instantiate a <code>Dentaku::Calculator</code> object</li>
+  <li>Load all the necessary common formulas into that object (e.g. <code>circular_area</code>, <code>cylinder_volume</code>, etc.)</li>
+  <li>Walk over the various material quantity formulas and evaluate them (e.g. <code>"black sand" =&gt; "cylinder_volume * 0.5 * fill"</code>)</li>
+  <li>Build up new records that map the names of materials in a project to their quantities.</li>
+</ol>
+
+<p>A few lines of code later, and you have a freshly minted <code>Calculator#materials</code> method:</p>
+
+<div class="language-ruby highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="line-numbers"> <a href="#n1" name="n1">1</a></span><span style="color:#777"># class Calculator</span>
+<span class="line-numbers"> <a href="#n2" name="n2">2</a></span>
+<span class="line-numbers"> <a href="#n3" name="n3">3</a></span>  <span style="color:#080;font-weight:bold">def</span> <span style="color:#06B;font-weight:bold">materials</span>
+<span class="line-numbers"> <a href="#n4" name="n4">4</a></span>    calculator = <span style="color:#036;font-weight:bold">Dentaku</span>::<span style="color:#036;font-weight:bold">Calculator</span>.new <span style="color:#777">#1</span>
+<span class="line-numbers"> <a href="#n5" name="n5">5</a></span>
+<span class="line-numbers"> <a href="#n6" name="n6">6</a></span>    <span style="color:#33B">@common_formulas</span>.each { |k,v| calculator.store_formula(k,v) }  <span style="color:#777">#2</span>
+<span class="line-numbers"> <a href="#n7" name="n7">7</a></span>    
+<span class="line-numbers"> <a href="#n8" name="n8">8</a></span>    <span style="color:#33B">@quantity_formulas</span>.map <span style="color:#080;font-weight:bold">do</span> |material|
+<span class="line-numbers"> <a href="#n9" name="n9">9</a></span>      amt = calculator.evaluate(material[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">formula</span><span style="color:#710">'</span></span>], <span style="color:#33B">@params</span>) <span style="color:#777">#3</span>
+<span class="line-numbers"><strong><a href="#n10" name="n10">10</a></strong></span>
+<span class="line-numbers"><a href="#n11" name="n11">11</a></span>      material.merge(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">quantity</span><span style="color:#710">'</span></span> =&gt; amt) <span style="color:#777">#4</span>
+<span class="line-numbers"><a href="#n12" name="n12">12</a></span>    <span style="color:#080;font-weight:bold">end</span>
+<span class="line-numbers"><a href="#n13" name="n13">13</a></span>  <span style="color:#080;font-weight:bold">end</span>
+</pre></div>
+</div>
+</div>
+
+<p>And for your last trick, you implement the <code>Calculator#shipping_weight</code> method.</p>
+
+<p>Because currently all shipping weight computations are simple arithmetic operations on a <code>quantity</code> for each material, you don&#8217;t need to load up the various common formulas used in the geometry equations. You just need to look up the relevant weight formulas by name, then evaluate them for each material in the list to get a weight value for that material. Sum up those values, for the entire materials list, and you&#8217;re done!</p>
+
+<div class="language-ruby highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="line-numbers"> <a href="#n1" name="n1">1</a></span><span style="color:#777"># class Calculator</span>
+<span class="line-numbers"> <a href="#n2" name="n2">2</a></span>
+<span class="line-numbers"> <a href="#n3" name="n3">3</a></span>  <span style="color:#080;font-weight:bold">def</span> <span style="color:#06B;font-weight:bold">shipping_weight</span>
+<span class="line-numbers"> <a href="#n4" name="n4">4</a></span>    calculator = <span style="color:#036;font-weight:bold">Dentaku</span>::<span style="color:#036;font-weight:bold">Calculator</span>.new
+<span class="line-numbers"> <a href="#n5" name="n5">5</a></span>
+<span class="line-numbers"> <a href="#n6" name="n6">6</a></span>    <span style="color:#777"># Sum up weights for all materials in project based on quantity</span>
+<span class="line-numbers"> <a href="#n7" name="n7">7</a></span>    materials.reduce(<span style="color:#60E">0.0</span>) { |s, e| 
+<span class="line-numbers"> <a href="#n8" name="n8">8</a></span>      weight = calculator.evaluate(<span style="color:#33B">@weight_formulas</span>[e[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">'</span><span style="color:#D20">name</span><span style="color:#710">'</span></span>]], e)
+<span class="line-numbers"> <a href="#n9" name="n9">9</a></span>
+<span class="line-numbers"><strong><a href="#n10" name="n10">10</a></strong></span>      s + weight
+<span class="line-numbers"><a href="#n11" name="n11">11</a></span>    }.ceil
+<span class="line-numbers"><a href="#n12" name="n12">12</a></span>  <span style="color:#080;font-weight:bold">end</span>
+</pre></div>
+</div>
+</div>
+
+<p>Wiring the <code>Calculator</code> class up to your Sinatra application, you end up with a fully functional program, which looks just the same as it did when you mocked up the UI, but actually knows how to crunch numbers now.</p>
+
+<p>As a sanity check, you enter the same values that you have been using to test the <code>Calculator</code> object on the command line into the Web UI, and observe the results:</p>
+
+<p><img src="//i.imgur.com/26sV6wr.png" alt="" /></p>
+
+<p>They look correct. Mission accomplished!!!</p>
+
+<blockquote>
+  <p><strong>SOURCE FILES:</strong> <a href="https://github.com/PracticingDeveloper/dentaku-zen-garden/blob/32e518f80b5499990a4f92af6a261594baaba88a/project.rb">project.rb</a> // <a href="https://github.com/PracticingDeveloper/dentaku-zen-garden/blob/32e518f80b5499990a4f92af6a261594baaba88a/calculator.rb">calculator.rb</a></p>
+</blockquote>
+
+<h2 id="considering-the-tradeoffs-involved-in-using-dentaku">Considering the tradeoffs involved in using Dentaku</h2>
+
+<p>It was easy to decide on using Dentaku in this particular project, for several reasons:</p>
+
+<ul>
+  <li>
+    <p>The formulas used in the project consist entirely of simple arithmetic operations.</p>
+  </li>
+  <li>
+    <p>The tool itself is an internal application with no major performance requirements.</p>
+  </li>
+  <li>
+    <p>The people who will be writing the formulas already understand basic computing concepts.</p>
+  </li>
+  <li>
+    <p>A programmer will available to customize the workflow and assist with problems as needed.</p>
+  </li>
+</ul>
+
+<p>If even a couple of these conditions were not met, the potential caveats of using Dentaku (or any similar formula processing tool) would require more careful consideration.</p>
+
+<p><strong>Maintainability concerns:</strong></p>
+
+<p>Even though Dentaku&#8217;s domain specific language is a very simple one, formulas are still a form of code. Like all code, any formulas that run through Dentaku need to be tested in some way &#8211; and when things go wrong, they need to be debugged.</p>
+
+<p>If your use of Dentaku is limited to the sort of thing someone might type into a cell of an Excel spreadsheet, there isn&#8217;t much of a problem to worry about. You can fairly easily build some sane error handling, and can provide features within your application to allow the user to test formulas before they go live in production.</p>
+
+<p>The more that user-defined computations start looking like &#8220;real programs&#8221;, the more you will miss the various niceties of a real programming environment. We take for granted things like smart code editors that understand the languages we&#8217;re working in, revision control systems, elaborate testing tools, debuggers, package managers, etc.</p>
+
+<p>The simple nature of Dentaku&#8217;s DSL should prevent you from ever getting into enough complexity to require the benefits of a proper development environment. That said, if the use cases for your project require you to run complex user-defined code that looks more like a program than a simple formula, Dentaku would definitely be the wrong tool for the job.</p>
+
+<p><strong>Performance concerns:</strong></p>
+
+<p>The default evaluation behavior of Dentaku is completely unoptimized: simply adding two numbers together is a couple orders of magnitude slower than it would be in pure Ruby. It is possible to precompile expressions by enabling <code>AST</code> caching, and this reduces evaluation overhead significantly. Doing so may introduce memory management issues at scale though, and even with this optimization the evaluator runs several times slower than native Ruby.</p>
+
+<p>None of these performance issues matter when you&#8217;re solving a single system of equations per request, but if you need to run Dentaku expressions in a tight loop over a large dataset, this is a problem to be aware of.</p>
+
+<p><strong>Usability concerns:</strong></p>
+
+<p>In this particular project, the people who will be using Dentaku are already familair with writing Excel-based formulas, and they are also comfortable with technology in general. This means that with a bit of documentation and training, they will be likely to comfortably use a code-based computational tool, as long as the workflow is kept relatively simple.</p>
+
+<p>In cases where the target audience is not assumed to be comfortable writing code-based mathematical expressions and working with raw data formats, a lot more in-application support would be required. For example, one could imagine building a drag-and-drop interface for designing a garden layout, which would in turn generate the relevant Dentaku expressions under the hood.</p>
+
+<p>The challenge is that once you get to the point where you need to put a layer of abstraction between the user and Dentaku&#8217;s DSL, you should carefully consider whether you actually need a formula processing engine at all. It&#8217;s certainly better to go without the extra complexity when it&#8217;s possible to do so, but this will depend heavily on the context of your particular application.</p>
+
+<p><strong>Extensibility concerns:</strong></p>
+
+<p>Setting up non-programmers with a means of doing their own computations can help cut down on a lot of tedious maintenance programming work, but the core domain model and data access rules are still defined by the application&#8217;s source code.</p>
+
+<p>As requirements change in a business, new data sources may need to be wired up, and new pieces of support code may need to be written from time to time. This can be challenging, because tweaks to the domain model might require corresponding changes to the user-defined formulas.</p>
+
+<p>In practice, this means that an embedded formula processing system works best when either the data sources and core domain model are somewhat stable, or there is a programmer actively maintaining the system that can help guide users through any necessary changes that come up.</p>
+
+<p>With code stored either as user-provided data files or even in the application&#8217;s database, there is also a potential for messy and complicated migrations to happen whenever a big change does need to happen. This may be especially challenging to navigate for non-programmers, who are used to writing something once and having it work forever.</p>
+
+<p><em>NOTE: Yes, this was a long list of caveats. Keep in mind that most of them only apply when you go beyond the &#8220;let&#8217;s take this set of Excel sheets and turn it into a nicely managed program&#8221; use case and venture into the &#8220;I want to embed an adhoc SDK into my application&#8221; territory. The concerns listed above are meant to help you sort out what category your project falls into, so that you can choose a modeling technique wisely.</em></p>
+
+<h2 id="reflections-and-further-explorations">Reflections and further explorations</h2>
+
+<p>By now you&#8217;ve seen that a formula parser/evaluator can be a great way to take a messy ad-hoc spreadsheet workflow and turn it into a slightly less messy ad-hoc web application workflow. This technique provides a way to balance the central management and depth of functionality that custom software development can offer with the flexibility and empowerment of putting computational modeling directly into the hands of non-programmers.</p>
+
+<p>Although this is not an approach that should be used in every application, it&#8217;s a very useful modeling strategy to know about, as long as you keep a close eye on the tradeoffs involved.</p>
+
+<p>If you&#8217;d like to continue studying this topic, here are a few things to try out:</p>
+
+<ul>
+  <li>
+    <p>Grab the <a href="https://github.com/PracticingDeveloper/dentaku-zen-garden">source code for the calculator application</a>, and run it on your own machine.</p>
+  </li>
+  <li>
+    <p>Create a new garden layout, with some new material types and shapes. For example,
+you could try to create a group of concentric circles, or a checkerboard style design.</p>
+  </li>
+  <li>
+    <p><a href="https://github.com/rubysolo/dentaku#external-functions">Explore how to extend Dentaku&#8217;s DSL</a> with your own Ruby functions.</p>
+  </li>
+  <li>
+    <p>Watch <a href="https://www.youtube.com/watch?v=0CKru5d4GPk">Spreadsheets for developers</a>, a talk by Felienne Hermans on the power and usefulness of basic spreadsheet software for rapid protyping and ad-hoc explorations.</p>
+  </li>
+</ul>
+
+<p>Good luck with your future number crunching, and thanks for reading!</p>
+
+  </div>
+</body>
+</html>

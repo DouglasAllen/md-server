@@ -1,0 +1,102 @@
+<p>Title: Math support in Maruku LaTeX preamble: math_preamble.tex LaTeX use listings: true CSS: math.css style.css use numbered headers: true</p>
+<h1 id="math-support-in-maruku">Math support in Maruku</h1>
+<p>This document describes Maruku's support of inline LaTeX-style math.</p>
+<p>There are many subtleties of which one must care for correctly serving the XHTML+MathML document to browsers. In fact, <em>this documentation is <strong>not</strong> enough to get you started</em>, unless you feel very adventurous.</p>
+<ul>
+<li>toc {:toc}</li>
+</ul>
+<h2 id="syntax">Syntax</h2>
+<h3 id="inline-math">Inline math</h3>
+<p>Inline math is contained inside couples of <code>$</code>.</p>
+<p>Everything inside will be passed as-is to LaTeX: no Markdown interpretation will take place.</p>
+<pre><code>Example: $x^{n}+y^{n} \neq z^{n}$ for $n \geq 3$</code></pre>
+<blockquote>
+<p>Example: <span class="math inline"><em>x</em><sup><em>n</em></sup> + <em>y</em><sup><em>n</em></sup> ≠ <em>z</em><sup><em>n</em></sup></span> for <span class="math inline"><em>n</em> ≥ 3</span></p>
+</blockquote>
+<h3 id="equations">Equations</h3>
+<p>Equations are specified using either the <code>$$ ... $$</code> or <code>\[ ... \]</code> LaTeX notation. Equations can span multiple lines.</p>
+<pre><code>\[ 
+\sum_{n=1}^\infty \frac{1}{n} 
+\text{ is divergent, but } 
+\lim_{n \to \infty} \sum_{i=1}^n \frac{1}{i} - \ln n \text{exists.} 
+\]</code></pre>
+<blockquote>
+<p>[ <em>{n=1}^  </em>{n } _{i=1}^n  - n  ]</p>
+</blockquote>
+<p>Some random AMSTeX symbols:</p>
+<pre><code>$$ \beth \Subset \bigtriangleup \bumpeq \ggg \pitchfork $$ </code></pre>
+<p><br /><span class="math display">ℶ ⋐ △ ≏ ⋙⋔</span><br /></p>
+<h2 id="cross">Cross references</h2>
+<p>Create a label for an equation in two ways:</p>
+<ul>
+<li><p>LaTeX style:</p>
+<pre><code>Consider \eqref{a}:
+
+$$ \alpha = \beta  \label{a} $$</code></pre></li>
+<li><p>More readable style:</p>
+<pre><code>Consider (eq:a):
+
+$$ \alpha = \beta $$        (a)</code></pre></li>
+</ul>
+<p>You can mix the two.</p>
+<p>Labels will work as expected also in the PDF output, whatever style you use: Maruku will insert the necessary <code>\label</code> commands.</p>
+<p>The following are 4 equations, labeled A,B,C,D:</p>
+<p><br /><span class="math display"><em>α</em></span><br /> (A)</p>
+<p>[ ] (B)</p>
+<p><br /><span class="math display"><em>γ</em></span><br /></p>
+<p>[  ]</p>
+<p>You can now refer to (eq:A), (eq:B), , .</p>
+<h2 id="enabling-the-extension">Enabling the extension</h2>
+<h3 id="on-the-command-line">On the command line</h3>
+<p>Use the <code>-m</code> option to choose the kind of output. Possible choices are:</p>
+<p><code>--math-engine itex2mml</code> : Outputs MathML using <a href="#using_itex2mml">itex2mml</a>.<br />
+<code>--math-engine ritex</code> : Outputs MathML using <a href="#using_ritex">ritex</a>.<br />
+<code>--math-engine blahtex</code> : Outputs MathML using <a href="#using_blahtex">blahtex</a>.<br />
+<code>--math-images blahtex</code> : Outputs PNGs using <a href="#using_blahtex">blahtex</a>.</p>
+<h3 id="with-embedded-maruku">With embedded Maruku</h3>
+<p>You have to enable the math extension like this:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">require <span class="st">&#39;maruku&#39;</span>          <span class="co"># loads maruku</span>
+require <span class="st">&#39;maruku/ext/math&#39;</span> <span class="co"># loads the math extension</span></code></pre></div>
+<p>Use the following to choose the engine:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">MaRuKu</span>::<span class="dt">Globals</span>[<span class="st">:html_math_engine</span>] = <span class="st">&#39;itex2mml&#39;</span>
+<span class="dt">MaRuKu</span>::<span class="dt">Globals</span>[<span class="st">:html_png_engine</span>] =  <span class="st">&#39;blahtex&#39;</span></code></pre></div>
+<p>Available MathML engines are 'none', 'itex2mml', 'blahtex'. 'blahtex' is the only PNG engine available.</p>
+<h2 id="external-libraries-needed">External libraries needed</h2>
+<p>To output MathML or PNGs, it is needed to install one of the following libraries</p>
+<h3 id="using_itex2mml">Using <code>itex2mml</code></h3>
+<p>itex2mml supports much more LaTeX commands/environments than ritex.</p>
+<p>Install itextomml with</p>
+<pre><code>$ gem install itextomml</code></pre>
+<p>This is a summary of the available LaTeX commands:</p>
+<blockquote>
+<p><a href="http://golem.ph.utexas.edu/~distler/blog/itex2MMLcommands.html" class="uri">http://golem.ph.utexas.edu/~distler/blog/itex2MMLcommands.html</a></p>
+</blockquote>
+<p>Moreover, <a href="http://golem.ph.utexas.edu/~distler">Jacques Distler</a> is integrating Maruku+itex2mml+<a href="http://golem.ph.utexas.edu/wiki/instiki/show/HomePage">Instiki</a>. You can find more information here:</p>
+<blockquote>
+<p><a href="http://golem.ph.utexas.edu/wiki/instiki/show/HomePage" class="uri">http://golem.ph.utexas.edu/wiki/instiki/show/HomePage</a></p>
+</blockquote>
+<h3 id="using_ritex">Using <code>ritex</code></h3>
+<p>Install with</p>
+<pre><code>$ gem install ritex</code></pre>
+<p>ritex's abilities are very limited, but it is the easiest to install since, unlike <code>itextomml</code>, it is a pure-ruby implementation.</p>
+<h3 id="using_blahtex">Using <code>blahtex</code></h3>
+<p>Download from <a href="http://www.blahtex.org" class="uri">http://www.blahtex.org</a>. Make sure you have the command-line <code>blahtex</code> in your path.</p>
+<h2 id="subtleties">Subtleties</h2>
+<h3 id="serving-the-right-contenttype">Serving the right content/type</h3>
+<ul>
+<li>Mozilla wants files to have the <code>.xhtml</code> extension.</li>
+</ul>
+<p>...</p>
+<h3 id="where-pngs-are-put">Where PNGS are put</h3>
+<ul>
+<li><p><code>Globals[:math_png_dir]</code></p></li>
+<li><p><code>Globals[:math_png_dir_url]</code></p></li>
+</ul>
+<h3 id="styling-equations">Styling equations</h3>
+<p>...</p>
+<h3 id="aligning-pngs">Aligning PNGs</h3>
+<ul>
+<li><p>using <code>ex</code></p></li>
+<li><p><strong>IE7 bug</strong></p></li>
+</ul>
+<p>...</p>

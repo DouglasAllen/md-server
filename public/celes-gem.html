@@ -1,0 +1,133 @@
+<h1 id="celes">Celes</h1>
+<p>Celes is a wrapper of the SOFA Library for Ruby.</p>
+<p>The SOFA Library has many functions for astronomical computing. The original library is available in Fortran 77 and ANSI C. Please see for more information about the SOFA Library: http://www.iausofa.org/.</p>
+<p>Celes is a derived work of the SOFA Library and includes original files in accordance with <a href="http://www.iausofa.org/tandc.html">the SOFA Software License</a>.</p>
+<h2 id="dependencies">Dependencies</h2>
+<p>Ruby 1.8.7 or later</p>
+<h2 id="licenses">Licenses</h2>
+<p>The 3-clause BSD License, the names of organizations of Article 3 have the IAU and the SOFA.</p>
+<h2 id="installation">Installation</h2>
+<h3 id="from-rubygems">from RubyGems</h3>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash">$ <span class="fu">sudo</span> gem install celes</code></pre></div>
+<h3 id="from-source">from source</h3>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash">$ <span class="co"># download Celes</span>
+$ <span class="fu">git</span> clone https://github.com/tohka/celes.git
+$ <span class="bu">cd</span> celes
+$ 
+$ <span class="co"># build gem</span>
+$ <span class="ex">rake</span> build
+$ 
+$ <span class="co"># install with built gem file</span>
+$ <span class="fu">sudo</span> gem install pkg/celes-0.0.1.gem</code></pre></div>
+<h3 id="from-source-without-gem-file">from source without gem file</h3>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash">$ <span class="co"># download Celes</span>
+$ <span class="fu">git</span> clone https://github.com/tohka/celes.git
+$ <span class="bu">cd</span> celes
+$ 
+$ <span class="bu">cd</span> ext/celes
+$ 
+$ <span class="co"># create Makefile and do make</span>
+$ <span class="ex">ruby</span> ./extconf.rb
+$ <span class="fu">make</span>
+$ 
+$ <span class="fu">ls</span> *.so
+<span class="ex">celes_core.so</span></code></pre></div>
+<h2 id="usage">Usage</h2>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">require <span class="st">&#39;celes&#39;</span>
+
+<span class="co"># UTC to TAI</span>
+p <span class="dt">Celes</span>::utctai(<span class="fl">2400000.5</span>, <span class="fl">45678.9</span>)
+<span class="co">#=&gt; [2400000.5, 45678.90025462963]</span></code></pre></div>
+<h2 id="documentation">Documentation</h2>
+<p>Celes's documentation is unprepared, but Celes is based on the original SOFA Library.</p>
+<p>For example, to convert Gregorian Calendar date into Julian Date.</p>
+<div class="sourceCode"><pre class="sourceCode c"><code class="sourceCode c"><span class="co">// in C, using the SOFA Library</span>
+<span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span>
+<span class="pp">#include </span><span class="im">&quot;sofa.h&quot;</span>
+<span class="pp">#include </span><span class="im">&quot;sofam.h&quot;</span>
+
+<span class="dt">int</span> status;
+<span class="dt">double</span> djm0, djm;
+
+status = iauCal2jd(<span class="dv">2000</span>, <span class="dv">12</span>, <span class="dv">23</span>, &amp;djm0, &amp;djm);
+
+<span class="cf">if</span>(status){
+  printf(<span class="st">&quot;error or warning</span><span class="sc">\n</span><span class="st">&quot;</span>);
+} <span class="cf">else</span>{
+  printf(<span class="st">&quot;Julian Day is %f</span><span class="sc">\n</span><span class="st">&quot;</span>, djm0 + djm);
+}
+<span class="co">//=&gt; Julian Day is 2451901.5</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># in Ruby, using Celes</span>
+require <span class="st">&#39;celes&#39;</span>
+
+<span class="kw">begin</span>
+  djm0, djm = <span class="dt">Celes</span>::cal2jd(<span class="dv">2000</span>, <span class="dv">12</span>, <span class="dv">23</span>)
+<span class="kw">rescue</span>
+  puts <span class="st">&quot;error&quot;</span>
+<span class="kw">else</span>
+  <span class="kw">if</span> <span class="dt">Celes</span>::status.nonzero?
+    puts <span class="st">&quot;warning&quot;</span>
+  <span class="kw">else</span>
+    puts <span class="st">&quot;Julian Day is </span><span class="ot">#{</span>djm0 + djm<span class="ot">}</span><span class="st">&quot;</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="co">#=&gt; Julian Day is 2451901.5</span></code></pre></div>
+<h3 id="rules">Rules</h3>
+<ul>
+<li>basically, according to the original SOFA Library</li>
+<li>functions' name are lower-case</li>
+<li>a prefix <var>iau</var> or <var>iau_</var> is removed</li>
+<li>some functions are bang functions, their arguments value are replaced and name are with '!'</li>
+<li><var>zp!</var>, <var>zr!</var>, <var>ir!</var>, <var>zpv!</var>, <var>rx!</var>, <var>ry!</var> and <var>rz!</var></li>
+<li>Celes has also non-bang functions, <var>zp</var>, <var>zr</var>, ...</li>
+<li>arguments for output are removed</li>
+<li>when they have multi returned values, return as array object</li>
+<li>functions do not return status code</li>
+<li><var>Celes::status</var> returns a last status code</li>
+<li>raise exception if status code implies error</li>
+</ul>
+<h3 id="bang-and-non-bang-functions">Bang and non-bang functions</h3>
+<p>Methods for clearing a vector or a matrix, <var>zp!</var>, <var>zr!</var>, <var>ir!</var> and <var>zpv!</var>.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># in Ruby</span>
+
+<span class="co"># vector</span>
+p1 = [<span class="fl">1.0</span>, <span class="fl">2.0</span>, <span class="fl">3.0</span>]
+
+<span class="dt">Celes</span>::zp!(p1)
+p p1 <span class="co">#=&gt; [0.0, 0.0, 0.0]</span>
+
+<span class="co"># non-bang version, has no arguments</span>
+p2 = <span class="dt">Celes</span>::zp
+p p2 <span class="co">#=&gt; [0.0, 0.0, 0.0]</span></code></pre></div>
+<hr />
+<p>Methods for rotating a matrix about an axis, <var>rx!</var>, <var>ry!</var> and <var>rz!</var>.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># in Ruby</span>
+format = <span class="st">&quot;[%9.6f, %9.6f, %9.6f]&quot;</span>
+
+<span class="co"># matrix</span>
+r1 = <span class="dt">Celes</span>::ir
+puts format % r1[<span class="dv">0</span>] <span class="co">#=&gt; [ 1.000000,  0.000000,  0.000000]</span>
+puts format % r1[<span class="dv">1</span>] <span class="co">#=&gt; [ 0.000000,  1.000000,  0.000000]</span>
+puts format % r1[<span class="dv">2</span>] <span class="co">#=&gt; [ 0.000000,  0.000000,  1.000000]</span>
+
+<span class="co"># rotate about z-axis</span>
+<span class="dt">Celes</span>::rz!(<span class="dt">Math</span>::<span class="dt">PI</span>/<span class="fl">3.0</span>, r1)
+puts format % r1[<span class="dv">0</span>] <span class="co">#=&gt; [ 0.500000,  0.866025,  0.000000]</span>
+puts format % r1[<span class="dv">1</span>] <span class="co">#=&gt; [-0.866025,  0.500000,  0.000000]</span>
+puts format % r1[<span class="dv">2</span>] <span class="co">#=&gt; [ 0.000000,  0.000000,  1.000000]</span>
+
+<span class="co"># non-bang version</span>
+r2 = <span class="dt">Celes</span>::rz(<span class="dt">Math</span>::<span class="dt">PI</span>/<span class="fl">3.0</span>, r1)
+puts format % r1[<span class="dv">0</span>] <span class="co">#=&gt; [ 0.500000,  0.866025,  0.000000]</span>
+puts format % r1[<span class="dv">1</span>] <span class="co">#=&gt; [-0.866025,  0.500000,  0.000000]</span>
+puts format % r1[<span class="dv">2</span>] <span class="co">#=&gt; [ 0.000000,  0.000000,  1.000000]</span>
+
+puts format % r2[<span class="dv">0</span>] <span class="co">#=&gt; [-0.500000,  0.866025,  0.000000]</span>
+puts format % r2[<span class="dv">1</span>] <span class="co">#=&gt; [-0.866025, -0.500000,  0.000000]</span>
+puts format % r2[<span class="dv">2</span>] <span class="co">#=&gt; [ 0.000000,  0.000000,  1.000000]</span></code></pre></div>
+<h3 id="original-documentation">Original documentation</h3>
+<p>A documentation about the SOFA Library.</p>
+<ul>
+<li>http://www.iausofa.org/current_F.html#Documents (Fortran 77)</li>
+<li>http://www.iausofa.org/current_C.html#Documents (ANSI C)</li>
+</ul>

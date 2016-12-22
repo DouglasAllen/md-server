@@ -1,0 +1,267 @@
+<h1 id="the-ruby-programming-language">The Ruby Programming Language</h1>
+<h2 id="chapter-2">CHAPTER 2</h2>
+<h3 id="the-structure-and-execution-of-ruby-programs">The Structure and Execution of Ruby Programs</h3>
+<h4 id="comments">2.1.1 Comments</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># This entire line is a comment</span>
+x = <span class="st">&quot;#This is a string&quot;</span>               <span class="co"># And this is a comment</span>
+y = <span class="ot">/#This is a regular expression/</span>   <span class="co"># Here&#39;s another comment</span>
+
+<span class="co">#</span>
+<span class="co"># This class represents a Complex number</span>
+<span class="co"># Despite its name, it is not complex at all.</span>
+<span class="co">#</span></code></pre></div>
+<h4 id="embedded-documents">2.1.1.1 Embedded documents</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co">=begin Someone needs to fix the broken code below!</span>
+<span class="co">    &lt;emphasis&gt;Any code here is commented out&lt;/emphasis&gt;</span>
+<span class="co">=end</span>
+---------------------------
+<span class="co"># =begin This used to begin a comment. Now it is itself commented out!</span>
+    &lt;emphasis&gt;<span class="dt">The</span> code that goes here is no longer commented out&lt;<span class="ot">/emphasis&gt;</span>
+<span class="ot"># =end</span></code></pre></div>
+<h4 id="documentation-comments">2.1.1.2 Documentation comments</h4>
+<pre class="rdoc"><code>
+   Rdoc comments use a simple markup grammar like those used in wikis.
+ 
+   Separate paragraphs with a blank line.
+
+   Headings begin with an equals sign
+ 
+   = Headings</code></pre>
+<h1 id="headings">Headings</h1>
+<pre class="rdoc"><code>   == Sub-Headings</code></pre>
+<h2 id="sub-headings">Sub-Headings</h2>
+<pre class="rdoc"><code>    The line above produces a subheading.
+    === Sub-Sub-Heading</code></pre>
+<h3 id="sub-sub-heading">Sub-Sub-Heading</h3>
+<pre class="rdoc"><code>    And so on.
+ 
+    = Examples</code></pre>
+<h1 id="examples">Examples</h1>
+<pre class="rdoc"><code> 
+   Indented lines are displayed verbatim in code font.
+     Be careful not to indent your headings and lists, though.
+ 
+   = Lists and Fonts</code></pre>
+<h1 id="lists-and-fonts">Lists and Fonts</h1>
+<pre class="rdoc"><code>    List items begin with * or -. Indicate fonts with punctuation or HTML:
+    * _italic_ or &lt;i&gt;multi-word italic&lt;/i&gt;</code></pre>
+<ul>
+<li><em>italic</em> or <i>multi-word italic</i></li>
+</ul>
+<pre class="rdoc"><code>    * *bold* or &lt;b&gt;multi-word bold&lt;/b&gt;</code></pre>
+<ul>
+<li><strong>bold</strong> or <b>multi-word bold</b></li>
+</ul>
+<pre class="rdoc"><code>    * +code+ or &lt;tt&gt;multi-word code&lt;/tt&gt;</code></pre>
+<ul>
+<li><code>code</code> or <tt>multi-word code</tt></li>
+</ul>
+<pre class="rdoc"><code>    1. Numbered lists begin with numbers.
+    99. Any number will do; they don&#39;t have to be sequential.
+    1. There is no way to do nested lists.</code></pre>
+<ol style="list-style-type: decimal">
+<li>Numbered lists begin with numbers.</li>
+<li>Any number will do; they don't have to be sequential.</li>
+<li>There is no way to do nested lists.</li>
+</ol>
+<pre class="rdoc"><code>    The terms of a description list are bracketed:
+
+    [item 1]  This is a description of item 1
+    [item 2]  This is a description of item 2</code></pre>
+<dl>
+<dt>
+<strong>item 1</strong>
+</dt>
+<dd>
+This is a description of item 1
+</dd>
+<dt>
+<strong>item 2</strong>
+</dt>
+<dd>
+This is a description of item 2
+</dd>
+</dl>
+<h4 id="literals">2.1.2 Literals</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dv">1</span>                      <span class="co"># An integer literal</span>
+<span class="fl">1.0</span>                    <span class="co"># A floating-point literal</span>
+<span class="st">&#39;one&#39;</span>                  <span class="co"># A string literal</span>
+<span class="st">&quot;two&quot;</span>                  <span class="co"># Another string literal</span>
+<span class="ot">/three/</span>                <span class="co"># A regular expression literal</span></code></pre></div>
+<h4 id="identifiers">2.1.4 Identifiers</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">i
+x2
+old_value
+_internal    <span class="co"># Identifiers may begin with underscores</span>
+<span class="dt">PI</span>           <span class="co"># Constant</span></code></pre></div>
+<h4 id="unicode-characters-in-identifiers">2.1.4.2 Unicode characters in identifiers</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">def</span> &amp;<span class="co">#xD7;(x,y)  # The name of this method is the Unicode multiplication sign</span>
+  x*y       <span class="co"># The body of this method multiplies its arguments</span>
+<span class="kw">end</span>         </code></pre></div>
+<h4 id="punctuation-in-identifiers">2.1.4.3 Punctuation in identifiers</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">$files</span>          <span class="co"># A global variable</span>
+<span class="ot">@data</span>           <span class="co"># An instance variable</span>
+<span class="ot">@@counter</span>       <span class="co"># A class variable</span>
+empty?          <span class="co"># A Boolean-valued method or predicate</span>
+sort!           <span class="co"># An in-place alternative to the regular sort method</span>
+timeout=        <span class="co"># A method invoked by assignment</span></code></pre></div>
+<h4 id="keywords">2.1.5 Keywords</h4>
+<pre class="rdoc"><code>__LINE__      case         ensure       not          then
+
+__ENCODING__  class        false        or           true
+
+__FILE__      def          for          redo         undef
+
+BEGIN         defined?     if           rescue       unless
+
+END           do           in           retry        until
+
+alias         else         module       return       when
+
+and           elsif        next         self         while
+
+begin         end          nil          super        yield
+
+break
+
+
+=begin    =end      __END__
+
+
+# These are methods that appear to be statements or keywords
+
+at_exit        catch          private        require
+
+attr           include        proc           throw
+
+attr_accessor  lambda         protected
+
+attr_reader    load           public
+
+attr_writer    loop           raise
+
+
+# These are commonly used global functions
+
+Array          chomp!         gsub!          select
+
+Float          chop           iterator?      sleep
+
+Integer        chop!          load           split
+
+String         eval           open           sprintf
+
+URI            exec           p              srand
+
+abort          exit           print          sub
+
+autoload       exit!          printf         sub!
+
+autoload?      fail           putc           syscall
+
+binding        fork           puts           system
+
+block_given?   format         rand           test
+
+callcc         getc           readline       trap
+
+caller         gets           readlines      warn
+
+chomp          gsub           scan
+
+
+# These are commonly used object methods
+
+allocate       freeze         kind_of?       superclass
+
+clone          frozen?        method         taint
+
+display        hash           methods        tainted?
+
+dup            id             new            to_a
+
+enum_for       inherited      nil?           to_enum
+
+eql?           inspect        object_id      to_s
+
+equal?         instance_of?   respond_to?    untaint
+
+extend         is_a?          send           </code></pre>
+<h4 id="newlines-as-statement-terminators">2.1.6.1 Newlines as statement terminators</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">total = x +     <span class="co"># Incomplete expression, parsing continues</span>
+  y
+
+total = x  <span class="co"># This is a complete expression</span>
+  + y      <span class="co"># A useless but complete expression</span>
+
+var total = first_long_variable_name + second_long_variable_name \
+  + third_long_variable_name <span class="co"># Note no statement terminator above</span>
+
+animals = <span class="dt">Array</span>.new
+  .push(<span class="st">&quot;dog&quot;</span>)   <span class="co"># Does not work in Ruby 1.8</span>
+  .push(<span class="st">&quot;cow&quot;</span>)
+  .push(<span class="st">&quot;cat&quot;</span>)
+  .sort</code></pre></div>
+<h4 id="spaces-and-method-invocations">2.1.6.2 Spaces and method invocations</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">f(<span class="dv">3+2</span>)+<span class="dv">1</span>
+f (<span class="dv">3+2</span>)+<span class="dv">1</span></code></pre></div>
+<h4 id="syntactic-structure">2.2 Syntactic Structure</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">[<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>]                <span class="co"># An Array literal</span>
+{<span class="dv">1</span>=&gt;<span class="st">&quot;one&quot;</span>, <span class="dv">2</span>=&gt;<span class="st">&quot;two&quot;</span>}   <span class="co"># A Hash literal</span>
+<span class="dv">1</span>..<span class="dv">3</span>                   <span class="co"># A Range literal</span>
+
+<span class="dv">1</span>         <span class="co"># A primary expression</span>
+x         <span class="co"># Another primary expression</span>
+x = <span class="dv">1</span>     <span class="co"># An assignment expression</span>
+x = x + <span class="dv">1</span> <span class="co"># An expression with two operators</span>
+
+<span class="kw">if</span> x &lt; <span class="dv">10</span> <span class="kw">then</span>   <span class="co"># If this expression is true</span>
+  x = x + <span class="dv">1</span>      <span class="co"># Then execute this statement</span>
+<span class="kw">end</span>              <span class="co"># Marks the end of the conditional</span>
+
+while x &lt; <span class="dv">10</span> <span class="kw">do</span>  <span class="co"># While this expression is true...</span>
+  print x        <span class="co"># Execute this statement</span>
+  x = x + <span class="dv">1</span>      <span class="co"># Then execute this statement</span>
+<span class="kw">end</span>              <span class="co"># Marks the end of the loop</span></code></pre></div>
+<h4 id="block-structure-in-ruby">2.2.1 Block Structure in Ruby</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dv">3</span>.times { print <span class="st">&quot;Ruby! &quot;</span> }
+
+<span class="dv">1</span>.upto(<span class="dv">10</span>) <span class="kw">do</span> |x|
+  print x
+<span class="kw">end</span>
+
+<span class="kw">module</span> <span class="dt">Stats</span>                          <span class="co"># A module</span>
+  <span class="kw">class</span> <span class="dt">Dataset</span>                       <span class="co"># A class in the module</span>
+    <span class="kw">def</span> initialize(filename)          <span class="co"># A method in the class</span>
+      <span class="dt">IO</span>.foreach(filename) <span class="kw">do</span> |line|  <span class="co"># A block in the method</span>
+        <span class="kw">if</span> line[<span class="dv">0</span>,<span class="dv">1</span>] == <span class="st">&quot;#&quot;</span>           <span class="co"># An if statement in the block</span>
+          <span class="kw">next</span>                        <span class="co"># A simple statement in the if</span>
+        <span class="kw">end</span>                           <span class="co"># End the if body</span>
+      <span class="kw">end</span>                             <span class="co"># End the block</span>
+    <span class="kw">end</span>                               <span class="co"># End the method body</span>
+  <span class="kw">end</span>                                 <span class="co"># End the class body</span>
+<span class="kw">end</span>                                   <span class="co"># End the module body</span></code></pre></div>
+<h4 id="file-structure">2.3 File Structure</h4>
+<pre class="rdoc"><code>#!/usr/bin/ruby -w          &lt;lineannotation&gt;shebang comment&lt;/lineannotation&gt;
+# -*- coding: utf-8 -*-     &lt;lineannotation&gt;coding comment&lt;/lineannotation&gt;
+require &#39;socket&#39;            &lt;lineannotation&gt;load networking library&lt;/lineannotation&gt;
+
+  ...                       &lt;lineannotation&gt;program code goes here&lt;/lineannotation&gt;
+
+__END__                     &lt;lineannotation&gt;mark end of code&lt;/lineannotation&gt;
+  ...                       &lt;lineannotation&gt;program data goes here&lt;/lineannotation&gt;</code></pre>
+<h4 id="specifying-program-encoding">2.4.1 Specifying Program Encoding</h4>
+<pre class="rdoc"><code># coding: utf-8
+
+# -*- coding: utf-8 -*-
+
+# vi: set fileencoding=utf-8 :
+
+#!/usr/bin/ruby -w
+# coding: utf-8</code></pre>
+<h4 id="source-encoding-and-default-external-encoding">2.4.2 Source Encoding and Default External Encoding</h4>
+<pre class="rdoc"><code>ruby -E utf-8            # Encoding name follows -E
+ruby -Eutf-8             # The space is optional
+ruby --encoding utf-8    # Encoding following --encoding with a space
+ruby --encoding=utf-8    # Or use an equals sign with --encoding
+</code></pre>

@@ -1,0 +1,114 @@
+<h1 id="public-suffix-for-ruby">Public Suffix <small>for Ruby</small></h1>
+<p><tt>PublicSuffix</tt> is a Ruby domain name parser based on the <a href="https://publicsuffix.org/">Public Suffix List</a>.</p>
+<p><a href="https://travis-ci.org/weppos/publicsuffix-ruby"><img src="https://travis-ci.org/weppos/publicsuffix-ruby.svg?branch=master" alt="Build Status" /></a></p>
+<h2 id="requirements">Requirements</h2>
+<ul>
+<li>Ruby &gt;= 2.0</li>
+</ul>
+<p>For an older versions of Ruby use a previous release.</p>
+<h2 id="installation">Installation</h2>
+<p>You can install the gem manually:</p>
+<pre class="shell"><code>$ gem install public_suffix</code></pre>
+<p>Or use Bundler and define it as a dependency in your <code>Gemfile</code>:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">gem <span class="st">&#39;public_suffix&#39;</span></code></pre></div>
+<p>If you are upgrading to 2.0, see <a href="2.0-Upgrade.md" class="uri">2.0-Upgrade.md</a>.</p>
+<h2 id="usage">Usage</h2>
+<p>Extract the domain out from a name:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">PublicSuffix</span>.domain(<span class="st">&quot;google.com&quot;</span>)
+<span class="co"># =&gt; &quot;google.com&quot;</span>
+<span class="dt">PublicSuffix</span>.domain(<span class="st">&quot;www.google.com&quot;</span>)
+<span class="co"># =&gt; &quot;google.com&quot;</span>
+<span class="dt">PublicSuffix</span>.domain(<span class="st">&quot;www.google.co.uk&quot;</span>)
+<span class="co"># =&gt; &quot;google.co.uk&quot;</span></code></pre></div>
+<p>Parse a domain without subdomains:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">domain = <span class="dt">PublicSuffix</span>.parse(<span class="st">&quot;google.com&quot;</span>)
+<span class="co"># =&gt; #&lt;PublicSuffix::Domain&gt;</span>
+domain.tld
+<span class="co"># =&gt; &quot;com&quot;</span>
+domain.sld
+<span class="co"># =&gt; &quot;google&quot;</span>
+domain.trd
+<span class="co"># =&gt; nil</span>
+domain.domain
+<span class="co"># =&gt; &quot;google.com&quot;</span>
+domain.subdomain
+<span class="co"># =&gt; nil</span></code></pre></div>
+<p>Parse a domain with subdomains:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">domain = <span class="dt">PublicSuffix</span>.parse(<span class="st">&quot;www.google.com&quot;</span>)
+<span class="co"># =&gt; #&lt;PublicSuffix::Domain&gt;</span>
+domain.tld
+<span class="co"># =&gt; &quot;com&quot;</span>
+domain.sld
+<span class="co"># =&gt; &quot;google&quot;</span>
+domain.trd
+<span class="co"># =&gt; &quot;www&quot;</span>
+domain.domain
+<span class="co"># =&gt; &quot;google.com&quot;</span>
+domain.subdomain
+<span class="co"># =&gt; &quot;www.google.com&quot;</span></code></pre></div>
+<p>Simple validation example:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">PublicSuffix</span>.valid?(<span class="st">&quot;google.com&quot;</span>)
+<span class="co"># =&gt; true</span>
+
+<span class="dt">PublicSuffix</span>.valid?(<span class="st">&quot;www.google.com&quot;</span>)
+<span class="co"># =&gt; true</span>
+
+<span class="co"># Explicitly forbidden, it is listed as a private domain</span>
+<span class="dt">PublicSuffix</span>.valid?(<span class="st">&quot;blogspot.com&quot;</span>)
+<span class="co"># =&gt; false</span></code></pre></div>
+<h2 id="fully-qualified-domain-names">Fully Qualified Domain Names</h2>
+<p>This library automatically recognizes Fully Qualified Domain Names. A FQDN is a domain name that end with a trailing dot.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># Parse a standard domain name</span>
+<span class="dt">PublicSuffix</span>.domain(<span class="st">&quot;www.google.com&quot;</span>)
+<span class="co"># =&gt; &quot;google.com&quot;</span>
+
+<span class="co"># Parse a fully qualified domain name</span>
+<span class="dt">PublicSuffix</span>.domain(<span class="st">&quot;www.google.com.&quot;</span>)
+<span class="co"># =&gt; &quot;google.com&quot;</span></code></pre></div>
+<h2 id="private-domains">Private domains</h2>
+<p>This library has support for switching off support for private (non-ICANN).</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># Extract a domain including private domains (by default)</span>
+<span class="dt">PublicSuffix</span>.domain(<span class="st">&quot;something.blogspot.com&quot;</span>)
+<span class="co"># =&gt; &quot;something.blogspot.com&quot;</span>
+
+<span class="co"># Extract a domain excluding private domains</span>
+<span class="dt">PublicSuffix</span>.domain(<span class="st">&quot;something.blogspot.com&quot;</span>, <span class="st">ignore_private: </span><span class="dv">true</span>)
+<span class="co"># =&gt; &quot;blogspot.com&quot;</span>
+
+<span class="co"># It also works for #parse and #valid?</span>
+<span class="dt">PublicSuffix</span>.parse(<span class="st">&quot;something.blogspot.com&quot;</span>, <span class="st">ignore_private: </span><span class="dv">true</span>)
+<span class="dt">PublicSuffix</span>.valid?(<span class="st">&quot;something.blogspot.com&quot;</span>, <span class="st">ignore_private: </span><span class="dv">true</span>)</code></pre></div>
+<p>If you don't care about private domains at all, it's more efficient to exclude them when the list is parsed:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># Disable support for private TLDs</span>
+<span class="dt">PublicSuffix</span>::<span class="dt">List</span>.default = <span class="dt">PublicSuffix</span>::<span class="dt">List</span>.parse(<span class="dt">File</span>.read(<span class="dt">PublicSuffix</span>::<span class="dt">List</span>::<span class="dt">DEFAULT_LIST_PATH</span>), <span class="st">private_domains: </span><span class="dv">false</span>)
+<span class="co"># =&gt; &quot;blogspot.com&quot;</span>
+<span class="dt">PublicSuffix</span>.domain(<span class="st">&quot;something.blogspot.com&quot;</span>)
+<span class="co"># =&gt; &quot;blogspot.com&quot;</span></code></pre></div>
+<h2 id="what-is-the-public-suffix-list">What is the Public Suffix List?</h2>
+<p>The <a href="https://publicsuffix.org">Public Suffix List</a> is a cross-vendor initiative to provide an accurate list of domain name suffixes.</p>
+<p>The Public Suffix List is an initiative of the Mozilla Project, but is maintained as a community resource. It is available for use in any software, but was originally created to meet the needs of browser manufacturers.</p>
+<p>A &quot;public suffix&quot; is one under which Internet users can directly register names. Some examples of public suffixes are &quot;.com&quot;, &quot;.co.uk&quot; and &quot;pvt.k12.wy.us&quot;. The Public Suffix List is a list of all known public suffixes.</p>
+<h2 id="why-the-public-suffix-list-is-better-than-any-available-regular-expression-parser">Why the Public Suffix List is better than any available Regular Expression parser?</h2>
+<p>Previously, browsers used an algorithm which basically only denied setting wide-ranging cookies for top-level domains with no dots (e.g. com or org). However, this did not work for top-level domains where only third-level registrations are allowed (e.g. co.uk). In these cases, websites could set a cookie for co.uk which will be passed onto every website registered under co.uk.</p>
+<p>Clearly, this was a security risk as it allowed websites other than the one setting the cookie to read it, and therefore potentially extract sensitive information.</p>
+<p>Since there is no algorithmic method of finding the highest level at which a domain may be registered for a particular top-level domain (the policies differ with each registry), the only method is to create a list of all top-level domains and the level at which domains can be registered. This is the aim of the effective TLD list.</p>
+<p>As well as being used to prevent cookies from being set where they shouldn't be, the list can also potentially be used for other applications where the registry controlled and privately controlled parts of a domain name need to be known, for example when grouping by top-level domains.</p>
+<p>Source: https://wiki.mozilla.org/Public_Suffix_List</p>
+<p>Not convinced yet? Check out <a href="https://stackoverflow.com/q/288810/123527">this real world example</a>.</p>
+<h2 id="does-publicsuffix-make-requests-to-public-suffix-list-website">Does <tt>PublicSuffix</tt> make requests to Public Suffix List website?</h2>
+<p>No. <tt>PublicSuffix</tt> comes with a bundled list. It does not make any HTTP requests to parse or validate a domain.</p>
+<h2 id="feedback-and-bug-reports">Feedback and bug reports</h2>
+<p>If you use this library and find yourself missing any functionality, please <a href="mailto:weppos@weppos.net">let me know</a>.</p>
+<p>Pull requests are very welcome! Please include tests and/or feature coverage for every patch, and create a topic branch for every separate change you make.</p>
+<p>Report issues or feature requests to <a href="https://github.com/weppos/publicsuffix-ruby/issues">GitHub Issues</a>.</p>
+<h2 id="more">More</h2>
+<ul>
+<li><a href="https://simonecarletti.com/code/publicsuffix-ruby">Homepage</a></li>
+<li><a href="https://github.com/weppos/publicsuffix-ruby">Repository</a></li>
+<li><a href="http://rubydoc.info/gems/public_suffix">API Documentation</a></li>
+<li><a href="https://simonecarletti.com/blog/2010/06/public-suffix-list-library-for-ruby/">Introducing the Public Suffix List library for Ruby</a></li>
+</ul>
+<h2 id="changelog">Changelog</h2>
+<p>See the <a href="CHANGELOG.md" class="uri">CHANGELOG.md</a> file for details.</p>
+<h2 id="license">License</h2>
+<p>Copyright (c) 2009-2016 Simone Carletti. This is Free Software distributed under the MIT license.</p>

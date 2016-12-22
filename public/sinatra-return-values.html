@@ -1,0 +1,18 @@
+<h2 id="return-values">Return Values</h2>
+<p>The return value of a route block determines at least the response body passed on to the HTTP client, or at least the next middleware in the Rack stack. Most commonly, this is a string, as in the above examples. But other values are also accepted.</p>
+<p>You can return any object that would either be a valid Rack response, Rack body object or HTTP status code:</p>
+<ul>
+<li>An Array with three elements: <code>[status (Fixnum), headers (Hash), response   body (responds to #each)]</code></li>
+<li>An Array with two elements: <code>[status (Fixnum), response body (responds to   #each)]</code></li>
+<li>An object that responds to <code>#each</code> and passes nothing but strings to the given block</li>
+<li>A Fixnum representing the status code</li>
+</ul>
+<p>That way we can, for instance, easily implement a streaming example:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">Stream</span>
+  <span class="kw">def</span> each
+    <span class="dv">100</span>.times { |i| <span class="kw">yield</span> <span class="st">&quot;</span><span class="ot">#{</span>i<span class="ot">}</span><span class="st">\n&quot;</span> }
+  <span class="kw">end</span>
+<span class="kw">end</span>
+
+get(<span class="st">&#39;/&#39;</span>) { <span class="dt">Stream</span>.new }</code></pre></div>
+<p>You can also use the <code>stream</code> helper method (described below) to reduce boiler plate and embed the streaming logic in the route.</p>

@@ -1,0 +1,29 @@
+<h2 id="testing">Testing</h2>
+<p>Sinatra tests can be written using any Rack-based testing library or framework. <a href="http://rdoc.info/github/brynary/rack-test/master/frames">Rack::Test</a> is recommended:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">require <span class="st">&#39;my_sinatra_app&#39;</span>
+require <span class="st">&#39;minitest/autorun&#39;</span>
+require <span class="st">&#39;rack/test&#39;</span>
+
+<span class="kw">class</span> <span class="dt">MyAppTest</span> &lt; <span class="dt">Minitest</span>::<span class="dt">Test</span>
+  include <span class="dt">Rack</span>::<span class="dt">Test</span>::<span class="dt">Methods</span>
+
+  <span class="kw">def</span> app
+    <span class="dt">Sinatra</span>::<span class="dt">Application</span>
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> test_my_default
+    get <span class="st">&#39;/&#39;</span>
+    assert_equal <span class="st">&#39;Hello World!&#39;</span>, last_response.body
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> test_with_params
+    get <span class="st">&#39;/meet&#39;</span>, <span class="st">:name</span> =&gt; <span class="st">&#39;Frank&#39;</span>
+    assert_equal <span class="st">&#39;Hello Frank!&#39;</span>, last_response.body
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> test_with_rack_env
+    get <span class="st">&#39;/&#39;</span>, {}, <span class="st">&#39;HTTP_USER_AGENT&#39;</span> =&gt; <span class="st">&#39;Songbird&#39;</span>
+    assert_equal <span class="st">&quot;You&#39;re using Songbird!&quot;</span>, last_response.body
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<p>Note: If you are using Sinatra in the modular style, replace <code>Sinatra::Application</code> above with the class name of your app.</p>

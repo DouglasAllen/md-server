@@ -1,0 +1,11 @@
+<h3 id="attachments">Attachments</h3>
+<p>You can use the <code>attachment</code> helper to tell the browser the response should be stored on disk rather than displayed in the browser:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  attachment
+  <span class="st">&quot;store it!&quot;</span>
+<span class="kw">end</span></code></pre></div>
+<p>You can also pass it a file name:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  attachment <span class="st">&quot;info.txt&quot;</span>
+  <span class="st">&quot;store it!&quot;</span>
+<span class="kw">end</span></code></pre></div>

@@ -1,0 +1,80 @@
+<h1 id="sinatraglorify">Sinatra::Glorify</h1>
+<p><a href="https://travis-ci.org/zzak/glorify"><img src="https://travis-ci.org/zzak/glorify.png?branch=master" alt="Build Status" /></a></p>
+<p>Sinatra helper to parse markdown with syntax highlighting like the pros</p>
+<p>Renders markdown via <a href="https://github.com/zzak/rdoc-rouge">rdoc-rouge</a>, an <a href="https://github.com/rdoc/rdoc">RDoc</a> and <a href="https://github.com/jayferd/rouge">Rouge</a> bridge.</p>
+<p>Able to use fenced code blocks like github, and includes a default pygments stylesheet.</p>
+<h2 id="requirements">Requirements</h2>
+<p>Ruby 1.9.2 or greater, also supports JRuby and Rubinius when using 1.9 modes.</p>
+<h2 id="installation">Installation</h2>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">gem</span> install glorify</code></pre></div>
+<p>or with bundler</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># Gemfile</span>
+source <span class="st">:rubygems</span>
+gem <span class="st">&#39;sinatra&#39;</span>
+gem <span class="st">&#39;glorify&#39;</span></code></pre></div>
+<h2 id="sinatraglorifytemplate">Sinatra::Glorify::Template</h2>
+<p>Sinatra::Glorify comes with a tilt template for rendering markdown.</p>
+<p>This allows you to override the default markdown renderer and use <code>rdoc-rouge</code> to highlight any code blocks within your view.</p>
+<p>In order to do this, you will need to prefer the template class.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">Tilt</span>.prefer <span class="dt">Sinatra</span>::<span class="dt">Glorify</span>::<span class="dt">Template</span></code></pre></div>
+<p>Now, any views that render via <code>markdown</code> will use Sinatra::Glorify::Template instead.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">register <span class="dt">Sinatra</span>::<span class="dt">Glorify</span>
+get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  markdown <span class="st">:a_view_with_code_blocks</span>
+<span class="kw">end</span></code></pre></div>
+<h2 id="sinatraglorifyhelpers">Sinatra::Glorify::Helpers</h2>
+<p>If you want to stick with your current renderer and just render some code blocks within your view, use the Sinatra::Glorify::Helpers.glorify helper method.</p>
+<p>Depending on the type of application you're building with Sinatra, the manner in which Sinatra::Glorify is used will change.</p>
+<p>See the Sinatra documentation on <a href="http://www.sinatrarb.com/intro#Modular%20vs.%20Classic%20Style">Modular vs. Classic style</a></p>
+<h3 id="with-a-classical-app">With a classical app</h3>
+<p>Simply <code>require 'glorify'</code> to use the helper with a classic style sinatra app.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">require <span class="st">&#39;sinatra&#39;</span>
+require <span class="st">&#39;glorify&#39;</span>
+require <span class="st">&#39;erb&#39;</span>
+get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  <span class="ot">@example</span> = <span class="dt">File</span>.open(<span class="st">&quot;</span><span class="ot">#{</span><span class="dt">File</span>.dirname(<span class="dv">__FILE__</span>)<span class="ot">}</span><span class="st">/example.md&quot;</span>, <span class="st">&quot;rb&quot;</span>).read
+  erb <span class="st">:index</span>
+<span class="kw">end</span></code></pre></div>
+<h3 id="with-a-modular-app">With a modular app</h3>
+<p>You will need to <code>register Sinatra::Glorify</code> in your sub-classed app, along with <code>require 'glorify'</code>, to use with a modular style sinatra app.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">require <span class="st">&#39;sinatra/base&#39;</span>
+require <span class="st">&#39;glorify&#39;</span>
+require <span class="st">&#39;erb&#39;</span>
+<span class="kw">class</span> <span class="dt">SubclassedApp</span> &lt; <span class="dt">Sinatra</span>::<span class="dt">Base</span>
+  register <span class="dt">Sinatra</span>::<span class="dt">Glorify</span>
+  get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+    <span class="ot">@example</span> = <span class="dt">File</span>.open(<span class="st">&quot;</span><span class="ot">#{</span><span class="dt">File</span>.dirname(<span class="dv">__FILE__</span>)<span class="ot">}</span><span class="st">/example.md&quot;</span>, <span class="st">&quot;rb&quot;</span>).read
+    erb <span class="st">:index</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<h3 id="the-view">The view</h3>
+<p>This is just a simple <code>erb</code> template, but you get the idea.</p>
+<pre class="erb"><code>&lt;html&gt;
+  &lt;head&gt;
+    &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;/pygments.css&quot; /&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;%= glorify @example %&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p>The default pygments stylesheet that comes with glorify is available at the <code>/pygments.css</code> route.</p>
+<h2 id="still-stuck">Still stuck?</h2>
+<p>The Sinatra documentation on <a href="http://www.sinatrarb.com/extensions.html">extensions</a> does a great job of explaining how to use and implement extensions using the Sinatra API.</p>
+<h2 id="license">License</h2>
+<pre><code>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the &#39;Software&#39;), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED &#39;AS IS&#39;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.</code></pre>

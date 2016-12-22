@@ -1,0 +1,32 @@
+<h2 id="filters">Filters</h2>
+<p>Before filters are evaluated before each request within the same context as the routes will be and can modify the request and response. Instance variables set in filters are accessible by routes and templates:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">before <span class="kw">do</span>
+  <span class="ot">@note</span> = <span class="st">&#39;Hi!&#39;</span>
+  request.path_info = <span class="st">&#39;/foo/bar/baz&#39;</span>
+<span class="kw">end</span>
+
+get <span class="st">&#39;/foo/*&#39;</span> <span class="kw">do</span>
+  <span class="ot">@note</span> <span class="co">#=&gt; &#39;Hi!&#39;</span>
+  params[<span class="st">&#39;splat&#39;</span>] <span class="co">#=&gt; &#39;bar/baz&#39;</span>
+<span class="kw">end</span></code></pre></div>
+<p>After filters are evaluated after each request within the same context as the routes will be and can also modify the request and response. Instance variables set in before filters and routes are accessible by after filters:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">after <span class="kw">do</span>
+  puts response.status
+<span class="kw">end</span></code></pre></div>
+<p>Note: Unless you use the <code>body</code> method rather than just returning a String from the routes, the body will not yet be available in the after filter, since it is generated later on.</p>
+<p>Filters optionally take a pattern, causing them to be evaluated only if the request path matches that pattern:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">before <span class="st">&#39;/protected/*&#39;</span> <span class="kw">do</span>
+  authenticate!
+<span class="kw">end</span>
+
+after <span class="st">&#39;/create/:slug&#39;</span> <span class="kw">do</span> |slug|
+  session[<span class="st">:last_slug</span>] = slug
+<span class="kw">end</span></code></pre></div>
+<p>Like routes, filters also take conditions:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">before <span class="st">:agent</span> =&gt; <span class="ot">/Songbird/</span> <span class="kw">do</span>
+  <span class="co"># ...</span>
+<span class="kw">end</span>
+
+after <span class="st">&#39;/blog/*&#39;</span>, <span class="st">:host_name</span> =&gt; <span class="st">&#39;example.com&#39;</span> <span class="kw">do</span>
+  <span class="co"># ...</span>
+<span class="kw">end</span></code></pre></div>

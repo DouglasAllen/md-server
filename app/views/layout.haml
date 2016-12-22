@@ -1,0 +1,56 @@
+%title=@title
+!!!
+%html
+  %head
+
+    %link{ :rel  => 'icon', 
+           :type => 'image/icon', 
+           :href => '/images/sun.ico' }
+           
+
+
+    %link{ :rel  => 'stylesheet',
+           :type => 'text/css', 
+           :href => '/stylesheets/foundation.css' }
+
+    %link{ :rel  => 'stylesheet',
+           :type => 'text/css', 
+           :href => '/stylesheets/pygments.css' }
+
+    %style
+      /*  %link{ :rel  => 'stylesheet',  */
+      /*         :type => 'text/css',    */
+      /*         :href => '/stylesheets/eot.css' } */
+
+  %div{:class => 'top-bar'}
+    %div{:class => 'top-bar-left'}
+      %ul{:class => 'dropdown menu'}
+
+        %li
+          %a{:class => 'active', :href => '/'} Home
+
+        %li
+          %a{:class => 'active', :href => '/prhtml'} Practicing Ruby
+
+        %li
+          %a{ :href => '/rdoc'} Rdoc
+
+        %li       
+          %a{ :href => '/md'} Markdown 
+
+        %li       
+          %a{ :href => '/erb'} Erb
+
+        %li       
+          %a{ :href => '/html'} Html
+
+        -# %li{:class => 'active'}
+        -#   %a{ :href => 'https://www.astroleague.org/Analemma_Introduction', :target => '_blank'} Data 
+          
+        -# %li{:class => 'active'}
+        -#   %a{:href => 'https://rubygems.org/gems/equationoftime/', :target => '_blank'}  EOT gems
+          
+        -# %li{:class => 'active'}      
+        -#   %a{ :href => 'http://douglasallen.github.io/gh-pages/aboutme2/', :target => '_blank'} GH page    
+      
+  %body= yield

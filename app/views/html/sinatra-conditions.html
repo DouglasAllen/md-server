@@ -1,0 +1,48 @@
+<h2 id="conditions">Conditions</h2>
+<p>Routes may include a variety of matching conditions, such as the user agent:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/foo&#39;</span>, <span class="st">:agent</span> =&gt; <span class="ot">/Songbird (\d\.\d)[\d\/]*?/</span> <span class="kw">do</span>
+  <span class="st">&quot;You&#39;re using Songbird version </span><span class="ot">#{</span>params[<span class="st">&#39;agent&#39;</span>][<span class="dv">0</span>]<span class="ot">}</span><span class="st">&quot;</span>
+<span class="kw">end</span>
+
+get <span class="st">&#39;/foo&#39;</span> <span class="kw">do</span>
+  <span class="co"># Matches non-songbird browsers</span>
+<span class="kw">end</span></code></pre></div>
+<p>Other available conditions are <code>host_name</code> and <code>provides</code>:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/&#39;</span>, <span class="st">:host_name</span> =&gt; <span class="ot">/^admin\./</span> <span class="kw">do</span>
+  <span class="st">&quot;Admin Area, Access denied!&quot;</span>
+<span class="kw">end</span>
+
+get <span class="st">&#39;/&#39;</span>, <span class="st">:provides</span> =&gt; <span class="st">&#39;html&#39;</span> <span class="kw">do</span>
+  haml <span class="st">:index</span>
+<span class="kw">end</span>
+
+get <span class="st">&#39;/&#39;</span>, <span class="st">:provides</span> =&gt; [<span class="st">&#39;rss&#39;</span>, <span class="st">&#39;atom&#39;</span>, <span class="st">&#39;xml&#39;</span>] <span class="kw">do</span>
+  builder <span class="st">:feed</span>
+<span class="kw">end</span></code></pre></div>
+<p><code>provides</code> searches the request's Accept header.</p>
+<p>You can easily define your own conditions:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">set(<span class="st">:probability</span>) { |value| condition { rand &lt;= value } }
+
+get <span class="st">&#39;/win_a_car&#39;</span>, <span class="st">:probability</span> =&gt; <span class="fl">0.1</span> <span class="kw">do</span>
+  <span class="st">&quot;You won!&quot;</span>
+<span class="kw">end</span>
+
+get <span class="st">&#39;/win_a_car&#39;</span> <span class="kw">do</span>
+  <span class="st">&quot;Sorry, you lost.&quot;</span>
+<span class="kw">end</span></code></pre></div>
+<p>For a condition that takes multiple values use a splat:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">set(<span class="st">:auth</span>) <span class="kw">do</span> |*roles|   <span class="co"># &lt;- notice the splat here</span>
+  condition <span class="kw">do</span>
+    <span class="kw">unless</span> logged_in? &amp;&amp; roles.any? {|role| current_user.in_role? role }
+      redirect <span class="st">&quot;/login/&quot;</span>, <span class="dv">303</span>
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+
+get <span class="st">&quot;/my/account/&quot;</span>, <span class="st">:auth</span> =&gt; [<span class="st">:user</span>, <span class="st">:admin</span>] <span class="kw">do</span>
+  <span class="st">&quot;Your Account Details&quot;</span>
+<span class="kw">end</span>
+
+get <span class="st">&quot;/only/admin/&quot;</span>, <span class="st">:auth</span> =&gt; <span class="st">:admin</span> <span class="kw">do</span>
+  <span class="st">&quot;Only admins are allowed here!&quot;</span>
+<span class="kw">end</span></code></pre></div>

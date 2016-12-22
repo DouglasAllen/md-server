@@ -1,0 +1,30 @@
+<h1 id="kramdown">kramdown</h1>
+<h2 id="readme-first">Readme first!</h2>
+<p>kramdown was originally licensed under the GPL until the 1.0.0 release. However, due to the many requests it is now released under the MIT license and therefore can easily be used in commercial projects, too.</p>
+<p>However, if you use kramdown in a commercial setting, please consider <strong>contributing back any changes</strong> for the benefit of the community and/or <strong>making a donation</strong> (see the links in the sidebar on the <a href="http://kramdown.gettalong.org/">kramdown homepage</a>!</p>
+<h2 id="introduction">Introduction</h2>
+<p>kramdown is a fast, pure Ruby Markdown superset converter, using a strict syntax definition and supporting several common extensions.</p>
+<p>The syntax definition for the kramdown syntax can be found in <strong>doc/syntax.page</strong> (or online at <a href="http://kramdown.gettalong.org/syntax.html" class="uri">http://kramdown.gettalong.org/syntax.html</a>) and a quick reference is available in <strong>doc/quickref.page</strong> or online at <a href="http://kramdown.gettalong.org/quickref.html" class="uri">http://kramdown.gettalong.org/quickref.html</a>.</p>
+<p>The kramdown library is mainly written to support the kramdown-to-HTML conversion chain. However, due to its flexibility (by creating an internal AST) it supports other input and output formats as well. Here is a list of the supported formats:</p>
+<ul>
+<li>input formats: kramdown (a Markdown superset), Markdown, GFM, HTML</li>
+<li>output formats: HTML, kramdown, LaTeX (and therefore PDF), PDF via Prawn</li>
+</ul>
+<p>All the documentation on the available input and output formats is available in the <strong>doc/</strong> directory and online at <a href="http://kramdown.gettalong.org" class="uri">http://kramdown.gettalong.org</a>.</p>
+<p>Starting from version 1.0.0 kramdown is using a versioning scheme with major, minor and patch parts in the version number where the major number changes on backwards-incompatible changes, the minor number on the introduction of new features and the patch number on everything else.</p>
+<h2 id="usage">Usage</h2>
+<p>kramdown has a very simple API, so using kramdown is as easy as</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">require <span class="st">&#39;kramdown&#39;</span>
+
+<span class="dt">Kramdown</span>::<span class="dt">Document</span>.new(text).to_html</code></pre></div>
+<p>For detailed information have a look at the API documentation of the <code>Kramdown::Document</code> class.</p>
+<p>The full API documentation is available at <a href="http://kramdown.gettalong.org/rdoc/" class="uri">http://kramdown.gettalong.org/rdoc/</a>, other sites with an API documentation for kramdown probably don't provide the complete documentation!</p>
+<p>There are also some third-party libraries that extend the functionality of kramdown -- see the kramdown Wiki at <a href="https://github.com/gettalong/kramdown/wiki" class="uri">https://github.com/gettalong/kramdown/wiki</a>.</p>
+<h2 id="development">Development</h2>
+<p>Just clone the git repository as described in <strong>doc/installation.page</strong> and you are good to go. You probably want to install <code>rake</code> so that you can use the provided rake tasks. Aside from that:</p>
+<ul>
+<li>The <code>tidy</code> binary needs to be installed for the automatically derived tests to work.</li>
+<li>The <code>latex</code> binary needs to be installed for the latex-compilation tests to work.</li>
+</ul>
+<h2 id="license">License</h2>
+<p>MIT - see the <strong>COPYING</strong> file.</p>

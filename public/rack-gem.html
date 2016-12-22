@@ -1,0 +1,128 @@
+<p>= Rack, a modular Ruby webserver interface {<img src="https://secure.travis-ci.org/rack/rack.svg" alt="Build Status" />}[http://travis-ci.org/rack/rack] {<img src="https://gemnasium.com/rack/rack.svg" alt="Dependency Status" />}[https://gemnasium.com/rack/rack]</p>
+<p>Rack provides a minimal, modular, and adaptable interface for developing web applications in Ruby. By wrapping HTTP requests and responses in the simplest way possible, it unifies and distills the API for web servers, web frameworks, and software in between (the so-called middleware) into a single method call.</p>
+<p>The exact details of this are described in the Rack specification, which all Rack applications should conform to.</p>
+<p>== Supported web servers</p>
+<p>The included <em>handlers</em> connect all kinds of web servers to Rack: * WEBrick * FCGI * CGI * SCGI * LiteSpeed * Thin</p>
+<p>These web servers include Rack handlers in their distributions: * Ebb * Fuzed * Glassfish v3 * Phusion Passenger (which is mod_rack for Apache and for nginx) * Puma * Reel * Unicorn * unixrack * uWSGI * yahns</p>
+<p>Any valid Rack app will run the same on all these handlers, without changing anything.</p>
+<p>== Supported web frameworks</p>
+<p>These frameworks include Rack adapters in their distributions: * Camping * Coset * Espresso * Halcyon * Mack * Maveric * Merb * Racktools::SimpleApplication * Ramaze * Ruby on Rails * Rum * Sinatra * Sin * Vintage * Waves * Wee * ... and many others.</p>
+<p>== Available middleware</p>
+<p>Between the server and the framework, Rack can be customized to your applications needs using middleware, for example: * Rack::URLMap, to route to multiple applications inside the same process. * Rack::CommonLogger, for creating Apache-style logfiles. * Rack::ShowException, for catching unhandled exceptions and presenting them in a nice and helpful way with clickable backtrace. * Rack::File, for serving static files. * ...many others!</p>
+<p>All these components use the same interface, which is described in detail in the Rack specification. These optional components can be used in any way you wish.</p>
+<p>== Convenience</p>
+<p>If you want to develop outside of existing frameworks, implement your own ones, or develop middleware, Rack provides many helpers to create Rack applications quickly and without doing the same web stuff all over: * Rack::Request, which also provides query string parsing and multipart handling. * Rack::Response, for convenient generation of HTTP replies and cookie handling. * Rack::MockRequest and Rack::MockResponse for efficient and quick testing of Rack application without real HTTP round-trips.</p>
+<p>== rack-contrib</p>
+<p>The plethora of useful middleware created the need for a project that collects fresh Rack middleware. rack-contrib includes a variety of add-on components for Rack and it is easy to contribute new modules.</p>
+<ul>
+<li>https://github.com/rack/rack-contrib</li>
+</ul>
+<p>== rackup</p>
+<p>rackup is a useful tool for running Rack applications, which uses the Rack::Builder DSL to configure middleware and build up applications easily.</p>
+<p>rackup automatically figures out the environment it is run in, and runs your application as FastCGI, CGI, or WEBrick---all from the same configuration.</p>
+<p>== Quick start</p>
+<p>Try the lobster!</p>
+<p>Either with the embedded WEBrick starter:</p>
+<pre><code>ruby -Ilib lib/rack/lobster.rb</code></pre>
+<p>Or with rackup:</p>
+<pre><code>bin/rackup -Ilib example/lobster.ru</code></pre>
+<p>By default, the lobster is found at http://localhost:9292.</p>
+<p>== Installing with RubyGems</p>
+<p>A Gem of Rack is available at rubygems.org. You can install it with:</p>
+<pre><code>gem install rack</code></pre>
+<p>I also provide a local mirror of the gems (and development snapshots) at my site:</p>
+<pre><code>gem install rack --source http://chneukirchen.org/releases/gems/</code></pre>
+<p>== Running the tests</p>
+<p>Testing Rack requires the bacon testing framework:</p>
+<pre><code>bundle install --without extra # to be able to run the fast tests</code></pre>
+<p>Or:</p>
+<pre><code>bundle install # this assumes that you have installed native extensions!</code></pre>
+<p>There is a rake-based test task:</p>
+<pre><code>rake test       tests all the tests</code></pre>
+<p>The testsuite has no dependencies outside of the core Ruby installation and bacon.</p>
+<p>To run the test suite completely, you need:</p>
+<ul>
+<li>fcgi</li>
+<li>memcache-client</li>
+<li>thin</li>
+</ul>
+<p>The full set of tests test FCGI access with lighttpd (on port 9203) so you will need lighttpd installed as well as the FCGI libraries and the fcgi gem:</p>
+<p>Download and install lighttpd:</p>
+<pre><code>http://www.lighttpd.net/download</code></pre>
+<p>Installing the FCGI libraries:</p>
+<pre><code>curl -O http://www.fastcgi.com/dist/fcgi-2.4.0.tar.gz
+tar xzvf fcgi-2.4.0.tar.gz
+cd fcgi-2.4.0
+./configure --prefix=/usr/local
+make
+sudo make install
+cd ..</code></pre>
+<p>Installing the Ruby fcgi gem:</p>
+<pre><code>gem install fcgi</code></pre>
+<p>Furthermore, to test Memcache sessions, you need memcached (will be run on port 11211) and memcache-client installed.</p>
+<p>== Configuration</p>
+<p>Several parameters can be modified on Rack::Utils to configure Rack behaviour.</p>
+<p>e.g:</p>
+<pre><code>Rack::Utils.key_space_limit = 128</code></pre>
+<p>=== key_space_limit</p>
+<p>The default number of bytes to allow a single parameter key to take up. This helps prevent a rogue client from flooding a Request.</p>
+<p>Default to 65536 characters (4 kiB in worst case).</p>
+<p>=== multipart_part_limit</p>
+<p>The maximum number of parts a request can contain. Accepting too many part can lead to the server running out of file handles.</p>
+<p>The default is 128, which means that a single request can't upload more than 128 files at once.</p>
+<p>Set to 0 for no limit.</p>
+<p>Can also be set via the RACK_MULTIPART_PART_LIMIT environment variable.</p>
+<p>== History</p>
+<p>See <a href="https://github.com/rack/rack/blob/master/HISTORY.md" class="uri">https://github.com/rack/rack/blob/master/HISTORY.md</a>.</p>
+<p>== Contact</p>
+<p>Please post bugs, suggestions and patches to the bug tracker at <a href="https://github.com/rack/rack/issues" class="uri">https://github.com/rack/rack/issues</a>.</p>
+<p>Please post security related bugs and suggestions to the core team at <a href="https://groups.google.com/group/rack-core" class="uri">https://groups.google.com/group/rack-core</a> or rack-core@googlegroups.com. This list is not public. Due to wide usage of the library, it is strongly preferred that we manage timing in order to provide viable patches at the time of disclosure. Your assistance in this matter is greatly appreciated.</p>
+<p>Mailing list archives are available at <a href="https://groups.google.com/group/rack-devel" class="uri">https://groups.google.com/group/rack-devel</a>.</p>
+<p>Git repository (send Git patches to the mailing list): * https://github.com/rack/rack * http://git.vuxu.org/cgi-bin/gitweb.cgi?p=rack-github.git</p>
+<p>You are also welcome to join the #rack channel on irc.freenode.net.</p>
+<p>== Thanks</p>
+<p>The Rack Core Team, consisting of</p>
+<ul>
+<li>Christian Neukirchen (chneukirchen[https://github.com/chneukirchen])</li>
+<li>James Tucker (raggi[https://github.com/raggi])</li>
+<li>Josh Peek (josh[https://github.com/josh])</li>
+<li>José Valim (josevalim[https://github.com/josevalim])</li>
+<li>Michael Fellinger (manveru[https://github.com/manveru])</li>
+<li>Aaron Patterson (tenderlove[https://github.com/tenderlove])</li>
+<li>Santiago Pastorino (spastorino[https://github.com/spastorino])</li>
+<li>Konstantin Haase (rkh[https://github.com/rkh])</li>
+</ul>
+<p>and the Rack Alumnis</p>
+<ul>
+<li>Ryan Tomayko (rtomayko[https://github.com/rtomayko])</li>
+<li>Scytrin dai Kinthra (scytrin[https://github.com/scytrin])</li>
+</ul>
+<p>would like to thank:</p>
+<ul>
+<li>Adrian Madrid, for the LiteSpeed handler.</li>
+<li>Christoffer Sawicki, for the first Rails adapter and Rack::Deflater.</li>
+<li>Tim Fletcher, for the HTTP authentication code.</li>
+<li>Luc Heinrich for the Cookie sessions, the static file handler and bugfixes.</li>
+<li>Armin Ronacher, for the logo and racktools.</li>
+<li>Alex Beregszaszi, Alexander Kahn, Anil Wadghule, Aredridel, Ben Alpert, Dan Kubb, Daniel Roethlisberger, Matt Todd, Tom Robinson, Phil Hagelberg, S. Brent Faulkner, Bosko Milekic, Daniel Rodríguez Troitiño, Genki Takiuchi, Geoffrey Grosenbach, Julien Sanchez, Kamal Fariz Mahyuddin, Masayoshi Takahashi, Patrick Aljordm, Mig, Kazuhiro Nishiyama, Jon Bardin, Konstantin Haase, Larry Siden, Matias Korhonen, Sam Ruby, Simon Chiang, Tim Connor, Timur Batyrshin, and Zach Brock for bug fixing and other improvements.</li>
+<li>Eric Wong, Hongli Lai, Jeremy Kemper for their continuous support and API improvements.</li>
+<li>Yehuda Katz and Carl Lerche for refactoring rackup.</li>
+<li>Brian Candler, for Rack::ContentType.</li>
+<li>Graham Batty, for improved handler loading.</li>
+<li>Stephen Bannasch, for bug reports and documentation.</li>
+<li>Gary Wright, for proposing a better Rack::Response interface.</li>
+<li>Jonathan Buch, for improvements regarding Rack::Response.</li>
+<li>Armin Röhrl, for tracking down bugs in the Cookie generator.</li>
+<li>Alexander Kellett for testing the Gem and reviewing the announcement.</li>
+<li>Marcus Rückert, for help with configuring and debugging lighttpd.</li>
+<li>The WSGI team for the well-done and documented work they've done and Rack builds up on.</li>
+<li>All bug reporters and patch contributors not mentioned above.</li>
+</ul>
+<p>== Copyright</p>
+<p>Copyright (C) 2007, 2008, 2009, 2010 Christian Neukirchen <a href="http://purl.org/net/chneukirchen" class="uri">http://purl.org/net/chneukirchen</a></p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &quot;Software&quot;), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+<p>== Links</p>
+<p>Rack:: <a href="http://rack.github.io/" class="uri">http://rack.github.io/</a> Official Rack repositories:: <a href="https://github.com/rack" class="uri">https://github.com/rack</a> Rack Bug Tracking:: <a href="https://github.com/rack/rack/issues" class="uri">https://github.com/rack/rack/issues</a> rack-devel mailing list:: <a href="https://groups.google.com/group/rack-devel" class="uri">https://groups.google.com/group/rack-devel</a> Rack's Rubyforge project:: <a href="http://rubyforge.org/projects/rack" class="uri">http://rubyforge.org/projects/rack</a></p>
+<p>Christian Neukirchen:: <a href="http://chneukirchen.org/" class="uri">http://chneukirchen.org/</a></p>

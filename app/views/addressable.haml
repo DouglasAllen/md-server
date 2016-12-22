@@ -1,0 +1,21 @@
+:markdown
+
+  ```ruby
+  require 'addressable/uri'
+
+  src_str = 'https://www.google.com/webhp?sourceid=chrome-instant&ion=1&ie=UTF-8&rct=j'
+  uri = Addressable::URI.parse(src_str)
+  #{uri = Addressable::URI.parse('https://www.google.com/webhp?sourceid=chrome-instant&ion=1&ie=UTF-8&rct=j')}
+  uri.scheme
+  #{uri.scheme}
+  uri.host
+  #{uri.host}
+  uri.path
+  #{uri.path}
+
+  uri = Addressable::URI.parse("http://www.詹姆斯.com/")
+  #{uri = Addressable::URI.parse("http://www.詹姆斯.com/")}
+  uri.normalize
+  #{uri.normalize}
+
+  ```

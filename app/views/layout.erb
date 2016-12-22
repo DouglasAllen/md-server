@@ -1,0 +1,71 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+
+<link rel='icon', type='image/icon', href='/images/favicon.ico'></link>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.4/foundation.css"
+      media="all"
+      rel="stylesheet" 
+      type="text/css" >
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      media='all'
+      rel="stylesheet"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" 
+      crossorigin="anonymous">
+
+<style>
+/*
+
+
+<link href="/stylesheets/erb.css" media="all" 
+      rel="stylesheet" type="text/css" >
+
+<link href="/stylesheets/foundation.css" media="all" 
+      rel="stylesheet" type="text/css" >
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" 
+  integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+*/
+
+</style>
+</head>
+<body>
+  <div class ='top-bar'>
+    <div class ='top-bar-left'>
+      <ul class ='dropdown menu'>
+        <li>
+          <a class ='active', href ='/'>Home</a>
+        </li>
+        <li>
+          <a href ='/pdf'>PDF</a>
+        </li>
+        <li>
+          <a href ='/rdoc'>Rdoc</a>
+        </li>
+        <li>       
+          <a href ='/md'>Markdown </a>
+        </li>
+        <li>       
+          <a href ='/erb'>Erb</a>
+        </li>
+        <li>       
+          <a href ='/html'>Html</a>
+        </li>
+        <!-- <li class ='active'>
+          <a href ='https://www.astroleague.org/Analemma_Introduction', target ='_blank'>Data</a> 
+        </li>    
+        <li class ='active'>
+          <a href ='https://rubygems.org/gems/equationoftime/', target ='_blank'>EOT gems</a>
+        </li>    
+        <li class ='active'>     
+          <a href ='http://douglasallen.github.io/gh-pages/aboutme2/', target ='_blank'>GH page</a> 
+        </li> -->
+      </ul>
+    </div>    
+  </div>
+
+
+</br>
+
+<%= yield %>
+</body>
+</html>

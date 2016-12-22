@@ -1,0 +1,21 @@
+
+<html>
+ <head>
+   <meta charset="UTF-8">
+   <% @title = "equationoftime.herokuapp.com/pdf.erb" %>
+   <meta name="description" content="pdf files array display" />
+   <meta name="keywords" content="markdow, pdf, web, array, ruby" />
+ </head>
+ <body>
+   <p>
+   <h2>Ruby apps, gems, files, and other interesting things</h2>
+   </p>
+   <ul> 
+   <% pdf_arr.each do |page| %>
+     <li>
+       <a href="/pdfview/<%= page%>"><%= formatter(page) %></a>
+     </li>
+   <% end %>
+   </ul>
+ </body>
+</html>  

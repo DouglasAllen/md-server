@@ -1,0 +1,37 @@
+<h2 id="configuration">Configuration</h2>
+<p>Run once, at startup, in any environment:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">configure <span class="kw">do</span>
+  <span class="co"># setting one option</span>
+  set <span class="st">:option</span>, <span class="st">&#39;value&#39;</span>
+
+  <span class="co"># setting multiple options</span>
+  set <span class="st">:a</span> =&gt; <span class="dv">1</span>, <span class="st">:b</span> =&gt; <span class="dv">2</span>
+
+  <span class="co"># same as `set :option, true`</span>
+  enable <span class="st">:option</span>
+
+  <span class="co"># same as `set :option, false`</span>
+  disable <span class="st">:option</span>
+
+  <span class="co"># you can also have dynamic settings with blocks</span>
+  set(<span class="st">:css_dir</span>) { <span class="dt">File</span>.join(views, <span class="st">&#39;css&#39;</span>) }
+<span class="kw">end</span></code></pre></div>
+<p>Run only when the environment (<code>RACK_ENV</code> environment variable) is set to <code>:production</code>:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">configure <span class="st">:production</span> <span class="kw">do</span>
+  ...
+<span class="kw">end</span></code></pre></div>
+<p>Run when the environment is set to either <code>:production</code> or <code>:test</code>:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">configure <span class="st">:production</span>, <span class="st">:test</span> <span class="kw">do</span>
+  ...
+<span class="kw">end</span></code></pre></div>
+<p>You can access those options via <code>settings</code>:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">configure <span class="kw">do</span>
+  set <span class="st">:foo</span>, <span class="st">&#39;bar&#39;</span>
+<span class="kw">end</span>
+
+get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  settings.foo? <span class="co"># =&gt; true</span>
+  settings.foo  <span class="co"># =&gt; &#39;bar&#39;</span>
+  ...
+<span class="kw">end</span></code></pre></div>
+<p>http://www.sinatrarb.com/configuration.html</p>

@@ -1,0 +1,550 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8"/>
+  <title>Practicing Ruby</title>
+  <style>
+    body {
+      font-family: "Helvetica Neue", arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      padding-top: 10px;
+      padding-bottom: 10px;
+      background-color: white;
+      padding: 30px;
+      color: #333;
+      border: 1px solid #aaa;
+      max-width: 900px;
+      margin: 20px auto;
+    }
+
+    body > *:first-child {
+      margin-top: 0 !important;
+    }
+
+    body > *:last-child {
+      margin-bottom: 0 !important;
+    }
+
+    a {
+      color: #4183C4;
+      text-decoration: none;
+    }
+
+    a.absent {
+      color: #cc0000;
+    }
+
+    a.anchor {
+      display: block;
+      padding-left: 30px;
+      margin-left: -30px;
+      cursor: pointer;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      margin: 20px 0 10px;
+      padding: 0;
+      font-weight: bold;
+      -webkit-font-smoothing: antialiased;
+      cursor: text;
+      position: relative;
+    }
+
+    h2:first-child, h1:first-child, h1:first-child + h2, h3:first-child, h4:first-child, h5:first-child, h6:first-child {
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    h1:hover a.anchor, h2:hover a.anchor, h3:hover a.anchor, h4:hover a.anchor, h5:hover a.anchor, h6:hover a.anchor {
+      text-decoration: none;
+    }
+
+    h1 tt, h1 code {
+      font-size: inherit;
+    }
+
+    h2 tt, h2 code {
+      font-size: inherit;
+    }
+
+    h3 tt, h3 code {
+      font-size: inherit;
+    }
+
+    h4 tt, h4 code {
+      font-size: inherit;
+    }
+
+    h5 tt, h5 code {
+      font-size: inherit;
+    }
+
+    h6 tt, h6 code {
+      font-size: inherit;
+    }
+
+    h1 {
+      font-size: 28px;
+      color: black;
+    }
+
+    h2 {
+      font-size: 24px;
+      border-bottom: 1px solid #cccccc;
+      color: black;
+    }
+
+    h3 {
+      font-size: 18px;
+    }
+
+    h4 {
+      font-size: 16px;
+    }
+
+    h5 {
+      font-size: 14px;
+    }
+
+    h6 {
+      color: #777777;
+      font-size: 14px;
+    }
+
+    p, blockquote, ul, ol, dl, li, table, pre {
+      margin: 3px 0;
+    }
+
+    hr {
+      background: transparent url("http://tinyurl.com/bq5kskr") repeat-x 0 0;
+      border: 0 none;
+      color: #cccccc;
+      height: 4px;
+      padding: 0;
+    }
+
+    body > h2:first-child {
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    body > h1:first-child {
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    body > h1:first-child + h2 {
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    body > h3:first-child, body > h4:first-child, body > h5:first-child, body > h6:first-child {
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    a:first-child h1, a:first-child h2, a:first-child h3, a:first-child h4, a:first-child h5, a:first-child h6 {
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    h1 p, h2 p, h3 p, h4 p, h5 p, h6 p {
+      margin-top: 0;
+    }
+
+    li p.first {
+      display: inline-block;
+    }
+
+    ul, ol {
+      padding-left: 30px;
+    }
+
+    ul :first-child, ol :first-child {
+      margin-top: 0;
+    }
+
+    ul :last-child, ol :last-child {
+      margin-bottom: 0;
+    }
+
+    dl {
+      padding: 0;
+    }
+
+    dl dt {
+      font-size: 14px;
+      font-weight: bold;
+      font-style: italic;
+      padding: 0;
+      margin: 15px 0 5px;
+    }
+
+    dl dt:first-child {
+      padding: 0;
+    }
+
+    dl dt > :first-child {
+      margin-top: 0;
+    }
+
+    dl dt > :last-child {
+      margin-bottom: 0;
+    }
+
+    dl dd {
+      margin: 0 0 15px;
+      padding: 0 15px;
+    }
+
+    dl dd > :first-child {
+      margin-top: 0;
+    }
+
+    dl dd > :last-child {
+      margin-bottom: 0;
+    }
+
+    blockquote {
+      border-left: 4px solid #dddddd;
+      padding: 0 15px;
+      color: #777777;
+    }
+
+    blockquote > :first-child {
+      margin-top: 0;
+    }
+
+    blockquote > :last-child {
+      margin-bottom: 0;
+    }
+
+    table {
+      padding: 0;
+    }
+    table tr {
+      border-top: 1px solid #cccccc;
+      background-color: white;
+      margin: 0;
+      padding: 0;
+    }
+
+    table tr:nth-child(2n) {
+      background-color: #f8f8f8;
+    }
+
+    table tr th {
+      font-weight: bold;
+      border: 1px solid #cccccc;
+      text-align: left;
+      margin: 0;
+      padding: 6px 13px;
+    }
+
+    table tr td {
+      border: 1px solid #cccccc;
+      text-align: left;
+      margin: 0;
+      padding: 6px 13px;
+    }
+
+    table tr th :first-child, table tr td :first-child {
+      margin-top: 0;
+    }
+
+    table tr th :last-child, table tr td :last-child {
+      margin-bottom: 0;
+    }
+
+    img {
+      max-width: 100%;
+    }
+
+    span.frame {
+      display: block;
+      overflow: hidden;
+    }
+
+    span.frame > span {
+      border: 1px solid #dddddd;
+      display: block;
+      float: left;
+      overflow: hidden;
+      margin: 13px 0 0;
+      padding: 7px;
+      width: auto;
+    }
+
+    span.frame span img {
+      display: block;
+      float: left;
+    }
+
+    span.frame span span {
+      clear: both;
+      color: #333333;
+      display: block;
+      padding: 5px 0 0;
+    }
+
+    span.align-center {
+      display: block;
+      overflow: hidden;
+      clear: both;
+    }
+
+    span.align-center > span {
+      display: block;
+      overflow: hidden;
+      margin: 13px auto 0;
+      text-align: center;
+    }
+
+    span.align-center span img {
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    span.align-right {
+      display: block;
+      overflow: hidden;
+      clear: both;
+    }
+
+    span.align-right > span {
+      display: block;
+      overflow: hidden;
+      margin: 13px 0 0;
+      text-align: right;
+    }
+
+    span.align-right span img {
+      margin: 0;
+      text-align: right;
+    }
+
+    span.float-left {
+      display: block;
+      margin-right: 13px;
+      overflow: hidden;
+      float: left;
+    }
+
+    span.float-left span {
+      margin: 13px 0 0;
+    }
+
+    span.float-right {
+      display: block;
+      margin-left: 13px;
+      overflow: hidden;
+      float: right;
+    }
+
+    span.float-right > span {
+      display: block;
+      overflow: hidden;
+      margin: 13px auto 0;
+      text-align: right;
+    }
+
+    code, tt {
+      font-family: "Lucida Console", "Courier New", courier;
+      font-size: 12px;
+      margin: 0 2px;
+      padding: 3px 5px;
+      white-space: nowrap;
+      border: 1px solid #eaeaea;
+      background-color: #f8f8f8;
+      border-radius: 3px;
+    }
+
+    pre code {
+      margin: 0;
+      padding: 0;
+      white-space: pre;
+      border: none;
+      background: transparent;
+    }
+
+    .highlight pre {
+      background-color: #f8f8f8;
+      border: 1px solid #cccccc;
+      font-size: 13px;
+      line-height: 19px;
+      overflow: auto;
+      padding: 6px 10px;
+      border-radius: 3px;
+    }
+
+    pre {
+      background-color: #f8f8f8;
+      border: 1px solid #cccccc;
+      font-size: 13px;
+      line-height: 19px;
+      overflow: auto;
+      padding: 6px 10px;
+      border-radius: 3px;
+    }
+
+    pre code, pre tt {
+      background-color: transparent;
+      border: none;
+    }
+
+    span.line-numbers {
+      margin-right: 10px;
+    }
+
+    img.logo {
+      display: block;
+      margin: 10px auto;
+    }
+
+    h1.logo {
+      text-align: center;
+      font-size: 40px;
+    }
+  </style>
+</head>
+<body>
+  <div id="containter">
+    <h1 class="logo">Practicing Ruby</h1>
+    <img class="logo" src="header.png" />
+     <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Problem discovery comes before problem solving</h1>
+    <p class="post-meta"><time datetime="2015-03-26T00:00:00+00:00" itemprop="datePublished">Mar 26, 2015</time> • Gregory Brown</p>
+  </header>
+    <p>Imagine you&#8217;re a programmer for a dental clinic, and they need your help to build a vacation scheduling system for their staff. Among other things, this system will display a calendar to staff members that summarizes all of the currently approved and pending vacation requests for the clinic, grouped by role.</p>
+
+<p>The basic idea here is simple: If a dental assistant wants to take a week off some time in July, it&#8217;d be more likely to get time off approved for a week where there was only one other assistant out of the office than it would be for a week when five others were on vacation. Rather than waiting for a manager to review their request (which might take a while), this information can be supplied up front to make planning easier for everyone.</p>
+
+<p>Your vacation request system already has been implemented weeks ago, so you can easily get all the data you need on who is requesting what time off, and who has already had their time off approved. Armed with this information, building the request summary calendar should be easy, right? Just take all the requests and then group them by employee roles, and then spit them out in chronological order. You&#8217;ll be able to roll out this new feature into production by lunch time!</p>
+
+<p>You grab your morning coffee, and sit down to work. Before you can even open your text editor, an uncomfortable realization weighs heavily upon you: Roles are actually a property of shifts, not employees. Your clinic is understaffed, and so some employees are cross-trained and need to wear multiple hats. To put it bluntly, there&#8217;s at least one employee that&#8217;s not precisely a receptionist, and would be more adequately described as &#8220;receptionish&#8221;. She helps out in the billing office at times, and whenever she&#8217;s working there, the clinic is down a receptionist.</p>
+
+<p>You do have access to some data about individual shifts, so maybe that could be used to determine roles. By the time a shift is approved, the role is set, and you know for sure what that employee is doing for that day.</p>
+
+<p>You think for a little while. You uncover a few annoying problems that will need to be solved if you decide to go this route.</p>
+
+<p>The shift data is coming from a third party shift planning system, and the import window is set out only ten weeks into the future.  In practice, shifts aren&#8217;t really firmly committed to until four weeks out, so that makes the practical window even smaller.</p>
+
+<p>The idea that a given employee&#8217;s shift in July would be set in stone by March is a fantasy, and so even if you could get at that data, it wouldn&#8217;t be perfectly accurate. There&#8217;s also no guarantee that attempting to import five times more data than what you&#8217;re currently working with won&#8217;t cause problems… the whole synchronization system was built in a bit of a hurry, and could be fragile in places.</p>
+
+<p>Feeling the anxiety start to set in, you go for a quick walk around the block, and come to the realization that you&#8217;ve gone into problem solving mode already, when you really should be more in the problem discovery phase of things. You haven&#8217;t even answered the question of how many employees work in multiple different roles, and you&#8217;re already assuming that&#8217;s a problem that needs a clear solution.</p>
+
+<p>An idea pops into your head. You rush to your desk, and pop open a Rails console in production. You write a crude query and then massage the data with an ugly chain of Enumerable methods, and end up with a report that looks like this:</p>
+
+<div class="language-ruby highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="line-numbers"> <a href="#n1" name="n1">1</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Nikko Bergnaum</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Hygienists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">5</span>]]],
+<span class="line-numbers"> <a href="#n2" name="n2">2</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Anderson Miller</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Billing</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">50</span>]]],
+<span class="line-numbers"> <a href="#n3" name="n3">3</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Bell Effertz</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Hygienists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">14</span>]]],
+<span class="line-numbers"> <a href="#n4" name="n4">4</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Vicky Okuneva</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Receptionists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">30</span>]]],
+<span class="line-numbers"> <a href="#n5" name="n5">5</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Lavern Von</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Assistants</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">37</span>]]],
+<span class="line-numbers"> <a href="#n6" name="n6">6</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Crawford Purdy</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Receptionists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">40</span>]]],
+<span class="line-numbers"> <a href="#n7" name="n7">7</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Valentin Daugherty</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Hygienists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">61</span>]]],
+<span class="line-numbers"> <a href="#n8" name="n8">8</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Eudora Bauch</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Receptionists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">40</span>]]],
+<span class="line-numbers"> <a href="#n9" name="n9">9</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Jaeden Bashirian</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Assistants</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">28</span>]]],
+<span class="line-numbers"><strong><a href="#n10" name="n10">10</a></strong></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Roel Hammes</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Dentists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">36</span>]]],
+<span class="line-numbers"><a href="#n11" name="n11">11</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">King Schowalter</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Hygienists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">20</span>]]],
+<span class="line-numbers"><a href="#n12" name="n12">12</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Liam Kovacek</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Receptionists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">55</span>]]],
+<span class="line-numbers"><a href="#n13" name="n13">13</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Elaina Von</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Hygienists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">25</span>]]],
+<span class="line-numbers"><a href="#n14" name="n14">14</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Susie Watsica</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Hygienists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">31</span>]]],
+<span class="line-numbers"><a href="#n15" name="n15">15</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Oswaldo Boyer</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Hygienists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">20</span>]]],
+<span class="line-numbers"><a href="#n16" name="n16">16</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Gardner Fay</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Hygienists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">10</span>]]],
+<span class="line-numbers"><a href="#n17" name="n17">17</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Joanny Beatty</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Assistants</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">52</span>]]],
+<span class="line-numbers"><a href="#n18" name="n18">18</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Beth Yost</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Hygienists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">34</span>]]],
+<span class="line-numbers"><a href="#n19" name="n19">19</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Gerry Torphy</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Hygienists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">10</span>]]],
+<span class="line-numbers"><strong><a href="#n20" name="n20">20</a></strong></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Maureen Terry</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Hygienists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">9</span>]]],
+<span class="line-numbers"><a href="#n21" name="n21">21</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Maritza Kemmer</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Billing</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">25</span>]]],
+<span class="line-numbers"><a href="#n22" name="n22">22</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Morton Hudson</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Dentists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">61</span>]]],
+<span class="line-numbers"><a href="#n23" name="n23">23</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Santino Parker</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Hygienists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">49</span>]]],
+<span class="line-numbers"><a href="#n24" name="n24">24</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Jesse Friesen</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Hygienists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">31</span>]]],
+<span class="line-numbers"><a href="#n25" name="n25">25</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Dillan Krajcik</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Hygienists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">44</span>]]],
+<span class="line-numbers"><a href="#n26" name="n26">26</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Travon Koch</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Hygienists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">16</span>]]],
+<span class="line-numbers"><a href="#n27" name="n27">27</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Audreanne Hand</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Billing</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">47</span>]]],
+<span class="line-numbers"><a href="#n28" name="n28">28</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Coralie Predovic</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Receptionists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">45</span>]]],
+<span class="line-numbers"><a href="#n29" name="n29">29</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Jovani Schulist</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Management</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">50</span>]]],
+<span class="line-numbers"><strong><a href="#n30" name="n30">30</a></strong></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Tanner D'Amore</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Dentists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">41</span>]]],
+<span class="line-numbers"><a href="#n31" name="n31">31</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Jace Nitzsche</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Dentists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">21</span>]]],
+<span class="line-numbers"><a href="#n32" name="n32">32</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Carolina Waters</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Receptionists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">40</span>]]],
+<span class="line-numbers"><a href="#n33" name="n33">33</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Terence Howell</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Dentists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">39</span>]]],
+<span class="line-numbers"><a href="#n34" name="n34">34</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Leann Pacocha</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Assistants</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">2</span>]]],
+<span class="line-numbers"><a href="#n35" name="n35">35</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Alvah Rippin</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Dentists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">50</span>]]],
+<span class="line-numbers"><a href="#n36" name="n36">36</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Lorenzo West</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Hygienists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">27</span>]]],
+<span class="line-numbers"><a href="#n37" name="n37">37</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Gideon McKenzie</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Dentists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">41</span>]]],
+<span class="line-numbers"><a href="#n38" name="n38">38</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Katrine O'Reilly</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Dentists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">51</span>]]],
+<span class="line-numbers"><a href="#n39" name="n39">39</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Briana Ziemann</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Dentists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">40</span>]]],
+<span class="line-numbers"><strong><a href="#n40" name="n40">40</a></strong></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Jerome Harris</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Dentists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">10</span>]]],
+<span class="line-numbers"><a href="#n41" name="n41">41</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Misael Pagac</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Assistants</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">51</span>]]],
+<span class="line-numbers"><a href="#n42" name="n42">42</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Krista Predovic</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Assistants</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">32</span>]]],
+<span class="line-numbers"><a href="#n43" name="n43">43</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Carole O'Hara</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Assistants</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">42</span>]]],
+<span class="line-numbers"><a href="#n44" name="n44">44</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Adalberto Doyle</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Management</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">49</span>], [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Receptionists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">2</span>]]],
+<span class="line-numbers"><a href="#n45" name="n45">45</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Noel Ortiz</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Management</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">28</span>], [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Receptionists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">1</span>]]],
+<span class="line-numbers"><a href="#n46" name="n46">46</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Monique McLaughlin</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Receptionists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">43</span>], [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Assistants</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">1</span>]]],
+<span class="line-numbers"><a href="#n47" name="n47">47</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Jaleel Graham</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Billing</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">50</span>], [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Receptionists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">18</span>]]],
+<span class="line-numbers"><a href="#n48" name="n48">48</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Ned Reilly</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Receptionists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">50</span>], [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Assistants</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">1</span>]]],
+<span class="line-numbers"><a href="#n49" name="n49">49</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Enrico Schowalter</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Receptionists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">1</span>], [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Assistants</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">55</span>]]],
+<span class="line-numbers"><strong><a href="#n50" name="n50">50</a></strong></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Caesar Goldner</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Management</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">30</span>], [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Receptionists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">16</span>]]],
+<span class="line-numbers"><a href="#n51" name="n51">51</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Kirstin Weissnat</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Receptionists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">26</span>], [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Assistants</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">28</span>]]],
+<span class="line-numbers"><a href="#n52" name="n52">52</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Guillermo Klein</span><span style="color:#710">&quot;</span></span>,
+<span class="line-numbers"><a href="#n53" name="n53">53</a></span>  [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Assistants</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">41</span>], [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Hygienists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">2</span>], [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Receptionists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">3</span>]]]]
+</pre></div>
+</div>
+</div>
+
+<p>This listing shows all the shifts planned for the next ten weeks, with counts for each employee by role. You copy and paste it into a text editor, and delete any of the lines for employees that have a single role. Here&#8217;s what you end up with:</p>
+
+<div class="language-ruby highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="line-numbers"> <a href="#n1" name="n1">1</a></span>   [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Adalberto Doyle</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Management</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">49</span>], [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Receptionists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">2</span>]]],
+<span class="line-numbers"> <a href="#n2" name="n2">2</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Noel Ortiz</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Management</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">28</span>], [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Receptionists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">1</span>]]],
+<span class="line-numbers"> <a href="#n3" name="n3">3</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Monique McLaughlin</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Receptionists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">43</span>], [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Assistants</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">1</span>]]],
+<span class="line-numbers"> <a href="#n4" name="n4">4</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Jaleel Graham</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Billing</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">50</span>], [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Receptionists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">18</span>]]],
+<span class="line-numbers"> <a href="#n5" name="n5">5</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Ned Reilly</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Receptionists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">50</span>], [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Assistants</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">1</span>]]],
+<span class="line-numbers"> <a href="#n6" name="n6">6</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Enrico Schowalter</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Receptionists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">1</span>], [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Assistants</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">55</span>]]],
+<span class="line-numbers"> <a href="#n7" name="n7">7</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Caesar Goldner</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Management</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">30</span>], [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Receptionists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">16</span>]]],
+<span class="line-numbers"> <a href="#n8" name="n8">8</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Kirstin Weissnat</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Receptionists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">26</span>], [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Assistants</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">28</span>]]],
+<span class="line-numbers"> <a href="#n9" name="n9">9</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Guillermo Klein</span><span style="color:#710">&quot;</span></span>,
+<span class="line-numbers"><strong><a href="#n10" name="n10">10</a></strong></span>  [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Assistants</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">41</span>], [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Hygienists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">2</span>], [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Receptionists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">3</span>]]]]
+</pre></div>
+</div>
+</div>
+
+<p>Now you&#8217;ve whittled the list down to only 9 people. In a business that employees over 50 people, this is 20% of the workforce, which isn&#8217;t a tiny number. But taking a closer look at the data, you realize something else: even on this list of cross-trained employees, most staff members work in a single role the majority of the time, and very rarely fill in for another role.</p>
+
+<p>Filtering the list again, you remove anyone who works in a single role at least 90% of the time. After this step, only three employees remain on your list:</p>
+
+<div class="language-ruby highlighter-coderay"><div class="CodeRay">
+  <div class="code"><pre><span class="line-numbers"><a href="#n1" name="n1">1</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Jaleel Graham</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Billing</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">50</span>], [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Receptionists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">18</span>]]],
+<span class="line-numbers"><a href="#n2" name="n2">2</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Caesar Goldner</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Management</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">30</span>], [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Receptionists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">16</span>]]],
+<span class="line-numbers"><a href="#n3" name="n3">3</a></span> [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Kirstin Weissnat</span><span style="color:#710">&quot;</span></span>, [[<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Receptionists</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">26</span>], [<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Assistants</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">28</span>]]]]]]]
+</pre></div>
+</div>
+</div>
+
+<p>Because these employees represent only about 5% of the total staff, you&#8217;ve revealed this problem as an edge case. For the other six employees that substitute for a different role once in a blue moon, you&#8217;d have at least 90% accuracy by always labeling them by their primary role. It&#8217;d be confusing to refer to them as anything else, at least for the purposes of vacation planning.</p>
+
+<p>In the process of this ad-hoc exploration, you&#8217;ve discovered a reasonably accurate method of predicting employee roles far out into the future: if at least 90% of the shifts they&#8217;re assigned are for a particular role, assume that is their primary role. Otherwise, label them as cross-trained, listing out all the roles they commonly fill in for. For example, 
+Jaleel could be listed as &#8220;X-Trained (Billing, Receptionist)&#8221;,
+Kirsten as &#8220;X-Trained (Receptionist, Assistant)&#8221;, and Caesar as &#8220;X-Trained (Receptionist, Management)&#8221;.</p>
+
+<p>Taking this approach will be at least as reliable as using the raw shift data, and requires no major technical changes to the system&#8217;s under-plumbing. It&#8217;s also dynamic, in the sense that the system will adaptively relabel employees as cross trained when they&#8217;re doing more than one role on a regular basis.</p>
+
+<p>Happy with this re-evaluation of the problem, you start working, and you manage to get the feature into production before lunch after all. In the worst case scenario, you can always come back to this and do more careful analysis, peering into the technological and philosophical rabbit hole that made you nervous in the first place. But there&#8217;s a very good chance that this solution will work just fine, and so it&#8217;s worth trying it out before venturing out into the darkness.</p>
+
+<p>From this small exercise, you come to a powerful realization:</p>
+
+<blockquote>
+  <p>Software isn&#8217;t mathematically perfect reality, it&#8217;s a useful fiction meant to capture some aspect of reality that is interesting or important to humans. Although our technical biases may aim for logical purity in the code we write, the humans that use our work mainly care about the story we&#8217;re trying to tell them. We should seek the most simple solutions that allow us to tell that story, even if those solutions lack technical elegance.</p>
+</blockquote>
+
+<p>In other words, feel free to ignore the man behind the curtain.</p>
+
+
+  </div>
+</body>
+</html>

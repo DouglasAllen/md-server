@@ -1,0 +1,164 @@
+<h1 id="rouge">Rouge</h1>
+<p><a href="http://travis-ci.org/jneen/rouge"><img src="https://secure.travis-ci.org/jneen/rouge.png" alt="Build Status" /></a> <a href="http://badge.fury.io/rb/rouge"><img src="https://badge.fury.io/rb/rouge.png" alt="Gem Version" /></a></p>
+<p><a href="http://rouge.jneen.net/">Rouge</a> is a pure-ruby syntax highlighter. It can highlight 100 different languages, and output HTML or ANSI 256-color text. Its HTML output is compatible with stylesheets designed for <a href="http://pygments.org/" title="Pygments">pygments</a>.</p>
+<p>If you'd like to help out with this project, assign yourself something from the <a href="https://github.com/jneen/rouge/issues" title="Help Out">issues</a> page, and send me a pull request (even if it's not done yet!). Bonus points for feature branches.</p>
+<h2 id="usage">Usage</h2>
+<p>First, take a look at the <a href="http://rouge.jneen.net/">pretty colors</a>.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># make some nice lexed html</span>
+source = <span class="dt">File</span>.read(<span class="st">&#39;/etc/bashrc&#39;</span>)
+formatter = <span class="dt">Rouge</span>::<span class="dt">Formatters</span>::<span class="dt">HTML</span>.new
+lexer = <span class="dt">Rouge</span>::<span class="dt">Lexers</span>::<span class="dt">Shell</span>.new
+formatter.format(lexer.lex(source))
+
+<span class="co"># Get some CSS</span>
+<span class="dt">Rouge</span>::<span class="dt">Themes</span>::<span class="dt">Base16</span>.mode(<span class="st">:light</span>).render(<span class="st">scope: &#39;.highlight&#39;</span>)
+<span class="co"># Or use Theme#find with string input</span>
+<span class="dt">Rouge</span>::<span class="dt">Theme</span>.find(<span class="st">&#39;base16.light&#39;</span>).render(<span class="st">scope: &#39;.highlight&#39;</span>)</code></pre></div>
+<h3 id="full-options">Full options</h3>
+<h4 id="formatters">Formatters</h4>
+<p>As of Rouge 2.0, you are encouraged to write your own formatter for custom formatting needs. Builtin formatters include:</p>
+<ul>
+<li><code>Rouge::Formatters::HTML.new</code> - will render your code with standard class names for tokens, with no div-wrapping or other bells or whistles.</li>
+<li><code>Rouge::Formatters::HTMLInline.new(theme)</code> - will render your code with no class names, but instead inline the styling options into the <code>style=</code> attribute. This is good for emails and other systems where CSS support is minimal.</li>
+<li><code>Rouge::Formatters::HTMLLinewise.new(formatter, class_format: 'line-%i')</code> This formatter will split your code into lines, each contained in its own div. The <code>class_format</code> option will be used to add a class name to the div, given the line number.</li>
+<li><code>Rouge::Formatters::HTMLPygments.new(formatter, css_class='codehilite')</code> wraps the given formatter with div wrappers generally expected by stylesheets designed for Pygments.</li>
+<li><code>Rouge::Formatters::HTMLTable.new(formatter, opts={})</code> will output an HTML table containing numbered lines. Options are:
+<ul>
+<li><code>start_line: 1</code> - the number of the first line</li>
+<li><code>line_format: '%i'</code> - a <code>sprintf</code> template for the line number itself</li>
+<li><code>table_class: 'rouge-table'</code> - a CSS class for the table</li>
+<li><code>gutter_class: 'rouge-gutter'</code> - a CSS class for the gutter</li>
+<li><code>code_class: 'rouge-code'</code> - a CSS class for the code column</li>
+</ul></li>
+<li><code>Rouge::Formatters::HTMLLegacy.new(opts={})</code> is a backwards-compatibility class intended for users of rouge 1.x, with options that were supported then. Options are:
+<ul>
+<li><code>inline_theme: nil</code> - use an HTMLInline formatter with the given theme</li>
+<li><code>line_numbers: false</code> - use an HTMLTable formatter</li>
+<li><code>wrap: true</code> - use an HTMLPygments wrapper</li>
+<li><code>css_class: 'codehilite'</code> - a CSS class to use for the pygments wrapper</li>
+</ul></li>
+</ul>
+<h4 id="lexer-options">Lexer options</h4>
+<h5 id="debug-false">debug: false</h5>
+<p>Print a trace of the lex on stdout</p>
+<h5 id="parent">parent: ''</h5>
+<p>Allows you to specify which language the template is inside</p>
+<h4 id="css-theme-options">CSS theme options</h4>
+<h5 id="scope-.highlight">scope: '.highlight'</h5>
+<p>CSS selector that styles are applied to, e.g. <code>Rouge::Themes::Monokai.mode(:sublime).render(scope: 'code')</code></p>
+<p>Rouge aims to be simple to extend, and to be a drop-in replacement for pygments, with the same quality of output. Also, Rouge ships with a <code>rougify</code> command which allows you to easily highlight files in your terminal:</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="ex">rougify</span> foo.rb
+$ <span class="ex">rougify</span> style monokai.sublime <span class="op">&gt;</span> syntax.css</code></pre></div>
+<h3 id="advantages-to-pygments.rb">Advantages to pygments.rb</h3>
+<ul>
+<li>No need to <a href="https://github.com/tmm1/pygments.rb">spawn Python processes</a>.</li>
+<li>We're faster in <a href="https://github.com/jneen/rouge/pull/41#issuecomment-223751572">almost every measure</a></li>
+</ul>
+<h3 id="advantages-to-coderay">Advantages to CodeRay</h3>
+<ul>
+<li>The HTML output from Rouge is fully compatible with stylesheets designed for pygments.</li>
+<li>The lexers are implemented with a dedicated DSL, rather than being hand-coded.</li>
+<li>Rouge supports every language CodeRay does and more.</li>
+</ul>
+<h2 id="you-can-even-use-it-with-redcarpet">You can even use it with Redcarpet</h2>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">require <span class="st">&#39;redcarpet&#39;</span>
+require <span class="st">&#39;rouge&#39;</span>
+require <span class="st">&#39;rouge/plugins/redcarpet&#39;</span>
+
+<span class="kw">class</span> <span class="dt">HTML</span> &lt; <span class="dt">Redcarpet</span>::<span class="dt">Render</span>::<span class="dt">HTML</span>
+  include <span class="dt">Rouge</span>::<span class="dt">Plugins</span>::<span class="dt">Redcarpet</span> <span class="co"># yep, that&#39;s it.</span>
+<span class="kw">end</span></code></pre></div>
+<p>If you have <code>:fenced_code_blocks</code> enabled, you can specify languages, and even options with CGI syntax, like <code>php?start_inline=1</code>, or <code>erb?parent=javascript</code>.</p>
+<h2 id="encodings">Encodings</h2>
+<p>Rouge is only for UTF-8 strings. If you'd like to highlight a string with a different encoding, please convert it to UTF-8 first.</p>
+<h2 id="other-integrations">Other integrations</h2>
+<ul>
+<li>Middleman: <a href="https://github.com/middleman/middleman-syntax">middleman-syntax</a> (<span class="citation">@bhollis</span>)</li>
+<li>Middleman: <a href="https://github.com/Linuus/middleman-rouge">middleman-rouge</a> (<span class="citation">@Linuus</span>)</li>
+<li>RDoc: <a href="https://github.com/zzak/rdoc-rouge">rdoc-rouge</a> (<span class="citation">@zzak</span>)</li>
+<li>Rouge::Rails: <a href="https://github.com/jacobsimeon/rouge-rails">render code samples in your rails views</a> (<span class="citation">@jacobsimeon</span>)</li>
+</ul>
+<h2 id="contributing">Contributing</h2>
+<h3 id="installing-ruby">Installing Ruby</h3>
+<p>If you're here to implement a lexer for your awesome language, there's a good chance you don't already have a ruby development environment set up. Follow the <a href="https://github.com/jneen/rouge/wiki/Setting-up-Ruby">instructions on the wiki</a> to get up and running. If you have trouble getting set up, let me know - I'm always happy to help.</p>
+<h3 id="run-the-tests">Run the tests</h3>
+<p>You can test the core of Rouge simply by running <code>rake</code> (no <code>bundle exec</code> required). It's also set up with <code>guard</code>, if you like.</p>
+<p>To test a lexer visually, run <code>rackup</code> from the root and go to <code>localhost:9292/#{some_lexer}</code> where <code>some_lexer</code> is the tag or an alias of a lexer you'd like to test. If you add <code>?debug=1</code>, helpful debugging info will be printed on stdout.</p>
+<h3 id="api-documentation">API Documentation</h3>
+<p>is at http://rubydoc.info/gems/rouge/frames.</p>
+<h3 id="using-the-lexer-dsl">Using the lexer DSL</h3>
+<p>You can probably learn a lot just by reading through the existing lexers. Basically, a lexer consists of a collection of states, each of which has several rules. A rule consists of a regular expression and an action, which yields tokens and manipulates the state stack. Each rule in the state on top of the stack is tried <em>in order</em> until a match is found, at which point the action is run, the match consumed from the stream, and the process repeated with the new lexer on the top of the stack. Each lexer has a special state called <code>:root</code>, and the initial state stack consists of just this state.</p>
+<p>Here's how you might use it:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">MyLexer</span> &lt; <span class="dt">Rouge</span>::<span class="dt">RegexLexer</span>
+  state <span class="st">:root</span> <span class="kw">do</span>
+    <span class="co"># the &quot;easy way&quot;</span>
+
+    <span class="co"># simple rules</span>
+    rule <span class="ot">/0x[0-9a-f]+/</span>, <span class="dt">Num</span>::<span class="dt">Hex</span>
+
+    <span class="co"># simple state stack manipulation</span>
+    rule <span class="ot">/{-/</span>, <span class="dt">Comment</span>, <span class="st">:next_state</span>
+    rule <span class="ot">/-}/</span>, <span class="dt">Comment</span>, <span class="st">:pop!</span>
+
+    <span class="co"># the &quot;flexible way&quot;</span>
+    rule <span class="ot">/abc/</span> <span class="kw">do</span> |m|
+      <span class="co"># m is the match, for accessing match groups manually</span>
+
+      <span class="co"># you can do the following things:</span>
+      pop!
+      push <span class="st">:another_state</span>
+      push <span class="co"># assumed to be the current state</span>
+      state? <span class="st">:some_state</span> <span class="co"># check if the current state is :some_state</span>
+      in_state? <span class="st">:some_state</span> <span class="co"># check if :some_state is in the state stack</span>
+
+      <span class="co"># yield a token.  if no second argument is supplied, the value is</span>
+      <span class="co"># taken to be the whole match.</span>
+      <span class="co"># The sum of all the tokens yielded must be equivalent to the whole</span>
+      <span class="co"># match - otherwise characters will go missing from the user&#39;s input.</span>
+      token <span class="dt">Generic</span>::<span class="dt">Output</span>, m[<span class="dv">0</span>]
+
+      <span class="co"># calls SomeOtherLexer.lex(str) and yields its output.  See the</span>
+      <span class="co"># HTML lexer for a nice example of this.</span>
+      <span class="co"># if no second argument is supplied, it is assumed to be the whole</span>
+      <span class="co"># match string.</span>
+      delegate <span class="dt">SomeOtherLexer</span>, str
+
+      <span class="co"># the context object is the lexer itself, so you can stash state here</span>
+      <span class="ot">@count</span> ||= <span class="dv">0</span>
+      <span class="ot">@count</span> += <span class="dv">1</span>
+
+      <span class="co"># advanced: push a dynamically created anonymous state</span>
+      push <span class="kw">do</span>
+        rule <span class="ot">/.../</span>, <span class="dt">Generic</span>::<span class="dt">Output</span>
+      <span class="kw">end</span>
+    <span class="kw">end</span>
+
+    rule <span class="ot">/(\w+)(:)/</span> <span class="kw">do</span>
+      <span class="co"># &quot;groups&quot; yields the matched groups in order</span>
+      groups <span class="dt">Name</span>::<span class="dt">Label</span>, <span class="dt">Punctuation</span>
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+
+  start <span class="kw">do</span>
+    <span class="co"># this is run whenever a fresh lex is started</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<p>If you're creating a lexer that's very similar to a different lexer, you can use subclassing (see C/C++/ObjC and also QML/Javascript for examples):</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">MyLexer</span> &lt; <span class="dt">OtherLexer</span>
+  <span class="co"># independent states</span>
+  state <span class="st">:my_state</span> <span class="kw">do</span> ... <span class="kw">end</span>
+
+  <span class="co"># override states</span>
+  state <span class="st">:your_state</span> <span class="kw">do</span> ... <span class="kw">end</span>
+
+  <span class="co"># prepend rules to states</span>
+  prepend <span class="st">:parent_state</span> <span class="kw">do</span> ... <span class="kw">end</span>
+
+  <span class="co"># append rules to states</span>
+  append <span class="st">:parent_state</span> <span class="kw">do</span> ... <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<p>Please don't submit lexers that are largely copy-pasted from other files.</p>
+<h2 id="tips">Tips</h2>
+<p>I don't get paid to maintain rouge. If you've found this software useful, consider dropping a tip in the <a href="http://cash.me/$jneen">bucket</a>.</p>
+<h2 id="license">License</h2>
+<p>Rouge is released under the MIT license. Please see the <code>LICENSE</code> file for more information.</p>

@@ -1,0 +1,93 @@
+<h1 id="sinatra-best-practices-part-two">Sinatra Best Practices: Part Two</h1>
+<p>In <a href="http://blog.carbonfive.com/2013/06/24/sinatra-best-practices-part-one/">part one</a> we saw how to break up your Sinatra application into smaller bite-size pieces. In <a href="http://blog.carbonfive.com/2013/06/28/sinatra-best-practices-part-two/">part two</a> we're going to explore testing, which will also compel us to address environment configuration.</p>
+<p>To get started, we need to add rspec and rack-test to our gem file:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># Gemfile</span>
+
+source <span class="st">&#39;https://rubygems.org&#39;</span>
+
+gem <span class="st">&#39;sinatra&#39;</span>
+
+group <span class="st">:test</span>, <span class="st">:development</span> <span class="kw">do</span>
+
+  gem <span class="st">&#39;rspec&#39;</span>
+
+<span class="kw">end</span>
+
+group <span class="st">:test</span> <span class="kw">do</span>
+
+  gem <span class="st">&#39;rack-test&#39;</span>
+
+<span class="kw">end</span></code></pre></div>
+<p>Now we can leverage different environments to load only the gems we need. We don't really want RSpec loaded in production, after all, do we?</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># app.rb</span>
+
+<span class="dt">ENV</span>[<span class="st">&#39;RACK_ENV&#39;</span>] ||= <span class="st">&#39;development&#39;</span>
+
+require <span class="st">&#39;bundler&#39;</span>
+
+<span class="dt">Bundler</span>.require <span class="st">:default</span>, <span class="dt">ENV</span>[<span class="st">&#39;RACK_ENV&#39;</span>].to_sym
+
+require_relative <span class="st">&#39;helpers&#39;</span>
+
+require_relative <span class="st">&#39;routes/secrets&#39;</span>
+
+require_relative <span class="st">&#39;routes/sessions&#39;</span>
+
+<span class="kw">class</span> <span class="dt">SimpleApp</span> &lt; <span class="dt">Sinatra</span>::<span class="dt">Base</span>
+
+  <span class="co"># No changes here - left out for brevity.</span>
+
+<span class="kw">end</span></code></pre></div>
+<p>The first line sets the environment to development by default. After that, we use Bundler to load only the gems for the appropriate environment.</p>
+<p>We're pretty big believers in having the default rake task run your full test suite, so to that end, our rakefile looks something like this:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># rakefile</span>
+
+require <span class="st">&#39;rspec/core/rake_task&#39;</span>
+
+<span class="dt">RSpec</span>::<span class="dt">Core</span>::<span class="dt">RakeTask</span>.new <span class="st">:specs</span> <span class="kw">do</span> |task|
+
+  task.pattern = <span class="dt">Dir</span>[<span class="st">&#39;spec/**/*_spec.rb&#39;</span>]
+
+<span class="kw">end</span>
+
+task <span class="st">:default</span> =&gt; [<span class="st">&#39;specs&#39;</span>]</code></pre></div>
+<p>Now, a simple 'bundle exec rake' will run our full test suite, which will yield 0 tests run at this point, so let's fix that by adding some. We'll start with the spec_helper, which is not a requirement, per se, but makes things quite clean when we get to constructing tests, as we'll see in just a moment.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># spec/spec_helper.rb</span>
+
+<span class="dt">ENV</span>[<span class="st">&#39;RACK_ENV&#39;</span>] = <span class="st">&#39;test&#39;</span>
+
+require_relative <span class="dt">File</span>.join(<span class="st">&#39;..&#39;</span>, <span class="st">&#39;app&#39;</span>)
+
+<span class="dt">RSpec</span>.configure <span class="kw">do</span> |config|
+
+  include <span class="dt">Rack</span>::<span class="dt">Test</span>::<span class="dt">Methods</span>
+
+  <span class="kw">def</span> app
+
+    <span class="dt">SimpleApp</span>
+
+  <span class="kw">end</span>
+
+<span class="kw">end</span></code></pre></div>
+<p>In our spec helper, we force the environment to be test and then load the app, which will load the appropriate gems via bundler.</p>
+<p>So let's add a spec:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># spec/features/root_spec.rb</span>
+
+require_relative <span class="st">&#39;../spec_helper&#39;</span>
+
+describe <span class="st">&#39;Root Path&#39;</span> <span class="kw">do</span>
+
+  describe <span class="st">&#39;GET /&#39;</span> <span class="kw">do</span>
+
+    before { get <span class="st">&#39;/&#39;</span> }
+
+    it <span class="st">&#39;is successful&#39;</span> <span class="kw">do</span>
+
+      expect(last_response.status).to eq <span class="dv">200</span>
+
+    <span class="kw">end</span>
+
+  <span class="kw">end</span>
+
+<span class="kw">end</span></code></pre></div>
+<p>And there we have it. Our Sinatra app is loading only the gems necessary for the environment and our testing infrastructure is in place.</p>

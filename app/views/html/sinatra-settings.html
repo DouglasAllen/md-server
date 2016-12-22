@@ -1,0 +1,230 @@
+<h3 id="available-settings">Available Settings</h3>
+<p>http://www.sinatrarb.com/intro.html#Available%20Settings</p>
+<dl>
+<dt>
+absolute_redirects
+</dt>
+<dd>
+<pre><code>If disabled, Sinatra will allow relative redirects, however, Sinatra will no
+longer conform with RFC 2616 (HTTP 1.1), which only allows absolute redirects.</code></pre>
+</dd>
+<dd>
+<pre><code>Enable if your app is running behind a reverse proxy that has not been set up
+properly. Note that the &lt;tt&gt;url&lt;/tt&gt; helper will still produce absolute URLs, unless you
+pass in &lt;tt&gt;false&lt;/tt&gt; as the second parameter.</code></pre>
+</dd>
+<dd>
+Disabled by default.
+</dd>
+<dt>
+add_charset
+</dt>
+<dd>
+<pre><code>Mime types the &lt;tt&gt;content_type&lt;/tt&gt; helper will automatically add the charset info to.
+You should add to it rather than overriding this option:
+&lt;tt&gt;settings.add_charset &lt;&lt; &quot;application/foobar&quot;&lt;/tt&gt;</code></pre>
+</dd>
+<dt>
+app_file
+</dt>
+<dd>
+<pre><code>Path to the main application file, used to detect project root, views and public
+folder and inline templates.</code></pre>
+</dd>
+<dt>
+bind
+</dt>
+<dd>
+IP address to bind to (default: <tt>0.0.0.0</tt> <em>or</em> <tt>localhost</tt> if your <code>environment</code> is set to development). Only used for built-in server.
+</dd>
+<dt>
+default_encoding
+</dt>
+<dd>
+Encoding to assume if unknown (defaults to <tt>&quot;utf-8&quot;</tt>).
+</dd>
+<dt>
+dump_errors
+</dt>
+<dd>
+Display errors in the log.
+</dd>
+<dt>
+environment
+</dt>
+<dd>
+<pre><code>Current environment. Defaults to &lt;tt&gt;ENV[&#39;RACK_ENV&#39;]&lt;/tt&gt;, or
+&lt;tt&gt;&quot;development&quot;&lt;/tt&gt; if not available.</code></pre>
+</dd>
+<dt>
+logging
+</dt>
+<dd>
+Use the logger.
+</dd>
+<dt>
+lock
+</dt>
+<dd>
+<pre><code>Places a lock around every request, only running processing on request
+per Ruby process concurrently.</code></pre>
+</dd>
+<dd>
+Enabled if your app is not thread-safe. Disabled per default.
+</dd>
+<dt>
+method_override
+</dt>
+<dd>
+<pre><code>Use &lt;tt&gt;_method&lt;/tt&gt; magic to allow put/delete forms in browsers that
+don&#39;t support it.</code></pre>
+</dd>
+<dt>
+port
+</dt>
+<dd>
+Port to listen on. Only used for built-in server.
+</dd>
+<dt>
+prefixed_redirects
+</dt>
+<dd>
+<pre><code>Whether or not to insert &lt;tt&gt;request.script_name&lt;/tt&gt; into redirects if no
+absolute path is given. That way &lt;tt&gt;redirect &#39;/foo&#39;&lt;/tt&gt; would behave like
+&lt;tt&gt;redirect to(&#39;/foo&#39;)&lt;/tt&gt;. Disabled per default.</code></pre>
+</dd>
+<dt>
+protection
+</dt>
+<dd>
+Whether or not to enable web attack protections. See protection section above.
+</dd>
+<dt>
+public_dir
+</dt>
+<dd>
+Alias for <tt>public_folder</tt>. See below.
+</dd>
+<dt>
+public_folder
+</dt>
+<dd>
+<pre><code>Path to the folder public files are served from. Only used if static
+file serving is enabled (see &lt;tt&gt;static&lt;/tt&gt; setting below). Inferred from
+&lt;tt&gt;app_file&lt;/tt&gt; setting if not set.</code></pre>
+</dd>
+<dt>
+reload_templates
+</dt>
+<dd>
+<pre><code>Whether or not to reload templates between requests. Enabled in development
+mode.</code></pre>
+</dd>
+<dt>
+root
+</dt>
+<dd>
+<pre><code>Path to project root folder. Inferred from &lt;tt&gt;app_file&lt;/tt&gt; setting if not
+set.</code></pre>
+</dd>
+<dt>
+raise_errors
+</dt>
+<dd>
+<pre><code>Raise exceptions (will stop application). Enabled by default when
+&lt;tt&gt;environment&lt;/tt&gt; is set to &lt;tt&gt;&quot;test&quot;&lt;/tt&gt;, disabled otherwise.</code></pre>
+</dd>
+<dt>
+run
+</dt>
+<dd>
+<pre><code>If enabled, Sinatra will handle starting the web server. Do not
+enable if using rackup or other means.</code></pre>
+</dd>
+<dt>
+running
+</dt>
+<dd>
+Is the built-in server running now? Do not change this setting!
+</dd>
+<dt>
+server
+</dt>
+<dd>
+<pre><code>Server or list of servers to use for built-in server. Order indicates
+priority, default depends on Ruby implementation.</code></pre>
+</dd>
+<dt>
+sessions
+</dt>
+<dd>
+<pre><code>Enable cookie-based sessions support using &lt;tt&gt;Rack::Session::Cookie&lt;/tt&gt;.
+See &#39;Using Sessions&#39; section for more information.</code></pre>
+</dd>
+<dt>
+show_exceptions
+</dt>
+<dd>
+<pre><code>Show a stack trace in the browser when an exception happens. Enabled by
+default when &lt;tt&gt;environment&lt;/tt&gt; is set to &lt;tt&gt;&quot;development&quot;&lt;/tt&gt;,
+disabled otherwise.</code></pre>
+</dd>
+<dd>
+<pre><code>Can also be set to &lt;tt&gt;:after_handler&lt;/tt&gt; to trigger app-specified error
+handling before showing a stack trace in the browser.</code></pre>
+</dd>
+<dt>
+static
+</dt>
+<dd>
+Whether Sinatra should handle serving static files.
+</dd>
+<dd>
+Disable when using a server able to do this on its own.
+</dd>
+<dd>
+Disabling will boost performance.
+</dd>
+<dd>
+<pre><code>Enabled per default in classic style, disabled for modular apps.</code></pre>
+</dd>
+<dt>
+static_cache_control
+</dt>
+<dd>
+<pre><code>When Sinatra is serving static files, set this to add &lt;tt&gt;Cache-Control&lt;/tt&gt;
+headers to the responses. Uses the &lt;tt&gt;cache_control&lt;/tt&gt; helper. Disabled
+by default.</code></pre>
+</dd>
+<dd>
+<pre><code>Use an explicit array when setting multiple values:
+&lt;tt&gt;set :static_cache_control, [:public, :max_age =&gt; 300]&lt;/tt&gt;</code></pre>
+</dd>
+<dt>
+threaded
+</dt>
+<dd>
+<pre><code>If set to &lt;tt&gt;true&lt;/tt&gt;, will tell Thin to use &lt;tt&gt;EventMachine.defer&lt;/tt&gt;
+for processing the request.</code></pre>
+</dd>
+<dt>
+traps
+</dt>
+<dd>
+Whether Sinatra should handle system signals.
+</dd>
+<dt>
+views
+</dt>
+<dd>
+<pre><code>Path to the views folder. Inferred from &lt;tt&gt;app_file&lt;/tt&gt; setting if
+not set.</code></pre>
+</dd>
+<dt>
+x_cascade
+</dt>
+<dd>
+<pre><code>Whether or not to set the X-Cascade header if no route matches.
+Defaults to &lt;tt&gt;true&lt;/tt&gt;.</code></pre>
+</dd>
+</dl>

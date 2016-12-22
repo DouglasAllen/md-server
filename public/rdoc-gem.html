@@ -1,0 +1,49 @@
+<p>= - Ruby Documentation System</p>
+<p>home :: https://github.com/rdoc/rdoc rdoc :: https://rdoc.github.io/rdoc bugs :: https://github.com/rdoc/rdoc/issues build status :: {<img src="https://travis-ci.org/rdoc/rdoc.svg?branch=master" alt="Build Status" />}[https://travis-ci.org/rdoc/rdoc] code quality :: {<img src="https://codeclimate.com/badge.png" alt="code climate">}[https://codeclimate.com/github/rdoc/rdoc]</p>
+<p>== Description</p>
+<p>RDoc produces HTML and command-line documentation for Ruby projects. RDoc includes the +rdoc+ and +ri+ tools for generating and displaying documentation from the command-line.</p>
+<p>== Generating Documentation</p>
+<p>Once installed, you can create documentation using the +rdoc+ command</p>
+<p>$ rdoc [options] [names...]</p>
+<p>For an up-to-date option summary, type</p>
+<p>$ rdoc --help</p>
+<p>A typical use might be to generate documentation for a package of Ruby source (such as RDoc itself).</p>
+<p>$ rdoc</p>
+<p>This command generates documentation for all the Ruby and C source files in and below the current directory. These will be stored in a documentation tree starting in the subdirectory +doc+.</p>
+<p>You can make this slightly more useful for your readers by having the index page contain the documentation for the primary file. In our case, we could type</p>
+<p>% rdoc --main README.rdoc</p>
+<p>You'll find information on the various formatting tricks you can use in comment blocks in the documentation this generates.</p>
+<p>RDoc uses file extensions to determine how to process each file. File names ending +.rb+ and +.rbw+ are assumed to be Ruby source. Files ending +.c+ are parsed as C files. All other files are assumed to contain just Markup-style markup (with or without leading '#' comment markers). If directory names are passed to RDoc, they are scanned recursively for C and Ruby source files only.</p>
+<p>To generate documentation using +rake+ see RDoc::Task[https://rdoc.github.io/rdoc/RDocTask.html].</p>
+<p>To generate documentation programmatically:</p>
+<p>gem 'rdoc' require 'rdoc/rdoc'</p>
+<p>options = RDoc::Options.new # see RDoc::Options</p>
+<p>rdoc = RDoc::RDoc.new rdoc.document options # see RDoc::RDoc</p>
+<p>== Writing Documentation</p>
+<p>To write documentation for RDoc place a comment above the class, module, method, constant, or attribute you want documented:</p>
+<p>## # This class represents an arbitrary shape by a series of points.</p>
+<p>class Shape</p>
+<pre><code>##
+# Creates a new shape described by a +polyline+.
+#
+# If the +polyline+ does not end at the same point it started at the
+# first pointed is copied and placed at the end of the line.
+#
+# An ArgumentError is raised if the line crosses itself, but shapes may
+# be concave.
+
+def initialize polyline
+  # ...
+end</code></pre>
+<p>end</p>
+<p>The default comment markup format is the RDoc::Markup format. TomDoc[rdoc-ref:RDoc::TomDoc], Markdown[rdoc-ref:RDoc::Markdown] and RD[rdoc-ref:RDoc::RD] format comments are also supported. You can set the default comment format for your entire project by creating a <tt>.rdoc_options</tt> file. See RDoc::Options@Saved+Options for instructions on creating one. You can also set the comment format for a single file through the +:markup:+ directive, but this is only recommended if you wish to switch markup formats. See RDoc::Markup@Other+directives.</p>
+<p>Comments can contain directives that tell RDoc information that it cannot otherwise discover through parsing. See RDoc::Markup@Directives to control what is or is not documented, to define method arguments or to break up methods in a class by topic. See RDoc::Parser::Ruby for directives used to teach RDoc about metaprogrammed methods.</p>
+<p>See RDoc::Parser::C for documenting C extensions with RDoc.</p>
+<p>To determine how well your project is documented run <tt>rdoc -C lib</tt> to get a documentation coverage report. <tt>rdoc -C1 lib</tt> includes parameter names in the documentation coverage report.</p>
+<p>== Bugs</p>
+<p>See CONTRIBUTING@Bugs for information on filing a bug report. It's OK to file a bug report for anything you're having a problem with. If you can't figure out how to make RDoc produce the output you like that is probably a documentation bug.</p>
+<p>== License</p>
+<p>RDoc is Copyright (c) 2001-2003 Dave Thomas, The Pragmatic Programmers. Portions (c) 2007-2011 Eric Hodel. Portions copyright others, see individual files and LEGAL.rdoc for details.</p>
+<p>RDoc is free software, and may be redistributed under the terms specified in LICENSE.rdoc.</p>
+<p>== Warranty</p>
+<p>This software is provided &quot;as is&quot; and without any express or implied warranties, including, without limitation, the implied warranties of merchantability and fitness for a particular purpose.</p>

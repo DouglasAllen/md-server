@@ -1,0 +1,13 @@
+<h3 id="halting">Halting</h3>
+<p>To immediately stop a request within a filter or route use:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">halt</code></pre></div>
+<p>You can also specify the status when halting:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">halt <span class="dv">410</span></code></pre></div>
+<p>Or the body:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">halt <span class="st">&#39;this will be the body&#39;</span></code></pre></div>
+<p>Or both:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">halt <span class="dv">401</span>, <span class="st">&#39;go away!&#39;</span></code></pre></div>
+<p>With headers:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">halt <span class="dv">402</span>, {<span class="st">&#39;Content-Type&#39;</span> =&gt; <span class="st">&#39;text/plain&#39;</span>}, <span class="st">&#39;revenge&#39;</span></code></pre></div>
+<p>It is of course possible to combine a template with <code>halt</code>:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">halt erb(<span class="st">:error</span>)</code></pre></div>

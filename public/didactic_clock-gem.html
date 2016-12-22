@@ -1,0 +1,45 @@
+<h1 id="didacticclock">DidacticClock</h1>
+<p>TODO: Write a gem description</p>
+<h2 id="installation">Installation</h2>
+<p>Add this line to your application's Gemfile:</p>
+<pre><code>gem &#39;didactic_clock&#39;</code></pre>
+<p>And then execute:</p>
+<pre><code>$ bundle</code></pre>
+<p>Or install it yourself as:</p>
+<pre><code>$ gem install didactic_clock</code></pre>
+<h2 id="usage">Usage</h2>
+<p>This is it in /lib/didactic_clock/time_keeper.rb</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">module</span> <span class="dt">DidacticClock</span>
+  <span class="kw">class</span> <span class="dt">TimeKeeper</span>
+    <span class="kw">def</span> verbose_time
+      time = <span class="dt">Time</span>.now
+      minute = time.min
+      hour = time.hour % <span class="dv">12</span>
+      meridian_indicator = time.hour &lt; <span class="dv">12</span> ? <span class="st">&#39;AM&#39;</span> : <span class="st">&#39;PM&#39;</span>
+         
+      <span class="st">&quot;</span><span class="ot">#{</span>minute<span class="ot">}</span><span class="st"> minutes past </span><span class="ot">#{</span>hour<span class="ot">}</span><span class="st"> o&#39;clock, </span><span class="ot">#{</span>meridian_indicator<span class="ot">}</span><span class="st">&quot;</span>
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<p>in the /bin/didactic_clock_server</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">#!/usr/bin/env ruby</span>
+
+require <span class="st">&#39;sinatra&#39;</span>
+require <span class="st">&#39;didactic_clock/time_keeper&#39;</span>
+
+<span class="co"># otherwise sinatra won&#39;t always automagically launch its embedded </span>
+<span class="co"># http server when this script is executed</span>
+set <span class="st">:run</span>, <span class="dv">true</span>
+
+get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  time_keeper = <span class="dt">DidacticClock</span>::<span class="dt">TimeKeeper</span>.new
+  <span class="kw">return</span> time_keeper.verbose_time
+<span class="kw">end</span></code></pre></div>
+<h2 id="contributing">Contributing</h2>
+<ol style="list-style-type: decimal">
+<li><p>Fork it</p></li>
+<li><p>Create your feature branch (<code>git checkout -b my-new-feature</code>)</p></li>
+<li><p>Commit your changes (<code>git commit -am 'Added some feature'</code>)</p></li>
+<li><p>Push to the branch (<code>git push origin my-new-feature</code>)</p></li>
+<li><p>Create new Pull Request</p></li>
+</ol>

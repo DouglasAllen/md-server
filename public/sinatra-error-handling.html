@@ -1,0 +1,37 @@
+<h2 id="error-handling">Error Handling</h2>
+<p>Error handlers run within the same context as routes and before filters, which means you get all the goodies it has to offer, like <code>haml</code>, <code>erb</code>, <code>halt</code>, etc.</p>
+<h3 id="not-found">Not Found</h3>
+<p>When a <code>Sinatra::NotFound</code> exception is raised, or the response's status code is 404, the <code>not_found</code> handler is invoked:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">not_found <span class="kw">do</span>
+  <span class="st">&#39;This is nowhere to be found.&#39;</span>
+<span class="kw">end</span></code></pre></div>
+<h3 id="error">Error</h3>
+<p>The <code>error</code> handler is invoked any time an exception is raised from a route block or a filter. But note in development it will only run if you set the show exceptions option to <code>:after_handler</code>:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">set <span class="st">:show_exceptions</span>, <span class="st">:after_handler</span></code></pre></div>
+<p>The exception object can be obtained from the <code>sinatra.error</code> Rack variable:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">error <span class="kw">do</span>
+  <span class="st">&#39;Sorry there was a nasty error - &#39;</span> + env[<span class="st">&#39;sinatra.error&#39;</span>].message
+<span class="kw">end</span></code></pre></div>
+<p>Custom errors:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">error <span class="dt">MyCustomError</span> <span class="kw">do</span>
+  <span class="st">&#39;So what happened was...&#39;</span> + env[<span class="st">&#39;sinatra.error&#39;</span>].message
+<span class="kw">end</span></code></pre></div>
+<p>Then, if this happens:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  raise <span class="dt">MyCustomError</span>, <span class="st">&#39;something bad&#39;</span>
+<span class="kw">end</span></code></pre></div>
+<p>You get this:</p>
+<pre><code>So what happened was... something bad</code></pre>
+<p>Alternatively, you can install an error handler for a status code:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">error <span class="dv">403</span> <span class="kw">do</span>
+  <span class="st">&#39;Access forbidden&#39;</span>
+<span class="kw">end</span>
+
+get <span class="st">&#39;/secret&#39;</span> <span class="kw">do</span>
+  <span class="dv">403</span>
+<span class="kw">end</span></code></pre></div>
+<p>Or a range:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">error <span class="dv">400</span>..<span class="dv">510</span> <span class="kw">do</span>
+  <span class="st">&#39;Boom&#39;</span>
+<span class="kw">end</span></code></pre></div>
+<p>Sinatra installs special <code>not_found</code> and <code>error</code> handlers when running under the development environment to display nice stack traces and additional debugging information in your browser.</p>

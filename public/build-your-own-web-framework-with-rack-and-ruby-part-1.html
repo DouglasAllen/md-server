@@ -1,0 +1,23 @@
+<h1 id="quickstart">Quickstart</h1>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># Gemfile</span>
+source <span class="st">&quot;http://rubygems.org&quot;</span>
+ruby <span class="st">&#39;2.3.1&#39;</span>
+gem <span class="st">&#39;rack&#39;</span>, <span class="st">&#39;~&gt; 1.5.2&#39;</span></code></pre></div>
+<hr />
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">$&gt;</span>  bundle install</code></pre></div>
+<hr />
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># request_controller.rb</span>
+<span class="kw">class</span> <span class="dt">RequestController</span>
+  <span class="kw">def</span> call(env)
+    [<span class="dv">200</span>, {}, [<span class="st">&quot;Hello World&quot;</span>]]
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<hr />
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># config.ru</span>
+require <span class="st">&#39;rack&#39;</span>
+load <span class="st">&#39;./request_controller.rb&#39;</span>
+
+<span class="dt">Rack</span>::<span class="dt">Handler</span>::<span class="dt">WEBrick</span>.run(<span class="dt">RequestController</span>.new, <span class="st">:Port</span> =&gt; <span class="dv">9000</span>)</code></pre></div>
+<hr />
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">$&gt;</span>  rackup</code></pre></div>
+<hr />

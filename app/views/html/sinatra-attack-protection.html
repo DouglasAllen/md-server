@@ -1,0 +1,10 @@
+<h3 id="configuring-attack-protection">Configuring attack protection</h3>
+<p>Sinatra is using <a href="https://github.com/rkh/rack-protection#readme">Rack::Protection</a> to defend your application against common, opportunistic attacks. You can easily disable this behavior (which will open up your application to tons of common vulnerabilities):</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">disable <span class="st">:protection</span></code></pre></div>
+<p>To skip a single defense layer, set <code>protection</code> to an options hash:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">set <span class="st">:protection</span>, <span class="st">:except</span> =&gt; <span class="st">:path_traversal</span></code></pre></div>
+<p>You can also hand in an array in order to disable a list of protections:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">set <span class="st">:protection</span>, <span class="st">:except</span> =&gt; [<span class="st">:path_traversal</span>, <span class="st">:session_hijacking</span>]</code></pre></div>
+<p>By default, Sinatra will only set up session based protection if <code>:sessions</code> has been enabled. Sometimes you want to set up sessions on your own, though. In that case you can get it to set up session based protections by passing the <code>:session</code> option:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">use <span class="dt">Rack</span>::<span class="dt">Session</span>::<span class="dt">Pool</span>
+set <span class="st">:protection</span>, <span class="st">:session</span> =&gt; <span class="dv">true</span></code></pre></div>

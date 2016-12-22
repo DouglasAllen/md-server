@@ -1,0 +1,99 @@
+<h2 id="requirement">Requirement</h2>
+<p>http://www.sinatrarb.com/intro.html#Requirement</p>
+The following Ruby versions are officially supported:
+<dl>
+<dt>
+Ruby 1.8.7
+</dt>
+<dd>
+<pre><code>1.8.7 is fully supported, however, if nothing is keeping you from it, we
+recommend upgrading or switching to JRuby or Rubinius. Support for 1.8.7
+will not be dropped before Sinatra 2.0. Ruby 1.8.6 is no longer supported.</code></pre>
+</dd>
+<dt>
+Ruby 1.9.2
+</dt>
+<dd>
+<pre><code>1.9.2 is fully supported. Do not use 1.9.2p0, as it is known to cause
+segmentation faults when running Sinatra. Official support will continue
+at least until the release of Sinatra 1.5.</code></pre>
+</dd>
+<dt>
+Ruby 1.9.3
+</dt>
+<dd>
+<pre><code>1.9.3 is fully supported and recommended. Please note that switching to 1.9.3
+from an earlier version will invalidate all sessions. 1.9.3 will be supported
+until the release of Sinatra 2.0.</code></pre>
+</dd>
+<dt>
+Ruby 2.x
+</dt>
+<dd>
+<pre><code>2.x is fully supported and recommended. There are currently no plans to drop
+official support for it.</code></pre>
+</dd>
+<dt>
+Rubinius
+</dt>
+<dd>
+<pre><code>Rubinius is officially supported (Rubinius &gt;= 2.x). It is recommended to
+&lt;tt&gt;gem install puma&lt;/tt&gt;.</code></pre>
+</dd>
+<dt>
+JRuby
+</dt>
+<dd>
+<pre><code>The latest stable release of JRuby is officially supported. It is not
+recommended to use C extensions with JRuby. It is recommended to
+&lt;tt&gt;gem install trinidad&lt;/tt&gt;.</code></pre>
+</dd>
+</dl>
+<p>We also keep an eye on upcoming Ruby versions.</p>
+<p>The following Ruby implementations are not officially supported but still are known to run Sinatra:</p>
+<ul>
+<li>Older versions of JRuby and Rubinius</li>
+<li>Ruby Enterprise Edition</li>
+<li>MacRuby, Maglev, IronRuby</li>
+<li>Ruby 1.9.0 and 1.9.1 (but we do recommend against using those)</li>
+</ul>
+<p>Not being officially supported means if things only break there and not on a supported platform, we assume it's not our issue but theirs.</p>
+<p>We also run our CI against ruby-head (future releases of MRI), but we can't guarantee anything, since it is constantly moving. Expect upcoming 2.x releases to be fully supported.</p>
+<p>Sinatra should work on any operating system supported by the chosen Ruby implementation.</p>
+<p>If you run MacRuby, you should <code>gem install control_tower</code>.</p>
+<p>Sinatra currently doesn't run on Cardinal, SmallRuby, BlueRuby or any Ruby version prior to 1.8.7.</p>
+<h2 id="the-bleeding-edge">The Bleeding Edge</h2>
+<p>If you would like to use Sinatra's latest bleeding-edge code, feel free to run your application against the master branch, it should be rather stable.</p>
+<p>We also push out prerelease gems from time to time, so you can do a</p>
+<pre class="shell"><code>gem install sinatra --pre</code></pre>
+<p>to get some of the latest features.</p>
+<h3 id="with-bundler">With Bundler</h3>
+<p>If you want to run your application with the latest Sinatra, using <a href="http://gembundler.com/">Bundler</a> is the recommended way.</p>
+<p>First, install bundler, if you haven't:</p>
+<pre class="shell"><code>gem install bundler</code></pre>
+<p>Then, in your project directory, create a <code>Gemfile</code>:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">source <span class="st">&#39;https://rubygems.org&#39;</span>
+gem <span class="st">&#39;sinatra&#39;</span>, <span class="st">:github</span> =&gt; <span class="st">&quot;sinatra/sinatra&quot;</span>
+
+<span class="co"># other dependencies</span>
+gem <span class="st">&#39;haml&#39;</span>                    <span class="co"># for instance, if you use haml</span>
+gem <span class="st">&#39;activerecord&#39;</span>, <span class="st">&#39;~&gt; 3.0&#39;</span>  <span class="co"># maybe you also need ActiveRecord 3.x</span></code></pre></div>
+<p>Note that you will have to list all your application's dependencies in the <code>Gemfile</code>. Sinatra's direct dependencies (Rack and Tilt) will, however, be automatically fetched and added by Bundler.</p>
+<p>Now you can run your app like this:</p>
+<pre class="shell"><code>bundle exec ruby myapp.rb</code></pre>
+<h3 id="roll-your-own">Roll Your Own</h3>
+<p>Create a local clone and run your app with the <code>sinatra/lib</code> directory on the <code>$LOAD_PATH</code>:</p>
+<pre class="shell"><code>cd myapp
+git clone git://github.com/sinatra/sinatra.git
+ruby -I sinatra/lib myapp.rb</code></pre>
+<p>To update the Sinatra sources in the future:</p>
+<pre class="shell"><code>cd myapp/sinatra
+git pull</code></pre>
+<h3 id="install-globally">Install Globally</h3>
+<p>You can build the gem on your own:</p>
+<pre class="shell"><code>git clone git://github.com/sinatra/sinatra.git
+cd sinatra
+rake sinatra.gemspec
+rake install</code></pre>
+<p>If you install gems as root, the last step should be:</p>
+<pre class="shell"><code>sudo rake install</code></pre>

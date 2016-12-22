@@ -1,0 +1,179 @@
+<h1 id="the-ruby-programming-language">The Ruby Programming Language</h1>
+<h2 id="chapter-10">CHAPTER 10</h2>
+<h3 id="the-ruby-environment">The Ruby Environment</h3>
+<h4 id="invoking-the-ruby-interpreter">10.1 Invoking the Ruby Interpreter</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">ruby [&lt;replaceable&gt;options&lt;<span class="ot">/replaceable&gt;] [--] &lt;replaceable&gt;program&lt;/</span>replaceable&gt; [&lt;replaceable&gt;arguments&lt;<span class="ot">/replaceable&gt;]</span></code></pre></div>
+<h4 id="common-options">10.1.1 Common Options</h4>
+<pre class="rdoc"><code>require &#39;&lt;replaceable&gt;library&lt;/replaceable&gt;&#39;</code></pre>
+<h4 id="text-processing-options">10.1.4 Text Processing Options</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">while</span> gets             <span class="co"># Read a line of input into $_</span>
+  <span class="dt">$F</span> = split <span class="kw">if</span> <span class="dt">$-a</span>    <span class="co"># Split $_ into fields if -a was specified</span>
+  chop! <span class="kw">if</span> <span class="dt">$-l</span>         <span class="co"># Chop line ending off $_ if -l was specified</span>
+  <span class="co"># Program text here</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">while</span> gets             <span class="co"># Read a line of input into $_</span>
+  <span class="dt">$F</span> = split <span class="kw">if</span> <span class="dt">$-a</span>    <span class="co"># Split $_ into fields if -a was specified</span>
+  chop! <span class="kw">if</span> <span class="dt">$-l</span>         <span class="co"># Chop line ending off $_ if -l was specified</span>
+  <span class="co"># Program text here</span>
+  print                <span class="co"># Output $_ (adding $/ if -l was specified)</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="predefined-modules-and-classes">10.2.1 Predefined Modules and Classes</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">Comparable</span>      <span class="dt">FileTest</span>        <span class="dt">Marshal</span>         <span class="dt">Precision</span>
+<span class="dt">Enumerable</span>      <span class="dt">GC</span>              <span class="dt">Math</span>            <span class="dt">Process</span>
+<span class="dt">Errno</span>           <span class="dt">Kernel</span>          <span class="dt">ObjectSpace</span>     <span class="dt">Signal</span>
+<span class="co">###########################</span>
+<span class="dt">Array</span>           <span class="dt">File</span>            <span class="dt">Method</span>          <span class="dt">String</span>
+<span class="dt">Bignum</span>          <span class="dt">Fixnum</span>          <span class="dt">Module</span>          <span class="dt">Struct</span>
+<span class="dt">Binding</span>         <span class="dt">Float</span>           <span class="dt">NilClass</span>        <span class="dt">Symbol</span>
+<span class="dt">Class</span>           <span class="dt">Hash</span>            <span class="dt">Numeric</span>         <span class="dt">Thread</span>
+<span class="dt">Continuation</span>    <span class="dt">IO</span>              <span class="dt">Object</span>          <span class="dt">ThreadGroup</span>
+<span class="dt">Data</span>            <span class="dt">Integer</span>         <span class="dt">Proc</span>            <span class="dt">Time</span>
+<span class="dt">Dir</span>             <span class="dt">MatchData</span>       <span class="dt">Range</span>           <span class="dt">TrueClass</span>
+<span class="dt">FalseClass</span>      <span class="dt">MatchingData</span>    <span class="dt">Regexp</span>          <span class="dt">UnboundMethod</span>
+<span class="co">###########################</span>
+<span class="dt">ArgumentError</span>           <span class="dt">NameError</span>               <span class="dt">SignalException</span>
+<span class="dt">EOFError</span>                <span class="dt">NoMemoryError</span>           <span class="dt">StandardError</span>
+<span class="dt">Exception</span>               <span class="dt">NoMethodError</span>           <span class="dt">SyntaxError</span>
+<span class="dt">FloatDomainError</span>        <span class="dt">NotImplementedError</span>     <span class="dt">SystemCallError</span>
+<span class="dt">IOError</span>                 <span class="dt">RangeError</span>              <span class="dt">SystemExit</span>
+<span class="dt">IndexError</span>              <span class="dt">RegexpError</span>             <span class="dt">SystemStackError</span>
+<span class="dt">Interrupt</span>               <span class="dt">RuntimeError</span>            <span class="dt">ThreadError</span>
+<span class="dt">LoadError</span>               <span class="dt">ScriptError</span>             <span class="dt">TypeError</span>
+<span class="dt">LocalJumpError</span>          <span class="dt">SecurityError</span>           <span class="dt">ZeroDivisionError</span>
+<span class="co">###########################</span>
+<span class="dt">BasicObject</span>     <span class="dt">FiberError</span>      <span class="dt">Mutex</span>           <span class="dt">VM</span>
+<span class="dt">Fiber</span>           <span class="dt">KeyError</span>        <span class="dt">StopIteration</span>
+<span class="co">###########################</span>
+<span class="co"># Print all modules (excluding classes)</span>
+puts <span class="dt">Module</span>.constants.sort.select {|x| eval(x.to_s).instance_of? <span class="dt">Module</span>}
+
+<span class="co"># Print all classes (excluding exceptions)</span>
+puts <span class="dt">Module</span>.constants.sort.select {|x|
+  c = eval(x.to_s)
+  c.is_a? <span class="dt">Class</span> <span class="kw">and</span> <span class="kw">not</span> c.ancestors.include? <span class="dt">Exception</span>
+}
+
+<span class="co"># Print all exceptions</span>
+puts <span class="dt">Module</span>.constants.sort.select {|x|
+  c = eval(x.to_s)
+  c.instance_of? <span class="dt">Class</span> <span class="kw">and</span> c.ancestors.include? <span class="dt">Exception</span>
+}</code></pre></div>
+<h4 id="top-level-constants">10.2.2 Top-Level Constants</h4>
+<pre class="rdoc"><code>ruby -e &#39;puts Module.constants.sort.reject{|x| eval(x.to_s).is_a? Module}&#39;</code></pre>
+<h4 id="global-variables">10.2.3 Global Variables</h4>
+<pre class="rdoc"><code>ruby -e &#39;puts global_variables.sort&#39;
+###########################
+ruby -rEnglish -e &#39;puts global_variables.sort&#39;</code></pre>
+<h4 id="keyword-functions">10.2.4.1 Keyword functions</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">block_given?    iterator?       loop            require
+callcc          lambda          proc            throw
+catch           load            raise</code></pre></div>
+<h4 id="text-input-output-and-manipulation-functions">10.2.4.2 Text input, output, and manipulation functions</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">format          print           puts            sprintf
+gets            printf          readline
+p               putc            readlines
+<span class="co">###########################</span>
+chomp   chop    gsub    scan    sub
+chomp!  chop!   gsub!   split   sub!</code></pre></div>
+<h4 id="os-methods">10.2.4.3 OS methods</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># `       fork    select  system  trap</span>
+<span class="co"># exec    open    syscall test</span></code></pre></div>
+<h4 id="warnings-failures-and-exiting">10.2.4.4 Warnings, failures, and exiting</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">abort   at_exit exit    exit!   fail    warn</code></pre></div>
+<h4 id="reflection-functions">10.2.4.5 Reflection functions</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">binding                         set_trace_func
+<span class="dv">caller</span>                          singleton_method_added
+eval                            singleton_method_removed
+global_variables                singleton_method_undefined
+local_variables                 trace_var
+method_missing                  untrace_var
+remove_instance_variable</code></pre></div>
+<h4 id="conversion-functions">10.2.4.6 Conversion functions</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">Array</span>   <span class="dt">Float</span>   <span class="dt">Integer</span> <span class="dt">String</span></code></pre></div>
+<h4 id="miscellaneous-kernel-functions">10.2.4.7 Miscellaneous Kernel functions</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">autoload                rand                    srand
+autoload?               sleep</code></pre></div>
+<h4 id="one-line-script-shortcuts">10.3.4 One-Line Script Shortcuts</h4>
+<pre class="rdoc"><code>ruby -n -e &#39;print if /^A/&#39; datafile
+###########################
+print if $_ =~ /^A/</code></pre>
+<h4 id="invoking-os-commands">10.4.1 Invoking OS Commands</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">os = <span class="st">`uname`</span>             <span class="co"># String literal and method invocation in one</span>
+os =<span class="ot"> %x{</span><span class="st">uname</span><span class="ot">}</span>           <span class="co"># Another quoting syntax</span>
+os = <span class="dt">Kernel</span>.<span class="st">`(&quot;uname&quot;)   #`</span> <span class="dt">Invoke</span> the method explicitly
+<span class="co">###########################</span>
+files = <span class="st">``</span> <span class="st">` ``echo *.xml`` `</span> <span class="st">``</span>
+<span class="co">###########################</span>
+pipe = open(<span class="st">&quot;|echo *.xml&quot;</span>)
+files = pipe.readline
+pipe.close</code></pre></div>
+<h4 id="forking-and-processes">10.4.2 Forking and Processes</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">fork {
+  puts <span class="st">&quot;Hello from the child process: #$$&quot;</span>
+}
+puts <span class="st">&quot;Hello from the parent process: #$$&quot;</span>
+<span class="co">###########################</span>
+pid = fork
+<span class="kw">if</span> (pid)
+  puts <span class="st">&quot;Hello from parent process: #$$&quot;</span>
+  puts <span class="st">&quot;Created child process </span><span class="ot">#{</span>pid<span class="ot">}</span><span class="st">&quot;</span>   
+<span class="kw">else</span>
+  puts <span class="dt">Hello</span> from child <span class="st">process: </span><span class="co">#$$&quot;</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+open(<span class="st">&quot;|-&quot;</span>, <span class="st">&quot;r+&quot;</span>) <span class="kw">do</span> |child|
+  <span class="kw">if</span> child
+    <span class="co"># This is the parent process</span>
+    child.puts(<span class="st">&quot;Hello child&quot;</span>)       <span class="co"># Send to child</span>
+    response = child.gets           <span class="co"># Read from child</span>
+    puts <span class="st">&quot;Child said: </span><span class="ot">#{</span>response<span class="ot">}</span><span class="st">&quot;</span>
+  <span class="kw">else</span>
+    <span class="co"># This is the child process</span>
+    from_parent = gets              <span class="co"># Read from parent</span>
+    <span class="dt">STDERR</span>.puts <span class="st">&quot;Parent said: </span><span class="ot">#{</span>from_parent<span class="ot">}</span><span class="st">&quot;</span>
+    puts(<span class="st">&quot;Hi Mom!&quot;</span>)                 <span class="co"># Send to parent</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+open(<span class="st">&quot;|-&quot;</span>, <span class="st">&quot;r&quot;</span>) <span class="kw">do</span> |child|
+  <span class="kw">if</span> child
+    <span class="co"># This is the parent process</span>
+    files = child.readlines   <span class="co"># Read the output of our child</span>
+    child.close
+  <span class="kw">else</span>
+    <span class="co"># This is the child process</span>
+    exec(<span class="st">&quot;/bin/ls&quot;</span>, <span class="st">&quot;-l&quot;</span>)     <span class="co"># Run another executable</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="trapping-signals">10.4.3 Trapping Signals</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">trap <span class="st">&quot;SIGINT&quot;</span> {
+  puts <span class="st">&quot;Ignoring SIGINT&quot;</span>
+}</code></pre></div>
+<h4 id="terminating-programs">10.4.4 Terminating Programs</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">fail <span class="st">&quot;Unknown option </span><span class="ot">#{</span>switch<span class="ot">}</span><span class="st">&quot;</span></code></pre></div>
+<h4 id="restricted-execution-and-safe-levels">10.5.2 Restricted Execution and Safe Levels</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">$SAFE</span>=<span class="dv">1</span>                <span class="co"># upgrade the safe level</span>
+<span class="dt">$SAFE</span>=<span class="dv">4</span>                <span class="co"># upgrade the safe level even higher</span>
+<span class="dt">$SAFE</span>=<span class="dv">0</span>                <span class="co"># SecurityError!  you can&#39;t do it</span>
+<span class="co">###########################</span>
+<span class="dt">Thread</span>.start {     <span class="co"># Create a &quot;sandbox&quot; thread</span>
+  <span class="dt">$SAFE</span> = <span class="dv">4</span>        <span class="co"># Restrict execution in this thread only</span>
+  ...              <span class="co"># Untrusted code can be run here</span>
+}</code></pre></div>
+<h4 id="safe-level-2">10.5.2.3 Safe level 2</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">Dir</span>.chdir               <span class="dt">File</span>.truncate           <span class="dt">Process</span>.egid=
+<span class="dt">Dir</span>.chroot              <span class="dt">File</span>.umask              <span class="dt">Process</span>.fork
+<span class="dt">Dir</span>.mkdir               <span class="dt">IO</span>.fctrl                <span class="dt">Process</span>.kill
+<span class="dt">Dir</span>.rmdir               <span class="dt">IO</span>.ioctl                <span class="dt">Process</span>.setpgid
+<span class="dt">File</span>.chmod              <span class="dt">Kernel</span>.exit!            <span class="dt">Process</span>.setpriority
+<span class="dt">File</span>.chown              <span class="dt">Kernel</span>.fork             <span class="dt">Process</span>.setsid
+<span class="dt">File</span>.flock              <span class="dt">Kernel</span>.syscall
+<span class="dt">File</span>.lstat              <span class="dt">Kernel</span>.trap
+<span class="co">###########################</span>
+<span class="kw">def</span> safe_eval(str)
+  <span class="dt">Thread</span>.start {            <span class="co"># Start sandbox thread</span>
+    <span class="dt">$SAFE</span> = <span class="dv">4</span>               <span class="co"># Upgrade safe level</span>
+    eval(str)               <span class="co"># Eval in the sandbox</span>
+  }.value                   <span class="co"># Retrieve result</span>
+<span class="kw">end</span></code></pre></div>

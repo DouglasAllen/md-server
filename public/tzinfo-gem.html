@@ -1,0 +1,53 @@
+<h1 id="tzinfo---ruby-timezone-library">TZInfo - Ruby Timezone Library</h1>
+<p><a href="http://badge.fury.io/rb/tzinfo"><img src="https://badge.fury.io/rb/tzinfo.svg" alt="Gem Version" /></a> <a href="https://travis-ci.org/tzinfo/tzinfo"><img src="https://travis-ci.org/tzinfo/tzinfo.svg?branch=master" alt="Build Status" /></a></p>
+<p><a href="http://tzinfo.github.io">TZInfo</a> provides daylight savings aware transformations between times in different timezones.</p>
+<h2 id="data-sources">Data Sources</h2>
+<p>TZInfo requires a source of timezone data. There are two built-in options:</p>
+<ol style="list-style-type: decimal">
+<li>The TZInfo::Data library (the tzinfo-data gem). TZInfo::Data contains a set of Ruby modules that are generated from the <a href="http://www.iana.org/time-zones">IANA Time Zone Database</a>.</li>
+<li>A zoneinfo directory. Most Unix-like systems include a zoneinfo directory containing timezone definitions. These are also generated from the <a href="http://www.iana.org/time-zones">IANA Time Zone Database</a>.</li>
+</ol>
+<p>By default, TZInfo::Data will be used. If TZInfo::Data is not available (i.e. if <code>require 'tzinfo/data'</code> fails), then TZInfo will search for a zoneinfo directory instead (using the search path specified by <code>TZInfo::ZoneinfoDataSource::DEFAULT_SEARCH_PATH</code>).</p>
+<p>If no data source can be found, a <code>TZInfo::DataSourceNotFound</code> exception will be raised when TZInfo is used. Further information is available <a href="http://tzinfo.github.io/datasourcenotfound">in the wiki</a> to help with resolving <code>TZInfo::DataSourceNotFound</code> errors.</p>
+<p>The default data source selection can be overridden using <code>TZInfo::DataSource.set</code>.</p>
+<p>Custom data sources can also be used. See <code>TZInfo::DataSource.set</code> for further details.</p>
+<h2 id="installation">Installation</h2>
+<p>The TZInfo gem can be installed by running:</p>
+<pre><code>gem install tzinfo</code></pre>
+<p>To use the Ruby modules as the data source, TZInfo::Data will also need to be installed:</p>
+<pre><code>gem install tzinfo-data</code></pre>
+<h2 id="example-usage">Example Usage</h2>
+<p>The following code will obtain the America/New_York timezone (as an instance of <code>TZInfo::Timezone</code>) and convert a time in UTC to local New York time:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">require <span class="st">&#39;tzinfo&#39;</span>
+    
+tz = <span class="dt">TZInfo</span>::<span class="dt">Timezone</span>.get(<span class="st">&#39;America/New_York&#39;</span>)
+local = tz.utc_to_local(<span class="dt">Time</span>.utc(<span class="dv">2005</span>,<span class="dv">8</span>,<span class="dv">29</span>,<span class="dv">15</span>,<span class="dv">35</span>,<span class="dv">0</span>))</code></pre></div>
+<p>Note that the local Time returned will have a UTC timezone (<code>local.zone</code> will return <code>&quot;UTC&quot;</code>). This is because the Ruby Time class only supports two timezones: UTC and the current system local timezone.</p>
+<p>To convert from a local time to UTC, the <code>local_to_utc</code> method can be used as follows:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">utc = tz.local_to_utc(local)</code></pre></div>
+<p>Note that the timezone information of the local Time object is ignored (TZInfo will just read the date and time and treat them as if there were in the <code>tz</code> timezone). The following two lines will return the same result regardless of the system's local timezone:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">tz.local_to_utc(<span class="dt">Time</span>.local(<span class="dv">2006</span>,<span class="dv">6</span>,<span class="dv">26</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>))
+tz.local_to_utc(<span class="dt">Time</span>.utc(<span class="dv">2006</span>,<span class="dv">6</span>,<span class="dv">26</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>))</code></pre></div>
+<p>To obtain information about the rules in force at a particular UTC or local time, the <code>TZInfo::Timezone.period_for_utc</code> and <code>TZInfo::Timezone.period_for_local</code> methods can be used. Both of these methods return <code>TZInfo::TimezonePeriod</code> objects. The following gets the identifier for the period (in this case EDT).</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">period = tz.period_for_utc(<span class="dt">Time</span>.utc(<span class="dv">2005</span>,<span class="dv">8</span>,<span class="dv">29</span>,<span class="dv">15</span>,<span class="dv">35</span>,<span class="dv">0</span>))
+id = period.zone_identifier</code></pre></div>
+<p>The current local time in a <code>Timezone</code> can be obtained with the <code>TZInfo::Timezone#now</code> method:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">now = tz.now</code></pre></div>
+<p>All methods in TZInfo that operate on a time can be used with either <code>Time</code> or <code>DateTime</code> instances or with Integer timestamps (i.e. as returned by <code>Time#to_i</code>). The type of the values returned will match the type passed in.</p>
+<p>A list of all the available timezone identifiers can be obtained using the <code>TZInfo::Timezone.all_identifiers</code> method. <code>TZInfo::Timezone.all</code> can be called to get an <code>Array</code> of all the <code>TZInfo::Timezone</code> instances.</p>
+<p>Timezones can also be accessed by country (using an ISO 3166-1 alpha-2 country code). The following code retrieves the <code>TZInfo::Country</code> instance representing the USA (country code 'US') and then gets all the timezone identifiers used in the USA.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">us = <span class="dt">TZInfo</span>::<span class="dt">Country</span>.get(<span class="st">&#39;US&#39;</span>)
+timezones = us.zone_identifiers</code></pre></div>
+<p>The <code>TZInfo::Country#zone_info</code> method provides an additional description and geographic location for each timezone in a country.</p>
+<p>A list of all the available country codes can be obtained using the <code>TZInfo::Country.all_codes</code> method. <code>TZInfo::Country.all</code> can be called to get an <code>Array</code> of all the <code>Country</code> instances.</p>
+<p>For further detail, please refer to the API documentation for the <code>TZInfo::Timezone</code> and <code>TZInfo::Country</code> classes.</p>
+<h2 id="thread-safety">Thread-Safety</h2>
+<p>The <code>TZInfo::Country</code> and <code>TZInfo::Timezone</code> classes are thread-safe. It is safe to use class and instance methods of <code>TZInfo::Country</code> and <code>TZInfo::Timezone</code> in concurrently executing threads. Instances of both classes can be shared across thread boundaries.</p>
+<h2 id="documentation">Documentation</h2>
+<p>API documentation for TZInfo is available on <a href="http://rubydoc.info/gems/tzinfo/frames">RubyDoc.info</a>.</p>
+<h2 id="license">License</h2>
+<p>TZInfo is released under the MIT license, see LICENSE for details.</p>
+<h2 id="source-code">Source Code</h2>
+<p>Source code for TZInfo is available on <a href="https://github.com/tzinfo/tzinfo">GitHub</a>.</p>
+<h2 id="issue-tracker">Issue Tracker</h2>
+<p>Please post any bugs, issues, feature requests or questions to the <a href="https://github.com/tzinfo/tzinfo/issues">GitHub issue tracker</a>.</p>

@@ -1,0 +1,54 @@
+<h3 id="streaming-responses">Streaming Responses</h3>
+<p>Sometimes you want to start sending out data while still generating parts of the response body. In extreme examples, you want to keep sending data until the client closes the connection. You can use the <code>stream</code> helper to avoid creating your own wrapper:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  stream <span class="kw">do</span> |out|
+    out &lt;&lt; <span class="st">&quot;It&#39;s gonna be legen -\n&quot;</span>
+    sleep <span class="fl">0.5</span>
+    out &lt;&lt; <span class="st">&quot; (wait for it) \n&quot;</span>
+    sleep <span class="dv">1</span>
+    out &lt;&lt; <span class="st">&quot;- dary!\n&quot;</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<p>This allows you to implement streaming APIs, <a href="http://dev.w3.org/html5/eventsource/">Server Sent Events</a>, and can be used as the basis for <a href="http://en.wikipedia.org/wiki/WebSocket">WebSockets</a>. It can also be used to increase throughput if some but not all content depends on a slow resource.</p>
+<p>Note that the streaming behavior, especially the number of concurrent requests, highly depends on the web server used to serve the application. Some servers, like WEBRick, might not even support streaming at all. If the server does not support streaming, the body will be sent all at once after the block passed to <code>stream</code> finishes executing. Streaming does not work at all with Shotgun.</p>
+<p>If the optional parameter is set to <code>keep_open</code>, it will not call <code>close</code> on the stream object, allowing you to close it at any later point in the execution flow. This only works on evented servers, like Thin and Rainbows. Other servers will still close the stream:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># long polling</span>
+
+set <span class="st">:server</span>, <span class="st">:thin</span>
+connections = []
+
+get <span class="st">&#39;/subscribe&#39;</span> <span class="kw">do</span>
+  <span class="co"># register a client&#39;s interest in server events</span>
+  stream(<span class="st">:keep_open</span>) <span class="kw">do</span> |out|
+    connections &lt;&lt; out
+    <span class="co"># purge dead connections</span>
+    connections.reject!(&amp;<span class="st">:closed?</span>)
+  <span class="kw">end</span>
+<span class="kw">end</span>
+
+post <span class="st">&#39;/:message&#39;</span> <span class="kw">do</span>
+  connections.each <span class="kw">do</span> |out|
+    <span class="co"># notify client that a new message has arrived</span>
+    out &lt;&lt; params[<span class="st">&#39;message&#39;</span>] &lt;&lt; <span class="st">&quot;\n&quot;</span>
+
+    <span class="co"># indicate client to connect again</span>
+    out.close
+  <span class="kw">end</span>
+
+  <span class="co"># acknowledge</span>
+  <span class="st">&quot;message received&quot;</span>
+<span class="kw">end</span></code></pre></div>
+<h3 id="logging">Logging</h3>
+<p>In the request scope, the <code>logger</code> helper exposes a <code>Logger</code> instance:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  logger.info <span class="st">&quot;loading data&quot;</span>
+  <span class="co"># ...</span>
+<span class="kw">end</span></code></pre></div>
+<p>This logger will automatically take your Rack handler's logging settings into account. If logging is disabled, this method will return a dummy object, so you do not have to worry about it in your routes and filters.</p>
+<p>Note that logging is only enabled for <code>Sinatra::Application</code> by default, so if you inherit from <code>Sinatra::Base</code>, you probably want to enable it yourself:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">MyApp</span> &lt; <span class="dt">Sinatra</span>::<span class="dt">Base</span>
+  configure <span class="st">:production</span>, <span class="st">:development</span> <span class="kw">do</span>
+    enable <span class="st">:logging</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<p>To avoid any logging middleware to be set up, set the <code>logging</code> setting to <code>nil</code>. However, keep in mind that <code>logger</code> will in that case return <code>nil</code>. A common use case is when you want to set your own logger. Sinatra will use whatever it will find in <code>env['rack.logger']</code>.</p>

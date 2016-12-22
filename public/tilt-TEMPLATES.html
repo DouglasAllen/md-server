@@ -1,0 +1,298 @@
+<h1 id="tilt-templates">Tilt Templates</h1>
+<p>(See <a href="https://github.com/rtomayko/tilt/blob/master/docs/TEMPLATES.md" class="uri">https://github.com/rtomayko/tilt/blob/master/docs/TEMPLATES.md</a> for a rendered, HTML-version of this file).</p>
+<p>While all Tilt templates use the same basic interface for template loading and evaluation, each varies in its capabilities and available options. Detailed documentation on each supported template engine is provided below.</p>
+<p>There are also some file extensions that have several implementations (currently ERB and Markdown). These template classes have certain features which are guaranteed to work across all the implementations. If you wish to be compatible with all of these template classes, you should only depend on the cross-implementation features.</p>
+<ul>
+<li><a href="#erb">ERB</a> - Generic ERB implementation (backed by erb.rb or Erubis)</li>
+<li><a href="#erbrb">erb.rb</a> - <code>Tilt::ERBTemplate</code></li>
+<li><a href="#erubis">Erubis</a> - <code>Tilt::ErubisTemplate</code></li>
+<li><a href="#haml">Haml</a> - <code>Tilt::HamlTemplate</code></li>
+<li><a href="#liquid">Liquid</a> - <code>Tilt::LiquidTemplate</code></li>
+<li>Nokogiri - <code>Tilt::NokogiriTemplate</code></li>
+<li>Builder - <code>Tilt::BuilderTemplate</code></li>
+<li>Markaby - <code>Tilt::MarkabyTemplate</code></li>
+<li><a href="#radius">Radius</a> - <code>Tilt::RadiusTemplate</code></li>
+</ul>
+<p>Tilt also includes support for CSS processors like <a href="http://lesscss.org/" title="Less CSS">LessCSS</a> and <a href="http://sass-lang.com/" title="Sass">Sass</a>, <a href="http://jashkenas.github.com/coffee-script/" title="Coffee Script">CoffeeScript</a> and some simple text formats.</p>
+<ul>
+<li>Less - <code>Tilt::LessTemplate</code></li>
+<li>Sass - <code>Tilt::SassTemplate</code></li>
+<li>Scss - <code>Tilt::ScssTemplate</code></li>
+<li>CoffeeScript - <code>Tilt::CoffeeScriptTemplate</code></li>
+<li><a href="#redcloth">Textile</a> - <code>Tilt::RedClothTemplate</code></li>
+<li>Creole - <code>Tilt::CreoleTemplate</code></li>
+<li><a href="#rdoc">RDoc</a> - <code>Tilt::RDocTemplate</code></li>
+</ul>
+<p>Tilt has extensive support for Markdown, backed by one of four different implementations (depending on which are available on your system):</p>
+<ul>
+<li><a href="#markdown">Markdown</a> - Generic Markdown implementation</li>
+<li><a href="#rdiscount">RDiscount</a> - <code>Tilt::RDiscountTemplate</code></li>
+<li>Redcarpet - <code>Tilt::RedcarpetTemplate</code></li>
+<li>BlueCloth - <code>Tilt::BlueClothTemplate</code></li>
+<li>Kramdown - <code>Tilt::KramdownTemplate</code></li>
+<li>Maruku - <code>Tilt::MarukuTemplate</code></li>
+</ul>
+<p><a name='erb'></a> ERB (<code>erb</code>, <code>rhtml</code>) --------------------</p>
+<p>ERB is a simple but powerful template languge for Ruby. In Tilt it's backed by <a href="#erubis">Erubis</a> (if installed on your system) or by <a href="#erbrb">erb.rb</a> (which is included in Ruby's standard library). This documentation applies to both implementations.</p>
+<h3 id="example">Example</h3>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">Hello</span> &lt;%= world <span class="ot">%&gt;</span><span class="st">!</span></code></pre></div>
+<h3 id="usage">Usage</h3>
+<p>ERB templates support custom evaluation scopes and locals:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">&gt;&gt; require <span class="st">&#39;erb&#39;</span>
+&gt;&gt; template = <span class="dt">Tilt</span>.new(<span class="st">&#39;hello.html.erb&#39;</span>)
+&gt;&gt; template.render(<span class="dv">self</span>, <span class="st">:world</span> =&gt; <span class="st">&#39;World!&#39;</span>)
+=&gt; <span class="st">&quot;Hello World!&quot;</span></code></pre></div>
+<p>Or, use <code>Tilt['erb']</code> directly to process strings:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">template = <span class="dt">Tilt</span>[<span class="st">&#39;erb&#39;</span>].new { <span class="st">&quot;Hello &lt;%= world %&gt;!&quot;</span> }
+template.render(<span class="dv">self</span>, <span class="st">:world</span> =&gt; <span class="st">&#39;World!&#39;</span>)</code></pre></div>
+<h3 id="options">Options</h3>
+<h4 id="trim-trim"><code>:trim =&gt; trim</code></h4>
+<p>Omits newlines and spaces around certain lines (usually those that starts with <code>&lt;%</code> and ends with <code>%&gt;</code>). There isn't a specification for how trimming in ERB should work, so if you need more control over the whitespace, you should use <a href="#erbrb">erb.rb</a> or <a href="#erubis">Erubis</a> directly.</p>
+<h4 id="outvar-_erbout"><code>:outvar =&gt; '_erbout'</code></h4>
+<p>The name of the variable used to accumulate template output. This can be any valid Ruby expression but must be assignable. By default a local variable named <code>_erbout</code> is used.</p>
+<p><a name='erbrb'></a> erb.rb (<code>erb</code>, <code>rhtml</code>) -----------------------</p>
+<p><a href="#erb">ERB</a> implementation available in Ruby's standard library.</p>
+<p>All the documentation of <a href="#erb">ERB</a> applies in addition to the following:</p>
+<h3 id="usage-1">Usage</h3>
+<p>The <code>Tilt::ERBTemplate</code> class is registered for all files ending in <code>.erb</code> or <code>.rhtml</code> by default, but with a <em>lower</em> priority than ErubisTemplate. If you specifically want to use ERB, it's recommended to use <code>#prefer</code>:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">Tilt</span>.prefer <span class="dt">Tilt</span>::<span class="dt">ERBTemplate</span></code></pre></div>
+<p><strong>NOTE:</strong> It's suggested that your program <code>require 'erb'</code> at load time when using this template engine within a threaded environment.</p>
+<h3 id="options-1">Options</h3>
+<h4 id="trim-true"><code>:trim =&gt; true</code></h4>
+<p>The ERB trim mode flags. This is a string consisting of any combination of the following characters:</p>
+<ul>
+<li><code>'&gt;'</code> omits newlines for lines ending in <code>&gt;</code></li>
+<li><code>'&lt;&gt;'</code> omits newlines for lines starting with <code>&lt;%</code> and ending in <code>%&gt;</code></li>
+<li><code>'%'</code> enables processing of lines beginning with <code>%</code></li>
+<li><code>true</code> is an alias of <code>&lt;&gt;</code></li>
+</ul>
+<h4 id="safe-nil"><code>:safe =&gt; nil</code></h4>
+<p>The <code>$SAFE</code> level; when set, ERB code will be run in a separate thread with <code>$SAFE</code> set to the provided level.</p>
+<h4 id="outvar-_erbout-1"><code>:outvar =&gt; '_erbout'</code></h4>
+<p>The name of the variable used to accumulate template output. This can be any valid Ruby expression but must be assignable. By default a local variable named <code>_erbout</code> is used.</p>
+<h3 id="see-also">See also</h3>
+<ul>
+<li><a href="http://www.ruby-doc.org/stdlib/libdoc/erb/rdoc/classes/ERB.html">ERB documentation</a></li>
+</ul>
+<p><a name='erubis'></a> Erubis (<code>erb</code>, <code>rhtml</code>, <code>erubis</code>) ---------------------------------</p>
+<p><a href="http://www.kuwata-lab.com/erubis/" title="Erubis">Erubis</a> is a fast, secure, and very extensible implementation of <a href="#erb">ERB</a>.</p>
+<p>All the documentation of <a href="#erb">ERB</a> applies in addition to the following:</p>
+<h3 id="usage-2">Usage</h3>
+<p>The <code>Tilt::ErubisTemplate</code> class is registered for all files ending in <code>.erb</code> or <code>.rhtml</code> by default, but with a <em>higher</em> priority than <code>ERBTemplate</code>. If you specifically want to use Erubis, it's recommended to use <code>#prefer</code>:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">Tilt</span>.prefer <span class="dt">Tilt</span>::<span class="dt">ErubisTemplate</span></code></pre></div>
+<p><strong>NOTE:</strong> It's suggested that your program <code>require 'erubis'</code> at load time when using this template engine within a threaded environment.</p>
+<h3 id="options-2">Options</h3>
+<h4 id="engine_class-erubiseruby"><code>:engine_class =&gt; Erubis::Eruby</code></h4>
+<p>Allows you to specify a custom engine class to use instead of the default which is <code>Erubis::Eruby</code>.</p>
+<h4 id="escape_html-false"><code>:escape_html =&gt; false</code></h4>
+<p>When <code>true</code>, <code>Erubis::EscapedEruby</code> will be used as the engine class instead of the default. All content within <code>&lt;%= %&gt;</code> blocks will be automatically html escaped.</p>
+<h4 id="outvar-_erbout-2"><code>:outvar =&gt; '_erbout'</code></h4>
+<p>The name of the variable used to accumulate template output. This can be any valid Ruby expression but must be assignable. By default a local variable named <code>_erbout</code> is used.</p>
+<h4 id="pattern"><code>:pattern =&gt; '&lt;% %&gt;'</code></h4>
+<p>Set pattern for embedded Ruby code.</p>
+<h4 id="trim-true-1"><code>:trim =&gt; true</code></h4>
+<p>Delete spaces around <code>&lt;% %&gt;</code>. (But, spaces around <code>&lt;%= %&gt;</code> are preserved.)</p>
+<h3 id="see-also-1">See also</h3>
+<ul>
+<li><a href="http://www.kuwata-lab.com/erubis/" title="Erubis">Erubis Home</a></li>
+<li><a href="http://www.kuwata-lab.com/erubis/users-guide.html">Erubis User's Guide</a></li>
+</ul>
+<p><a name='haml'></a> Haml (<code>haml</code>) -------------</p>
+<p><a href="http://haml.info/" title="Haml">Haml</a> is a markup language that’s used to cleanly and simply describe the HTML of any web document without the use of inline code. Haml functions as a replacement for inline page templating systems such as PHP, ASP, and ERB, the templating language used in most Ruby on Rails applications. However, Haml avoids the need for explicitly coding HTML into the template, because it itself is a description of the HTML, with some code to generate dynamic content. (<a href="http://haml.info/about.html">more</a>)</p>
+<h3 id="example-1">Example</h3>
+<pre><code>%html
+  %head
+    %title= @title
+  %body
+    %h1
+      Hello
+      = world + &#39;!&#39;</code></pre>
+<h3 id="usage-3">Usage</h3>
+<p>The <code>Tilt::HamlTemplate</code> class is registered for all files ending in <code>.haml</code> by default. Haml templates support custom evaluation scopes and locals:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">&gt;&gt; require <span class="st">&#39;haml&#39;</span>
+&gt;&gt; template = <span class="dt">Tilt</span>.new(<span class="st">&#39;hello.haml&#39;</span>)
+=&gt; <span class="co">#&lt;Tilt::HamlTemplate @file=&#39;hello.haml&#39;&gt;</span>
+&gt;&gt; <span class="ot">@title</span> = <span class="st">&quot;Hello Haml!&quot;</span>
+&gt;&gt; template.render(<span class="dv">self</span>, <span class="st">:world</span> =&gt; <span class="st">&#39;Haml!&#39;</span>)
+=&gt; <span class="st">&quot;</span>
+<span class="st">&lt;html&gt;</span>
+<span class="st">  &lt;head&gt;</span>
+<span class="st">    &lt;title&gt;Hello Haml!&lt;/title&gt;</span>
+<span class="st">  &lt;/head&gt;</span>
+<span class="st">  &lt;body&gt;</span>
+<span class="st">    &lt;h1&gt;Hello Haml!&lt;/h1&gt;</span>
+<span class="st">  &lt;/body&gt;</span>
+<span class="st">&lt;/html&gt;&quot;</span></code></pre></div>
+<p>Or, use the <code>Tilt::HamlTemplate</code> class directly to process strings:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">&gt;&gt; require <span class="st">&#39;haml&#39;</span>
+&gt;&gt; template = <span class="dt">Tilt</span>::<span class="dt">HamlTemplate</span>.new { <span class="st">&quot;%h1= &#39;Hello Haml!&#39;&quot;</span> }
+=&gt; <span class="co">#&lt;Tilt::HamlTemplate @file=nil ...&gt;</span>
+&gt;&gt; template.render
+=&gt; <span class="st">&quot;&lt;h1&gt;Hello Haml!&lt;/h1&gt;&quot;</span></code></pre></div>
+<p><strong>NOTE:</strong> It's suggested that your program <code>require 'haml'</code> at load time when using this template engine within a threaded environment.</p>
+<h3 id="options-3">Options</h3>
+<p>Please see the <a href="http://haml.info/docs/yardoc/file.HAML_REFERENCE.html#options">Haml Reference</a> for all available options.</p>
+<h3 id="see-also-2">See also</h3>
+<ul>
+<li><a href="http://haml.info/docs.html">#haml.docs</a></li>
+<li><a href="http://haml.info/tutorial.html">Haml Tutorial</a></li>
+<li><a href="http://haml.info/docs/yardoc/file.HAML_REFERENCE.html">Haml Reference</a></li>
+</ul>
+<p><a name='liquid'></a> Liquid (<code>liquid</code>) -----------------</p>
+<p><a href="http://www.liquidmarkup.org/" title="Liquid">Liquid</a> is for rendering safe templates which cannot affect the security of the server they are rendered on.</p>
+<h3 id="example-2">Example</h3>
+<pre><code>&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;{{ title }}&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;Hello {{ world }}!&lt;/h1&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<h3 id="usage-4">Usage</h3>
+<p><code>Tilt::LiquidTemplate</code> is registered for all files ending in <code>.liquid</code> by default. Liquid templates support locals and objects that respond to <code>#to_h</code> as scopes:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">&gt;&gt; require <span class="st">&#39;liquid&#39;</span>
+&gt;&gt; require <span class="st">&#39;tilt&#39;</span>
+&gt;&gt; template = <span class="dt">Tilt</span>.new(<span class="st">&#39;hello.liquid&#39;</span>)
+=&gt; <span class="co">#&lt;Tilt::LiquidTemplate @file=&#39;hello.liquid&#39;&gt;</span>
+&gt;&gt; scope = { <span class="st">:title</span> =&gt; <span class="st">&quot;Hello Liquid Templates&quot;</span> }
+&gt;&gt; template.render(<span class="dv">nil</span>, <span class="st">:world</span> =&gt; <span class="st">&quot;Liquid&quot;</span>)
+=&gt; <span class="st">&quot;</span>
+<span class="st">&lt;html&gt;</span>
+<span class="st">  &lt;head&gt;</span>
+<span class="st">    &lt;title&gt;Hello Liquid Templates&lt;/title&gt;</span>
+<span class="st">  &lt;/head&gt;</span>
+<span class="st">  &lt;body&gt;</span>
+<span class="st">    &lt;h1&gt;Hello Liquid!&lt;/h1&gt;</span>
+<span class="st">  &lt;/body&gt;</span>
+<span class="st">&lt;/html&gt;&quot;</span></code></pre></div>
+<p>Or, use <code>Tilt::LiquidTemplate</code> directly to process strings:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">&gt;&gt; require <span class="st">&#39;liquid&#39;</span>
+&gt;&gt; template = <span class="dt">Tilt</span>::<span class="dt">LiquidTemplate</span>.new { <span class="st">&quot;&lt;h1&gt;Hello Liquid!&lt;/h1&gt;&quot;</span> }
+=&gt; <span class="co">#&lt;Tilt::LiquidTemplate @file=nil ...&gt;</span>
+&gt;&gt; template.render
+=&gt; <span class="st">&quot;&lt;h1&gt;Hello Liquid!&lt;/h1&gt;&quot;</span></code></pre></div>
+<p><strong>NOTE:</strong> It's suggested that your program <code>require 'liquid'</code> at load time when using this template engine within a threaded environment.</p>
+<h3 id="see-also-3">See also</h3>
+<ul>
+<li><a href="https://wiki.github.com/Shopify/liquid/liquid-for-programmers">Liquid for Programmers</a></li>
+<li><a href="http://liquid.rubyforge.org/">Liquid Docs</a></li>
+<li>GitHub: <a href="https://github.com/Shopify/liquid/">Shopify/liquid</a></li>
+</ul>
+<p><a name='radius'></a> Radius (<code>radius</code>) -----------------</p>
+<p><a href="http://radius.rubyforge.org/" title="Radius">Radius</a> is the template language used by <a href="http://radiantcms.org/" title="Radiant CMS">Radiant CMS</a>. It is a tag language designed to be valid XML/HTML.</p>
+<h3 id="example-3">Example</h3>
+<pre><code>&lt;html&gt;
+&lt;body&gt;
+  &lt;h1&gt;&lt;r:title /&gt;&lt;/h1&gt;
+  &lt;ul class=&quot;&lt;r:type /&gt;&quot;&gt;
+  &lt;r:repeat times=&quot;3&quot;&gt;
+    &lt;li&gt;&lt;r:hello /&gt;!&lt;/li&gt;
+  &lt;/r:repeat&gt;
+  &lt;/ul&gt;
+  &lt;r:yield /&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<h3 id="usage-5">Usage</h3>
+<p>To render a template such as the one above.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">scope = <span class="dt">OpenStruct</span>.new
+scope.title = <span class="st">&quot;Radius Example&quot;</span>
+scope.hello = <span class="st">&quot;Hello, World!&quot;</span>
+
+require <span class="st">&#39;radius&#39;</span>
+template = <span class="dt">Tilt</span>::<span class="dt">RadiusTemplate</span>.new(<span class="st">&#39;example.radius&#39;</span>, <span class="st">:tag_prefix=</span>&gt;<span class="st">&#39;r&#39;</span>)
+template.render(scope, <span class="st">:type=</span>&gt;<span class="st">&#39;hlist&#39;</span>){ <span class="st">&quot;Jackpot!&quot;</span> }
+
+<span class="co"># The result will be:</span>
+
+    &lt;html&gt;
+    &lt;body&gt;
+      &lt;h1&gt;<span class="dt">Radius</span> <span class="dt">Example</span>&lt;<span class="ot">/h1&gt;</span>
+<span class="ot">      &lt;ul class=&quot;hlist&quot;&gt;</span>
+<span class="ot">        &lt;li&gt;Hello, World!&lt;/</span>li&gt;
+        &lt;li&gt;<span class="dt">Hello</span>, <span class="dt">World</span>!&lt;<span class="ot">/li&gt;</span>
+<span class="ot">        &lt;li&gt;Hello, World!&lt;/</span>li&gt;
+      &lt;<span class="ot">/ul&gt;</span>
+<span class="ot">      Jackpot!</span>
+<span class="ot">    &lt;/</span>body&gt;
+    &lt;<span class="ot">/html&gt;</span></code></pre></div>
+<h3 id="see-also-4">See also</h3>
+<ul>
+<li><a href="http://radius.rubyforge.org/" title="Radius">Radius</a></li>
+<li><a href="http://radiantcms.org/" title="Radiant CMS">Radiant CMS</a></li>
+</ul>
+<p><a name='textile'></a> Textile (<code>textile</code>) -------------------</p>
+<p>Textile is a lightweight markup language originally developed by Dean Allen and billed as a &quot;humane Web text generator&quot;. Textile converts its marked-up text input to valid, well-formed XHTML and also inserts character entity references for apostrophes, opening and closing single and double quotation marks, ellipses and em dashes.</p>
+<p>Textile formatted texts are converted to HTML with the <a href="http://redcloth.org/" title="RedCloth">RedCloth</a> engine, which is a Ruby extension written in C.</p>
+<h3 id="example-4">Example</h3>
+<pre><code>h1. Hello Textile Templates
+
+Hello World. This is a paragraph.</code></pre>
+<h3 id="usage-6">Usage</h3>
+<p><strong>NOTE:</strong> It's suggested that your program <code>require 'redcloth'</code> at load time when using this template engine in a threaded environment.</p>
+<h3 id="see-also-5">See Also</h3>
+<ul>
+<li><a href="http://redcloth.org/" title="RedCloth">RedCloth</a></li>
+</ul>
+<p><a name='rdoc'></a> RDoc (<code>rdoc</code>) -------------</p>
+<p><a href="http://rdoc.rubyforge.org/" title="RDoc">RDoc</a> is the simple text markup system that comes with Ruby's standard library.</p>
+<h3 id="example-5">Example</h3>
+<pre><code>= Hello RDoc Templates
+
+Hello World. This is a paragraph.</code></pre>
+<h3 id="usage-7">Usage</h3>
+<p><strong>NOTE:</strong> It's suggested that your program <code>require 'rdoc'</code>, <code>require 'rdoc/markup'</code>, and <code>require 'rdoc/markup/to_html'</code> at load time when using this template engine in a threaded environment.</p>
+<h3 id="see-also-6">See also</h3>
+<ul>
+<li><a href="http://rdoc.rubyforge.org/" title="RDoc">RDoc</a></li>
+</ul>
+<p><a name='markdown'></a> Markdown (<code>markdown</code>, <code>md</code>, <code>mkd</code>) ----------------------------------</p>
+<p><a href="http://en.wikipedia.org/wiki/Markdown" title="Markdown">Markdown</a> is a lightweight markup language, created by John Gruber and Aaron Swartz. For any markup that is not covered by Markdown’s syntax, HTML is used. Marking up plain text with Markdown markup is easy and Markdown formatted texts are readable.</p>
+<p>Markdown formatted texts are converted to HTML with one of these libraries:</p>
+<ul>
+<li><a href="#rdiscount">RDiscount</a> - <code>Tilt::RDiscountTemplate</code></li>
+<li>Redcarpet - <code>Tilt::RedcarpetTemplate</code></li>
+<li>BlueCloth - <code>Tilt::BlueClothTemplate</code></li>
+<li>Kramdown - <code>Tilt::KramdownTemplate</code></li>
+<li>Maruku - <code>Tilt::MarukuTemplate</code></li>
+</ul>
+<p>Tilt will use fallback mode (as documented in the README) for determining which library to use. RDiscount has highest priority - Maruku has lowest.</p>
+<h3 id="example-6">Example</h3>
+<pre><code>Hello Markdown Templates
+========================
+
+Hello World. This is a paragraph.</code></pre>
+<h3 id="usage-8">Usage</h3>
+<p>To wrap a Markdown formatted document with a layout:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">layout = <span class="dt">Tilt</span>[<span class="st">&#39;erb&#39;</span>].new <span class="kw">do</span>
+  <span class="st">&quot;&lt;!doctype html&gt;&lt;title&gt;&lt;/title&gt;&lt;%= yield %&gt;&quot;</span>
+<span class="kw">end</span>
+data = <span class="dt">Tilt</span>[<span class="st">&#39;md&#39;</span>].new { <span class="st">&quot;# hello tilt&quot;</span> }
+layout.render { data.render }
+<span class="co"># =&gt; &quot;&lt;!doctype html&gt;&lt;title&gt;&lt;/title&gt;&lt;h1&gt;hello tilt&lt;/h1&gt;\n&quot;</span></code></pre></div>
+<h3 id="options-4">Options</h3>
+<p>Every implementation of Markdown <em>should</em> support these options, but there are some known problems with the Kramdown and Maruku engines.</p>
+<h4 id="smartypants-truefalse"><code>:smartypants =&gt; true|false</code></h4>
+<p>Set <code>true</code> to enable <a href="http://daringfireball.net/projects/smartypants/" title="Smarty Pants">Smarty Pants</a> style punctuation replacement.</p>
+<p>In Kramdown this option only applies to smart quotes. It will apply a subset of Smarty Pants (e.g. <code>...</code> to <code>…</code>) regardless of any option.</p>
+<p>Maruku ignores this option and always applies smart quotes (and nothing else).</p>
+<h4 id="escape_html-truefalse"><code>:escape_html =&gt; true|false</code></h4>
+<p>Set <code>true</code> disallow raw HTML in Markdown contents. HTML is converted to literal text by escaping <code>&lt;</code> characters.</p>
+<p>Kramdown and Maruku doesn't support this option.</p>
+<h3 id="see-also-7">See also</h3>
+<ul>
+<li><a href="http://daringfireball.net/projects/markdown/syntax/">Markdown Syntax Documentation</a></li>
+</ul>
+<p><a name='rdiscount'></a> RDiscount (<code>markdown</code>, <code>md</code>, <code>mkd</code>) -----------------------------------</p>
+<p><a href="http://www.pell.portland.or.us/~orc/Code/discount/" title="Discount">Discount</a> is an implementation of the Markdown markup language in C. <a href="http://github.com/rtomayko/rdiscount/" title="RDiscount">RDiscount</a> is a Ruby wrapper around Discount.</p>
+<p>All the documentation of <a href="#markdown">Markdown</a> applies in addition to the following:</p>
+<h3 id="usage-9">Usage</h3>
+<p>The <code>Tilt::RDiscountTemplate</code> class is registered for all files ending in <code>.markdown</code>, <code>.md</code> or <code>.mkd</code> by default with the highest priority. If you specifically want to use RDiscount, it's recommended to use <code>#prefer</code>:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">Tilt</span>.prefer <span class="dt">Tilt</span>::<span class="dt">RDiscountTemplate</span></code></pre></div>
+<p><strong>NOTE:</strong> It's suggested that your program <code>require 'erubis'</code> at load time when using this template engine within a threaded environment.</p>
+<h3 id="see-also-8">See also</h3>
+<ul>
+<li><a href="http://www.pell.portland.or.us/~orc/Code/discount/" title="Discount">Discount</a></li>
+<li><a href="http://github.com/rtomayko/rdiscount/" title="RDiscount">RDiscount</a></li>
+<li>GitHub: <a href="http://github.com/rtomayko/rdiscount/" title="RDiscount">rtomayko/rdiscount</a></li>
+</ul>

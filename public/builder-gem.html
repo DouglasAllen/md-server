@@ -1,0 +1,175 @@
+<h1 id="project-builder">Project: Builder</h1>
+<h2 id="goal">Goal</h2>
+<p>Provide a simple way to create XML markup and data structures.</p>
+<h2 id="classes">Classes</h2>
+<p>Builder::XmlMarkup:: Generate XML markup notation Builder::XmlEvents:: Generate XML events (i.e. SAX-like)</p>
+<p>** Notes: **</p>
+<ul>
+<li>An <tt>Builder::XmlTree</tt> class to generate XML tree (i.e. DOM-like) structures is also planned, but not yet implemented. Also, the events builder is currently lagging the markup builder in features.</li>
+</ul>
+<h2 id="usage">Usage</h2>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">  require <span class="st">&#39;rubygems&#39;</span>
+  require_gem <span class="st">&#39;builder&#39;</span>, <span class="st">&#39;~&gt; 2.0&#39;</span>
+
+  builder = <span class="dt">Builder</span>::<span class="dt">XmlMarkup</span>.new
+  xml = builder.person { |b| b.name(<span class="st">&quot;Jim&quot;</span>); b.phone(<span class="st">&quot;555-1234&quot;</span>) }
+  xml <span class="co">#=&gt; &lt;person&gt;&lt;name&gt;Jim&lt;/name&gt;&lt;phone&gt;555-1234&lt;/phone&gt;&lt;/person&gt;</span></code></pre></div>
+<p>or</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">  require <span class="st">&#39;rubygems&#39;</span>
+  require_gem <span class="st">&#39;builder&#39;</span>
+
+  builder = <span class="dt">Builder</span>::<span class="dt">XmlMarkup</span>.new(<span class="st">:target=</span>&gt;<span class="dt">STDOUT</span>, <span class="st">:indent=</span>&gt;<span class="dv">2</span>)
+  builder.person { |b| b.name(<span class="st">&quot;Jim&quot;</span>); b.phone(<span class="st">&quot;555-1234&quot;</span>) }
+  <span class="co">#</span>
+  <span class="co"># Prints:</span>
+  <span class="co"># &lt;person&gt;</span>
+  <span class="co">#   &lt;name&gt;Jim&lt;/name&gt;</span>
+  <span class="co">#   &lt;phone&gt;555-1234&lt;/phone&gt;</span>
+  <span class="co"># &lt;/person&gt;</span></code></pre></div>
+<h2 id="compatibility">Compatibility</h2>
+<h3 id="version-2.0.0-compatibility-changes">Version 2.0.0 Compatibility Changes</h3>
+<p>Version 2.0.0 introduces automatically escaped attribute values for the first time. Versions prior to 2.0.0 did not insert escape characters into attribute values in the XML markup. This allowed attribute values to explicitly reference entities, which was occasionally used by a small number of developers. Since strings could always be explicitly escaped by hand, this was not a major restriction in functionality.</p>
+<p>However, it did surprise most users of builder. Since the body text is normally escaped, everybody expected the attribute values to be escaped as well. Escaped attribute values were the number one support request on the 1.x Builder series.</p>
+<p>Starting with Builder version 2.0.0, all attribute values expressed as strings will be processed and the appropriate characters will be escaped (e.g. &quot;&amp;&quot; will be translated to &quot;&amp;&quot;). Attribute values that are expressed as Symbol values will not be processed for escaped characters and will be unchanged in output. (Yes, this probably counts as Symbol abuse, but the convention is convenient and flexible).</p>
+<p>Example:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">xml = <span class="dt">Builder</span>::<span class="dt">XmlMarkup</span>.new
+xml.sample(<span class="st">:escaped=</span>&gt;<span class="st">&quot;This&amp;That&quot;</span>, <span class="st">:unescaped=</span>&gt;:<span class="st">&quot;Here&amp;amp;There&quot;</span>)
+xml.target!  =&gt;
+  &lt;sample escaped=<span class="st">&quot;This&amp;amp;That&quot;</span> unescaped=<span class="st">&quot;Here&amp;amp;There&quot;</span>/&gt;</code></pre></div>
+<h3 id="version-1.0.0-compatibility-changes">Version 1.0.0 Compatibility Changes</h3>
+<p>Version 1.0.0 introduces some changes that are not backwards compatible with earlier releases of builder. The main areas of incompatibility are:</p>
+<ul>
+<li><p>Keyword based arguments to +new+ (rather than positional based). It was found that a developer would often like to specify indentation without providing an explicit target, or specify a target without indentation. Keyword based arguments handle this situation nicely.</p></li>
+<li><p>Builder must now be an explicit target for markup tags. Instead of writing</p></li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">    xml_markup = <span class="dt">Builder</span>::<span class="dt">XmlMarkup</span>.new
+    xml_markup.div { strong(<span class="st">&quot;text&quot;</span>) }</code></pre></div>
+<p>you need to write</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">xml_markup = <span class="dt">Builder</span>::<span class="dt">XmlMarkup</span>.new
+xml_markup.div { xml_markup.strong(<span class="st">&quot;text&quot;</span>) }</code></pre></div>
+<ul>
+<li>The builder object is passed as a parameter to all nested markup blocks. This allows you to create a short alias for the builder object that can be used within the block. For example, the previous example can be written as:</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">xml_markup = <span class="dt">Builder</span>::<span class="dt">XmlMarkup</span>.new
+xml_markup.div { |xml| xml.strong(<span class="st">&quot;text&quot;</span>) }</code></pre></div>
+<ul>
+<li>If you have both a pre-1.0 and a post-1.0 gem of builder installed, you can choose which version to use through the RubyGems +require_gem+ facility.</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">require_gem <span class="st">&#39;builder&#39;</span>, <span class="st">&quot;~&gt; 0.0&quot;</span>   <span class="co"># Gets the old version</span>
+require_gem <span class="st">&#39;builder&#39;</span>, <span class="st">&quot;~&gt; 1.0&quot;</span>   <span class="co"># Gets the new version</span></code></pre></div>
+<h2 id="features">Features</h2>
+<ul>
+<li>XML Comments are supported ...</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">xml_markup.comment! <span class="st">&quot;This is a comment&quot;</span>
+<span class="co"># =&gt;  &lt;!-- This is a comment --&gt;</span></code></pre></div>
+<ul>
+<li>XML processing instructions are supported ...</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">xml_markup.instruct! <span class="st">:xml</span>, <span class="st">:version=</span>&gt;<span class="st">&quot;1.0&quot;</span>, <span class="st">:encoding=</span>&gt;<span class="st">&quot;UTF-8&quot;</span>
+<span class="co"># =&gt;  &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span></code></pre></div>
+<p>If the processing instruction is omitted, it defaults to &quot;xml&quot;. When the processing instruction is &quot;xml&quot;, the defaults attributes are:</p>
+<p><b>version</b>: 1.0 <b>encoding</b>: &quot;UTF-8&quot;</p>
+<p>(NOTE: if the encoding is set to &quot;UTF-8&quot; and $KCODE is set to &quot;UTF8&quot;, then Builder will emit UTF-8 encoded strings rather than encoding non-ASCII characters as entities.)</p>
+<ul>
+<li>XML entity declarations are now supported to a small degree.</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">xml_markup.declare! <span class="st">:DOCTYPE</span>, <span class="st">:chapter</span>, <span class="st">:SYSTEM</span>, <span class="st">&quot;../dtds/chapter.dtd&quot;</span>
+<span class="co"># =&gt;  &lt;!DOCTYPE chapter SYSTEM &quot;../dtds/chapter.dtd&quot;&gt;</span></code></pre></div>
+<p>The parameters to a declare! method must be either symbols or strings. Symbols are inserted without quotes, and strings are inserted with double quotes. Attribute-like arguments in hashes are not allowed.</p>
+<p>If you need to have an argument to declare! be inserted without quotes, but the argument does not conform to the typical Ruby syntax for symbols, then use the :&quot;string&quot; form to specify a symbol.</p>
+<p>For example:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">xml_markup.declare! <span class="st">:ELEMENT</span>, <span class="st">:chapter</span>, :<span class="st">&quot;(title,para+)&quot;</span>
+<span class="co"># =&gt;  &lt;!ELEMENT chapter (title,para+)&gt;</span></code></pre></div>
+<p>Nested entity declarations are allowed. For example:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="ot">@xml_markup</span>.declare! <span class="st">:DOCTYPE</span>, <span class="st">:chapter</span> <span class="kw">do</span> |x|
+  x.declare! <span class="st">:ELEMENT</span>, <span class="st">:chapter</span>, :<span class="st">&quot;(title,para+)&quot;</span>
+  x.declare! <span class="st">:ELEMENT</span>, <span class="st">:title</span>, :<span class="st">&quot;(#PCDATA)&quot;</span>
+  x.declare! <span class="st">:ELEMENT</span>, <span class="st">:para</span>, :<span class="st">&quot;(#PCDATA)&quot;</span>
+<span class="kw">end</span>
+
+<span class="co"># =&gt;  &lt;!DOCTYPE chapter [</span>
+<span class="co"># =&gt;  &lt;!ELEMENT chapter (title,para+)&gt;</span>
+<span class="co"># =&gt;  &lt;!ELEMENT title (#PCDATA)&gt;</span>
+<span class="co"># =&gt;  &lt;!ELEMENT para (#PCDATA)&gt;</span>
+<span class="co"># =&gt;  ]&gt;</span></code></pre></div>
+<ul>
+<li>Some support for XML namespaces is now available. If the first argument to a tag call is a symbol, it will be joined to the tag to produce a namespace:tag combination. It is easier to show this than describe it.</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">xml.<span class="dt">SOAP</span> <span class="st">:Envelope</span> <span class="kw">do</span> ... <span class="kw">end</span></code></pre></div>
+<p>Just put a space before the colon in a namespace to produce the right form for builder (e.g. &quot;<tt>SOAP:Envelope</tt>&quot; =&gt; &quot;<tt>xml.SOAP :Envelope</tt>&quot;)</p>
+<ul>
+<li>String attribute values are <em>now</em> escaped by default by Builder (<b>NOTE:</b> this is <em>new</em> behavior as of version 2.0).</li>
+</ul>
+<p>However, occasionally you need to use entities in attribute values. Using a symbol (rather than a string) for an attribute value will cause Builder to not run its quoting/escaping algorithm on that particular value.</p>
+<p>(<b>Note:</b> The +escape_attrs+ option for builder is now obsolete).</p>
+<p>Example:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">xml = <span class="dt">Builder</span>::<span class="dt">XmlMarkup</span>.new
+xml.sample(<span class="st">:escaped=</span>&gt;<span class="st">&quot;This&amp;That&quot;</span>, <span class="st">:unescaped=</span>&gt;:<span class="st">&quot;Here&amp;amp;There&quot;</span>)
+xml.target!  =&gt;
+  &lt;sample escaped=<span class="st">&quot;This&amp;amp;That&quot;</span> unescaped=<span class="st">&quot;Here&amp;amp;There&quot;</span>/&gt;</code></pre></div>
+<ul>
+<li>UTF-8 Support</li>
+</ul>
+<p>Builder correctly translates UTF-8 characters into valid XML. (New in version 2.0.0). Thanks to Sam Ruby for the translation code.</p>
+<p>You can get UTF-8 encoded output by making sure that the XML encoding is set to &quot;UTF-8&quot; and that the $KCODE variable is set to &quot;UTF8&quot;.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">$KCODE</span> = <span class="st">&#39;UTF8&#39;</span>
+xml = <span class="dt">Builder</span>::<span class="dt">Markup</span>.new
+xml.instruct!(<span class="st">:xml</span>, <span class="st">:encoding</span> =&gt; <span class="st">&quot;UTF-8&quot;</span>)
+xml.sample(<span class="st">&quot;Iñtërnâtiônàl&quot;</span>)
+xml.target!  =&gt;
+  <span class="st">&quot;&lt;sample&gt;Iñtërnâtiônàl&lt;/sample&gt;&quot;</span></code></pre></div>
+<h2 id="links">Links</h2>
+<table style="width:19%;">
+<colgroup>
+<col width="9%" />
+<col width="9%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Description</th>
+<th align="center">Link</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">Documents</td>
+<td align="center">http://builder.rubyforge.org/</td>
+</tr>
+<tr class="even">
+<td align="center">Github Clone</td>
+<td align="center">git://github.com/jimweirich/builder.git</td>
+</tr>
+<tr class="odd">
+<td align="center">Issue / Bug Reports</td>
+<td align="center">https://github.com/jimweirich/builder/issues?state=open</td>
+</tr>
+</tbody>
+</table>
+<h2 id="contact">Contact</h2>
+<table>
+<thead>
+<tr class="header">
+<th align="center">Description</th>
+<th align="center">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">Author</td>
+<td align="center">Jim Weirich</td>
+</tr>
+<tr class="even">
+<td align="center">Email</td>
+<td align="center">jim.weirich@gmail.com</td>
+</tr>
+<tr class="odd">
+<td align="center">Home Page</td>
+<td align="center">http://onestepback.org</td>
+</tr>
+<tr class="even">
+<td align="center">License</td>
+<td align="center">MIT Licence (http://www.opensource.org/licenses/mit-license.html)</td>
+</tr>
+</tbody>
+</table>

@@ -1,0 +1,106 @@
+<h2 id="routes">Routes</h2>
+<p>In Sinatra, a route is an HTTP method paired with a URL-matching pattern. Each route is associated with a block:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  .. show something ..
+<span class="kw">end</span>
+
+post <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  .. create something ..
+<span class="kw">end</span>
+
+put <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  .. replace something ..
+<span class="kw">end</span>
+
+patch <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  .. modify something ..
+<span class="kw">end</span>
+
+delete <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  .. annihilate something ..
+<span class="kw">end</span>
+
+options <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  .. appease something ..
+<span class="kw">end</span>
+
+link <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  .. affiliate something ..
+<span class="kw">end</span>
+
+unlink <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  .. separate something ..
+<span class="kw">end</span></code></pre></div>
+<p>Routes are matched in the order they are defined. The first route that matches the request is invoked.</p>
+<p>Route patterns may include named parameters, accessible via the <code>params</code> hash:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/hello/:name&#39;</span> <span class="kw">do</span>
+  <span class="co"># matches &quot;GET /hello/foo&quot; and &quot;GET /hello/bar&quot;</span>
+  <span class="co"># params[&#39;name&#39;] is &#39;foo&#39; or &#39;bar&#39;</span>
+  <span class="st">&quot;Hello </span><span class="ot">#{</span>params[<span class="st">&#39;name&#39;</span>]<span class="ot">}</span><span class="st">!&quot;</span>
+<span class="kw">end</span></code></pre></div>
+<p>You can also access named parameters via block parameters:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/hello/:name&#39;</span> <span class="kw">do</span> |n|
+  <span class="co"># matches &quot;GET /hello/foo&quot; and &quot;GET /hello/bar&quot;</span>
+  <span class="co"># params[&#39;name&#39;] is &#39;foo&#39; or &#39;bar&#39;</span>
+  <span class="co"># n stores params[&#39;name&#39;]</span>
+  <span class="st">&quot;Hello </span><span class="ot">#{</span>n<span class="ot">}</span><span class="st">!&quot;</span>
+<span class="kw">end</span></code></pre></div>
+<p>Route patterns may also include splat (or wildcard) parameters, accessible via the <code>params['splat']</code> array:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/say/*/to/*&#39;</span> <span class="kw">do</span>
+  <span class="co"># matches /say/hello/to/world</span>
+  params[<span class="st">&#39;splat&#39;</span>] <span class="co"># =&gt; [&quot;hello&quot;, &quot;world&quot;]</span>
+<span class="kw">end</span>
+
+get <span class="st">&#39;/download/*.*&#39;</span> <span class="kw">do</span>
+  <span class="co"># matches /download/path/to/file.xml</span>
+  params[<span class="st">&#39;splat&#39;</span>] <span class="co"># =&gt; [&quot;path/to/file&quot;, &quot;xml&quot;]</span>
+<span class="kw">end</span></code></pre></div>
+<p>Or with block parameters:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/download/*.*&#39;</span> <span class="kw">do</span> |path, ext|
+  [path, ext] <span class="co"># =&gt; [&quot;path/to/file&quot;, &quot;xml&quot;]</span>
+<span class="kw">end</span></code></pre></div>
+<p>Route matching with Regular Expressions:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="ot">/\A\/hello\/([\w]+)\z/</span> <span class="kw">do</span>
+  <span class="st">&quot;Hello, </span><span class="ot">#{</span>params[<span class="st">&#39;captures&#39;</span>].first<span class="ot">}</span><span class="st">!&quot;</span>
+<span class="kw">end</span></code></pre></div>
+<p>Or with a block parameter:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="ot">%r{/hello/([\w]+)}</span> <span class="kw">do</span> |c|
+  <span class="co"># Matches &quot;GET /meta/hello/world&quot;, &quot;GET /hello/world/1234&quot; etc.</span>
+  <span class="st">&quot;Hello, </span><span class="ot">#{</span>c<span class="ot">}</span><span class="st">!&quot;</span>
+<span class="kw">end</span></code></pre></div>
+<p>Route patterns may have optional parameters:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/posts.?:format?&#39;</span> <span class="kw">do</span>
+  <span class="co"># matches &quot;GET /posts&quot; and any extension &quot;GET /posts.json&quot;, &quot;GET /posts.xml&quot; etc.</span>
+<span class="kw">end</span></code></pre></div>
+<p>Routes may also utilize query parameters:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/posts&#39;</span> <span class="kw">do</span>
+  <span class="co"># matches &quot;GET /posts?title=foo&amp;author=bar&quot;</span>
+  title = params[<span class="st">&#39;title&#39;</span>]
+  author = params[<span class="st">&#39;author&#39;</span>]
+  <span class="co"># uses title and author variables; query is optional to the /posts route</span>
+<span class="kw">end</span></code></pre></div>
+<p>By the way, unless you disable the path traversal attack protection (see below), the request path might be modified before matching against your routes.</p>
+<h3 id="passing">Passing</h3>
+<p>A route can punt processing to the next matching route using <code>pass</code>:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/guess/:who&#39;</span> <span class="kw">do</span>
+  pass <span class="kw">unless</span> params[<span class="st">&#39;who&#39;</span>] == <span class="st">&#39;Frank&#39;</span>
+  <span class="st">&#39;You got me!&#39;</span>
+<span class="kw">end</span>
+
+get <span class="st">&#39;/guess/*&#39;</span> <span class="kw">do</span>
+  <span class="st">&#39;You missed!&#39;</span>
+<span class="kw">end</span></code></pre></div>
+<p>The route block is immediately exited and control continues with the next matching route. If no matching route is found, a 404 is returned.</p>
+<h3 id="triggering-another-route">Triggering Another Route</h3>
+<p>Sometimes <code>pass</code> is not what you want, instead you would like to get the result of calling another route. Simply use <code>call</code> to achieve this:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/foo&#39;</span> <span class="kw">do</span>
+  status, headers, body = call env.merge(<span class="st">&quot;PATH_INFO&quot;</span> =&gt; <span class="st">&#39;/bar&#39;</span>)
+  [status, headers, body.map(&amp;<span class="st">:upcase</span>)]
+<span class="kw">end</span>
+
+get <span class="st">&#39;/bar&#39;</span> <span class="kw">do</span>
+  <span class="st">&quot;bar&quot;</span>
+<span class="kw">end</span></code></pre></div>
+<p>Note that in the example above, you would ease testing and increase performance by simply moving <code>&quot;bar&quot;</code> into a helper used by both <code>/foo</code> and <code>/bar</code>.</p>
+<p>If you want the request to be sent to the same application instance rather than a duplicate, use <code>call!</code> instead of <code>call</code>.</p>
+<p>Check out the Rack specification if you want to learn more about <code>call</code>.</p>

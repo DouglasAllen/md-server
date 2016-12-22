@@ -1,0 +1,25 @@
+<h3 id="looking-up-template-files">Looking Up Template Files</h3>
+<p>The <code>find_template</code> helper is used to find template files for rendering:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">find_template settings.views, <span class="st">&#39;foo&#39;</span>, <span class="dt">Tilt</span>[<span class="st">:haml</span>] <span class="kw">do</span> |file|
+  puts <span class="st">&quot;could be </span><span class="ot">#{</span>file<span class="ot">}</span><span class="st">&quot;</span>
+<span class="kw">end</span></code></pre></div>
+<p>This is not really useful. But it is useful that you can actually override this method to hook in your own lookup mechanism. For instance, if you want to be able to use more than one view directory:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">set <span class="st">:views</span>, [<span class="st">&#39;views&#39;</span>, <span class="st">&#39;templates&#39;</span>]
+
+helpers <span class="kw">do</span>
+  <span class="kw">def</span> find_template(views, name, engine, &amp;block)
+    <span class="dt">Array</span>(views).each { |v| <span class="dv">super</span>(v, name, engine, &amp;block) }
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<p>Another example would be using different directories for different engines:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">set <span class="st">:views</span>, <span class="st">:sass</span> =&gt; <span class="st">&#39;views/sass&#39;</span>, <span class="st">:haml</span> =&gt; <span class="st">&#39;templates&#39;</span>, <span class="st">:default</span> =&gt; <span class="st">&#39;views&#39;</span>
+
+helpers <span class="kw">do</span>
+  <span class="kw">def</span> find_template(views, name, engine, &amp;block)
+    _, folder = views.detect { |k,v| engine == <span class="dt">Tilt</span>[k] }
+    folder ||= views[<span class="st">:default</span>]
+    <span class="dv">super</span>(folder, name, engine, &amp;block)
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<p>You can also easily wrap this up in an extension and share with others!</p>
+<p>Note that <code>find_template</code> does not check if the file really exists but rather calls the given block for all possible paths. This is not a performance issue, since <code>render</code> will use <code>break</code> as soon as a file is found. Also, template locations (and content) will be cached if you are not running in development mode. You should keep that in mind if you write a really crazy method.</p>

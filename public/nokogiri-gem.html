@@ -1,0 +1,93 @@
+<h1 id="nokogiri">Nokogiri</h1>
+<ul>
+<li>http://nokogiri.org</li>
+<li>Installation: http://nokogiri.org/tutorials/installing_nokogiri.html</li>
+<li>Tutorials: http://nokogiri.org</li>
+<li>README: https://github.com/sparklemotion/nokogiri</li>
+<li>Mailing List: https://groups.google.com/group/nokogiri-talk</li>
+<li>Bug Reports: https://github.com/sparklemotion/nokogiri/issues</li>
+</ul>
+<h2 id="status">Status</h2>
+<p><a href="https://travis-ci.org/sparklemotion/nokogiri"><img src="https://travis-ci.org/sparklemotion/nokogiri.svg?branch=master" alt="Travis Build Status" /></a> <a href="https://ci.appveyor.com/project/flavorjones/nokogiri?branch=master"><img src="https://ci.appveyor.com/api/projects/status/github/sparklemotion/nokogiri?branch=master&amp;svg=true" alt="Appveyor Build Status" /></a> <a href="https://codeclimate.com/github/sparklemotion/nokogiri"><img src="https://codeclimate.com/github/sparklemotion/nokogiri.svg" alt="Code Climate" /></a> <a href="https://www.versioneye.com/ruby/nokogiri"><img src="https://www.versioneye.com/ruby/nokogiri/badge.png" alt="Version Eye" /></a></p>
+<h2 id="description">Description</h2>
+<p>Nokogiri (鋸) is an HTML, XML, SAX, and Reader parser. Among Nokogiri's many features is the ability to search documents via XPath or CSS3 selectors.</p>
+<h2 id="features">Features</h2>
+<ul>
+<li>XML/HTML DOM parser which handles broken HTML</li>
+<li>XML/HTML SAX parser</li>
+<li>XML/HTML Push parser</li>
+<li>XPath 1.0 support for document searching</li>
+<li>CSS3 selector support for document searching</li>
+<li>XML/HTML builder</li>
+<li>XSLT transformer</li>
+</ul>
+<p>Nokogiri parses and searches XML/HTML using native libraries (either C or Java, depending on your Ruby), which means it's fast and standards-compliant.</p>
+<h2 id="installation">Installation</h2>
+<p>If this doesn't work:</p>
+<pre><code>gem install nokogiri</code></pre>
+<p>then please start troubleshooting here:</p>
+<blockquote>
+<p>http://www.nokogiri.org/tutorials/installing_nokogiri.html</p>
+</blockquote>
+<p>There are currently 1,237 Stack Overflow questions about Nokogiri installation. The vast majority of them are out of date and therefore incorrect. <strong>Please do not use Stack Overflow.</strong></p>
+<p>Instead, <a href="http://nokogiri.org/tutorials/getting_help.html">tell us</a> when the above instructions don't work for you. This allows us to both help you directly and improve the documentation.</p>
+<h3 id="binary-packages">Binary packages</h3>
+<p>Binary packages are available for some distributions.</p>
+<ul>
+<li>Debian: https://packages.debian.org/sid/ruby-nokogiri</li>
+<li>SuSE: https://download.opensuse.org/repositories/devel:/languages:/ruby:/extensions/</li>
+<li>Fedora: http://s390.koji.fedoraproject.org/koji/packageinfo?packageID=6756</li>
+</ul>
+<h2 id="support">Support</h2>
+<p>There are open-source tutorials (to which we invite contributions!) here: http://nokogiri.org/tutorials</p>
+<ul>
+<li>The Nokogiri mailing list is active: https://groups.google.com/group/nokogiri-talk</li>
+<li>The Nokogiri bug tracker is here: https://github.com/sparklemotion/nokogiri/issues</li>
+<li>Before filing a bug report, please read our submission guidelines: http://nokogiri.org/tutorials/getting_help.html</li>
+<li>The IRC channel is #nokogiri on freenode.</li>
+</ul>
+<h2 id="synopsis">Synopsis</h2>
+<p>Nokogiri is a large library, but here is example usage for parsing and examining a document:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co">#! /usr/bin/env ruby</span>
+
+require <span class="st">&#39;nokogiri&#39;</span>
+require <span class="st">&#39;open-uri&#39;</span>
+
+<span class="co"># Fetch and parse HTML document</span>
+doc = <span class="dt">Nokogiri</span>::<span class="dt">HTML</span>(open(<span class="st">&#39;http://www.nokogiri.org/tutorials/installing_nokogiri.html&#39;</span>))
+
+puts <span class="st">&quot;### Search for nodes by css&quot;</span>
+doc.css(<span class="st">&#39;nav ul.menu li a&#39;</span>, <span class="st">&#39;article h2&#39;</span>).each <span class="kw">do</span> |link|
+  puts link.content
+<span class="kw">end</span>
+
+puts <span class="st">&quot;### Search for nodes by xpath&quot;</span>
+doc.xpath(<span class="st">&#39;//nav//ul//li/a&#39;</span>, <span class="st">&#39;//article//h2&#39;</span>).each <span class="kw">do</span> |link|
+  puts link.content
+<span class="kw">end</span>
+
+puts <span class="st">&quot;### Or mix and match.&quot;</span>
+doc.search(<span class="st">&#39;nav ul.menu li a&#39;</span>, <span class="st">&#39;//article//h2&#39;</span>).each <span class="kw">do</span> |link|
+  puts link.content
+<span class="kw">end</span></code></pre></div>
+<h2 id="requirements">Requirements</h2>
+<ul>
+<li><p>Ruby 2.1.0 or higher, including any development packages necessary to compile native extensions.</p></li>
+<li><p>In Nokogiri 1.6.0 and later libxml2 and libxslt are bundled with the gem, but if you want to use the system versions:</p></li>
+<li><p>First, check out <a href="http://www.xmlsoft.org/news.html">the long list</a> of fixes and changes between releases before deciding to use any version older than is bundled with Nokogiri.</p></li>
+<li><p>At install time, set the environment variable <code>NOKOGIRI_USE_SYSTEM_LIBRARIES</code> or else use the <code>--use-system-libraries</code> argument. (See http://nokogiri.org/tutorials/installing_nokogiri.html#using_your_system_libraries for specifics.)</p></li>
+<li><p>libxml2 &gt;=2.6.21 with iconv support (libxml2-dev/-devel is also required)</p></li>
+<li><p>libxslt, built with and supported by the given libxml2 (libxslt-dev/-devel is also required)</p></li>
+</ul>
+<h2 id="encoding">Encoding</h2>
+<p>Strings are always stored as UTF-8 internally. Methods that return text values will always return UTF-8 encoded strings. Methods that return a string containing markup (like <code>to_xml</code>, <code>to_html</code> and <code>inner_html</code>) will return a string encoded like the source document.</p>
+<p><strong>WARNING</strong></p>
+<p>Some documents declare one encoding, but actually use a different one. In these cases, which encoding should the parser choose?</p>
+<p>Data is just a stream of bytes. Humans add meaning to that stream. Any particular set of bytes could be valid characters in multiple encodings, so detecting encoding with 100% accuracy is not possible. <code>libxml2</code> does its best, but it can't be right all the time.</p>
+<p>If you want Nokogiri to handle the document encoding properly, your best bet is to explicitly set the encoding. Here is an example of explicitly setting the encoding to EUC-JP on the parser:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">  doc = <span class="dt">Nokogiri</span>.<span class="dt">XML</span>(<span class="st">&#39;&lt;foo&gt;&lt;bar /&gt;&lt;foo&gt;&#39;</span>, <span class="dv">nil</span>, <span class="st">&#39;EUC-JP&#39;</span>)</code></pre></div>
+<h2 id="development">Development</h2>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash">  <span class="ex">bundle</span> install
+  <span class="ex">bundle</span> exec rake</code></pre></div>
+<h2 id="license">License</h2>
+<p>MIT. See the <code>LICENSE.txt</code> file.</p>

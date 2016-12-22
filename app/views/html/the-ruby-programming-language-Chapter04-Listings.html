@@ -1,0 +1,309 @@
+<h1 id="the-ruby-programming-language">The Ruby Programming Language</h1>
+<h2 id="chapter-4">CHAPTER 4</h2>
+<h3 id="expressions-and-operators">Expressions and Operators</h3>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dv">2</span>                  <span class="co"># A numeric literal</span>
+x                  <span class="co"># A local variable reference</span>
+<span class="dt">Math</span>.sqrt(<span class="dv">2</span>)       <span class="co"># A method invocation</span>
+x = <span class="dt">Math</span>.sqrt(<span class="dv">2</span>)   <span class="co"># Assignment</span>
+x*x                <span class="co"># Multiplication with the * operator</span></code></pre></div>
+<h4 id="variable-references">4.2 Variable References</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">one = <span class="fl">1.0</span>     <span class="co"># This is an assignment expression</span>
+one           <span class="co"># This variable reference expression evaluates to 1.0</span></code></pre></div>
+<h4 id="uninitialized-variables">4.2.1 Uninitialized Variables</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">a = <span class="fl">0.0</span> <span class="kw">if</span> <span class="dv">false</span>    <span class="co"># This assignment is never executed</span>
+print a             <span class="co"># Prints nil: the variable exists but is not assigned</span>
+print b             <span class="co"># NameError: no variable or method named b exists</span></code></pre></div>
+<h4 id="constant-references">4.3 Constant References</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">CM_PER_INCH</span> = <span class="fl">2.54</span>  <span class="co"># Define a constant.</span>
+<span class="dt">CM_PER_INCH</span>         <span class="co"># Refer to the constant. Evaluates to 2.54.</span>
+
+<span class="dt">Conversions</span>::<span class="dt">CM_PER_INCH</span> <span class="co"># Constant defined in the Conversions module</span>
+modules[<span class="dv">0</span>]::<span class="dt">NAME</span>         <span class="co"># Constant defined by an element of an array</span>
+
+<span class="dt">Conversions</span>::<span class="dt">Area</span>::<span class="dt">HECTARES_PER_ACRE</span>
+
+::<span class="dt">ARGV</span>      <span class="co"># The global constant ARGV</span></code></pre></div>
+<h4 id="method-invocations">4.4 Method Invocations</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">puts <span class="st">&quot;hello world&quot;</span>  <span class="co"># &quot;puts&quot; invoked on self, with one string arg</span>
+<span class="dt">Math</span>.sqrt(<span class="dv">2</span>)        <span class="co"># &quot;sqrt&quot; invoked on object Math with one arg</span>
+message.length      <span class="co"># &quot;length&quot; invoked on object message; no args</span>
+a.each {|x| p x }   <span class="co"># &quot;each&quot; invoked on object a, with an associated block</span>
+
+puts <span class="st">&quot;hello world&quot;</span>
+
+message.length=(<span class="dv">3</span>)    <span class="co"># Traditional method invocation</span>
+message.length = <span class="dv">3</span>    <span class="co"># Method invocation masquerading as assignment</span>
+
+a[<span class="dv">0</span>]
+
+a.[](<span class="dv">0</span>)
+
+x</code></pre></div>
+<h4 id="assignments">4.5 Assignments</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">x = <span class="dv">1</span>     <span class="co"># Set the lvalue x to the value 1</span>
+
+x += <span class="dv">1</span>    <span class="co"># Set the lvalue x to the value x + 1</span>
+
+x,y,z = <span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>   <span class="co"># Set x to 1, y to 2 and z to 3</span>
+
+x = y = <span class="dv">0</span>   <span class="co"># Set x and y to 0</span>
+
+x + y
+<span class="dt">Math</span>.sqrt(<span class="dv">2</span>)
+
+x = <span class="dv">1</span>       <span class="co"># Affects the value of other expressions that use x</span>
+x += <span class="dv">1</span>      <span class="co"># Returns a different value each time it is evaluated</span></code></pre></div>
+<h4 id="assigning-to-variables">4.5.1 Assigning to Variables</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">point.x, point.y = <span class="dv">1</span>, <span class="dv">2</span>
+
+<span class="kw">class</span> <span class="dt">Ambiguous</span>
+  <span class="kw">def</span> x; <span class="dv">1</span>; <span class="kw">end</span> <span class="co"># A method named &quot;x&quot;. Always returns 1</span>
+
+  <span class="kw">def</span> test
+    puts x      <span class="co"># No variable has been seen; refers to method above: prints 1</span>
+
+    <span class="co"># The line below is never evaluated, because of the &quot;if false&quot; clause. But</span>
+    <span class="co"># the parser sees it and treats x as a variable for the rest of the method.</span>
+    x = <span class="dv">0</span> <span class="kw">if</span> <span class="dv">false</span>
+
+    puts x    <span class="co"># x is a variable, but has never been assigned to: prints nil</span>
+
+    x = <span class="dv">2</span>     <span class="co"># This assignment does get evaluated</span>
+    puts x    <span class="co"># So now this line prints 2</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="assigning-to-constants">4.5.2 Assigning to Constants</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">N = <span class="dv">100</span> <span class="kw">if</span> <span class="dv">false</span></code></pre></div>
+<h4 id="assigning-to-attributes-and-array-elements">4.5.3 Assigning to Attributes and Array Elements</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">o.m = v
+
+o.m=(v)  <span class="co"># If we omit the parens and add a space, this looks like assignment!</span>
+
+o.[]=(x,y)
+
+o[x,y] = z
+o.[]=(x,y,z)</code></pre></div>
+<h4 id="abbreviated-assignment">4.5.4 Abbreviated Assignment</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">x += <span class="dv">1</span>
+
+x = x + <span class="dv">1</span>
+
+o.m += <span class="dv">1</span>
+o.m=(o.m()+<span class="dv">1</span>)
+
+o[x] -= <span class="dv">2</span>
+o.[]=(x, o.[](x) - <span class="dv">2</span>)
+
+results ||= []
+
+results = results || []</code></pre></div>
+<h4 id="same-number-of-lvalues-and-rvalues">4.5.5.1 Same number of lvalues and rvalues</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">x, y, z = <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>   <span class="co"># x=1; y=2; z=3</span>
+
+x,y = y,x     <span class="co"># Parallel: swap the value of two variables</span>
+x = y; y = x  <span class="co"># Sequential: both variables have same value</span></code></pre></div>
+<h4 id="one-lvalue-multiple-rvalues">4.5.5.2 One lvalue, multiple rvalues</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">x = <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>      <span class="co"># x = [1,2,3]</span>
+
+x, = <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>     <span class="co"># x = 1; other values are discarded</span></code></pre></div>
+<h4 id="multiple-lvalues-single-array-rvalue">4.5.5.3 Multiple lvalues, single array rvalue</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">x, y, z = [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>]  <span class="co"># Same as x,y,z = 1,2,3</span>
+
+x = [<span class="dv">1</span>,<span class="dv">2</span>]    <span class="co"># x becomes [1,2]: this is not parallel assignment</span>
+x, = [<span class="dv">1</span>,<span class="dv">2</span>]   <span class="co"># x becomes 1: the trailing comma makes it parallel</span></code></pre></div>
+<h4 id="different-numbers-of-lvalues-and-rvalues">4.5.5.4 Different numbers of lvalues and rvalues</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">x, y, z = <span class="dv">1</span>, <span class="dv">2</span>  <span class="co"># x=1; y=2; z=nil</span>
+
+x, y = <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span> <span class="co"># x=1; y=2; 3 is not assigned anywhere</span></code></pre></div>
+<h4 id="the-splat-operator">4.5.5.5 The splat operator</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">x, y, z = <span class="dv">1</span>, *[<span class="dv">2</span>,<span class="dv">3</span>]  <span class="co"># Same as x,y,z = 1,2,3</span>
+
+x,y = **[[<span class="dv">1</span>,<span class="dv">2</span>]]   <span class="co"># SyntaxError!</span>
+
+x,*y = <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>  <span class="co"># x=1; y=[2,3]</span>
+x,*y = <span class="dv">1</span>, <span class="dv">2</span>     <span class="co"># x=1; y=[2]</span>
+x,*y = <span class="dv">1</span>        <span class="co"># x=1; y=[]</span>
+
+<span class="co"># Ruby 1.9 only</span>
+*x,y = <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>  <span class="co"># x=[1,2]; y=3</span>
+*x,y = <span class="dv">1</span>, <span class="dv">2</span>     <span class="co"># x=[1]; y=2</span>
+*x,y = <span class="dv">1</span>        <span class="co"># x=[]; y=1</span>
+
+x, y, *z = <span class="dv">1</span>, *[<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>]  <span class="co"># x=1; y=2; z=[3,4].</span></code></pre></div>
+<h4 id="parentheses-in-parallel-assignment">4.5.5.6 Parentheses in parallel assignment</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">x,(y,z) = a, b
+
+x = a
+y,z = b
+
+x,y,z = <span class="dv">1</span>,[<span class="dv">2</span>,<span class="dv">3</span>]             <span class="co"># No parens: x=1;y=[2,3];z=nil</span>
+x,(y,z) = <span class="dv">1</span>,[<span class="dv">2</span>,<span class="dv">3</span>]           <span class="co"># Parens: x=1;y=2;z=3</span>
+
+a,b,c,d = [<span class="dv">1</span>,[<span class="dv">2</span>,[<span class="dv">3</span>,<span class="dv">4</span>]]]     <span class="co"># No parens: a=1;b=[2,[3,4]];c=d=nil</span>
+a,(b,(c,d)) = [<span class="dv">1</span>,[<span class="dv">2</span>,[<span class="dv">3</span>,<span class="dv">4</span>]]] <span class="co"># Parens: a=1;b=2;c=3;d=4</span></code></pre></div>
+<h4 id="the-value-of-parallel-assignment">4.5.5.7 The value of parallel assignment</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">puts x,y=<span class="dv">1</span>,<span class="dv">2</span>
+
+puts (x,y=<span class="dv">1</span>,<span class="dv">2</span>)
+
+puts((x,y=<span class="dv">1</span>,<span class="dv">2</span>))</code></pre></div>
+<h4 id="operators">4.6 Operators</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dv">2</span> * <span class="dt">Math</span>.sqrt(<span class="dv">2</span>) &lt; limit
+
+<span class="dv">1</span> + <span class="dv">2</span> * <span class="dv">3</span>     <span class="co"># =&gt; 7</span>
+
+(<span class="dv">1</span> + <span class="dv">2</span>) * <span class="dv">3</span>   <span class="co"># =&gt; 9</span></code></pre></div>
+<pre class="rdoc"><code>$&gt; irb
+ 
+help
+
+String.*
+
+$&gt; pry
+
+ri String.*
+
+=
+**= *= /= %= += -=
+&lt;&lt;= &gt;&gt;=
+&amp;&amp;= &amp;= ||= |= ^=</code></pre>
+<h4 id="shift-and-append-and">4.6.4 Shift and Append: &lt;&lt; and &gt;&gt;</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">(<span class="bn">0b1011</span> &lt;&lt; <span class="dv">1</span>).to_s(<span class="dv">2</span>)   <span class="co"># =&gt; &quot;10110&quot;   11 &lt;&lt; 1 =&gt; 22</span>
+(<span class="bn">0b10110</span> &gt;&gt; <span class="dv">2</span>).to_s(<span class="dv">2</span>)  <span class="co"># =&gt; &quot;101&quot;     22 &gt;&gt; 2 =&gt; 5</span>
+
+message = <span class="st">&quot;hello&quot;</span>        <span class="co"># A string</span>
+messages = []            <span class="co"># An empty array</span>
+message &lt;&lt; <span class="st">&quot; world&quot;</span>      <span class="co"># Append to the string</span>
+messages &lt;&lt; message      <span class="co"># Append message to the array</span>
+<span class="dt">STDOUT</span> &lt;&lt; message        <span class="co"># Print the message to standard output stream</span></code></pre></div>
+<h4 id="complement-union-intersection-and">4.6.5 Complement, Union, Intersection: ~, &amp;, |, and ^</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">(<span class="bn">0b1010</span> &amp; <span class="bn">0b1100</span>).to_s(<span class="dv">2</span>)  <span class="co"># =&gt; &quot;1000&quot;</span>
+
+(<span class="bn">0b1010</span> | <span class="bn">0b1100</span>).to_s(<span class="dv">2</span>)  <span class="co"># =&gt; &quot;1110&quot;</span>
+
+(<span class="bn">0b1010</span> ^ <span class="bn">0b1100</span>).to_s(<span class="dv">2</span>)  <span class="co"># =&gt; &quot;110&quot;</span></code></pre></div>
+<h4 id="comparison-and">4.6.6 Comparison: &lt;, &lt;=, &gt;, &gt;=, and &lt;=&gt;</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># Declare class A as a subclass of B</span>
+<span class="kw">class</span> A &lt; B
+<span class="kw">end</span>
+
+<span class="dt">String</span> &lt; <span class="dt">Object</span>        <span class="co"># true: String is more specialized than Object</span>
+<span class="dt">Object</span> &gt; <span class="dt">Numeric</span>       <span class="co"># true: Object is more general than Numeric</span>
+<span class="dt">Numeric</span> &lt; <span class="dt">Integer</span>      <span class="co"># false: Numeric is not more specialized than Integer</span>
+<span class="dt">String</span> &lt; <span class="dt">Numeric</span>       <span class="co"># nil: String and Numeric are not related</span></code></pre></div>
+<h4 id="boolean-operators-and-or-not">4.6.8 Boolean Operators: &amp;&amp;, ||, !, and, or, not</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">x == <span class="dv">0</span> &amp;&amp; y &gt; <span class="dv">1</span>
+
+x &amp;&amp; y
+
+x &amp;&amp; print(x.to_s)
+
+print(x.to_s) <span class="kw">if</span> x &lt;<span class="ot">/programlisting&gt;</span>
+<span class="ot">        &lt;/</span>footnote&gt;&lt;<span class="ot">/para&gt;</span>
+
+<span class="ot">      &lt;para&gt;The &lt;literal&gt;||&lt;/</span>literal&gt; operator returns the <span class="dt">Boolean</span> <span class="dt">OR</span> of its
+      operands. <span class="dt">It</span> returns a <span class="dv">true</span> value <span class="kw">if</span> either of its operands is a <span class="dv">true</span>
+      value. <span class="dt">If</span> both operands are <span class="dv">false</span> values, <span class="kw">then</span> it returns a <span class="dv">false</span> value.
+      <span class="dt">Like</span> &lt;literal&gt;&amp;&amp;&lt;<span class="ot">/literal&gt;, the &lt;literal&gt;||&lt;/</span>literal&gt; operator
+      ignores its righthand operand <span class="kw">if</span> its value has no impact on the value of
+      the operation. <span class="dt">The</span> &lt;literal&gt;||&lt;<span class="ot">/literal&gt; operator works like this:</span>
+<span class="ot">      first, it evaluates its lefthand operand. If this is any value other</span>
+<span class="ot">      than &lt;literal&gt;nil&lt;/</span>literal&gt; <span class="kw">or</span> &lt;literal&gt;<span class="dv">false</span>&lt;<span class="ot">/literal&gt;, it simply</span>
+<span class="ot">      returns that value. Otherwise, it evaluates its righthand operand and</span>
+<span class="ot">      returns that value.&lt;/</span>para&gt;
+
+      &lt;para&gt;&lt;literal&gt;||&lt;<span class="ot">/literal&gt; can be used as a conjunction to join</span>
+<span class="ot">      multiple comparison or equality expressions:&lt;/</span>para&gt;
+
+      &lt;programlisting&gt;x &lt; <span class="dv">0</span> || y &lt; <span class="dv">0</span> || z &lt; <span class="dv">0</span>   <span class="co"># Are any of the coordinates negative?</span>
+
+<span class="co"># If the argument x is nil, then get its value from a hash of user preferences</span>
+<span class="co"># or from a constant default value.</span>
+x = x || preferences[<span class="st">:x</span>] || <span class="dt">Defaults</span>::<span class="dt">X</span>
+
+<span class="dv">1</span> || <span class="dv">2</span> &amp;&amp; <span class="dv">nil</span>     <span class="co"># =&gt; 1</span>
+
+(<span class="dv">1</span> || <span class="dv">2</span>) &amp;&amp; <span class="dv">nil</span>   <span class="co"># =&gt; nil</span>
+
+!(a &amp;&amp; b)
+
+!a || !b
+
+<span class="kw">if</span> x &gt; <span class="dv">0</span> <span class="kw">and</span> y &gt; <span class="dv">0</span> <span class="kw">and</span> <span class="kw">not</span> <span class="kw">defined?</span> d <span class="kw">then</span> d = <span class="dt">Math</span>.sqrt(x*x + y*y) <span class="kw">end</span>
+
+<span class="kw">if</span> a = f(x) <span class="kw">and</span> b = f(y) <span class="kw">and</span> c = f(z) <span class="kw">then</span> d = g(a,b,c) <span class="kw">end</span>
+
+x || y &amp;&amp; <span class="dv">nil</span>        <span class="co"># &amp;&amp; is performed first   =&gt; x</span>
+x <span class="kw">or</span> y <span class="kw">and</span> <span class="dv">nil</span>       <span class="co"># evaluated left-to-right =&gt; nil </span></code></pre></div>
+<h4 id="ranges-and-flip-flops-..-and-...">4.6.9 Ranges and Flip-Flops: .. and ...</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">x<span class="dv">+1</span>..x*x
+
+<span class="dt">Range</span>.new(x,y)
+
+<span class="dt">Range</span>.new(x,y,<span class="dv">true</span>)</code></pre></div>
+<h4 id="boolean-flip-flops">4.6.9.1 Boolean flip-flops</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">(<span class="dv">1</span>..<span class="dv">10</span>).each {|x| print x <span class="kw">if</span> x==<span class="dv">3</span>..x==<span class="dv">5</span> }
+
+<span class="co"># Prints &quot;3&quot;. Flips and flops back when x==3</span>
+(<span class="dv">1</span>..<span class="dv">10</span>).each {|x| print x <span class="kw">if</span> x==<span class="dv">3</span>..x&gt;=<span class="dv">3</span> }  
+<span class="co"># Prints &quot;34&quot;. Flips when x == 3 and flops when x==4</span>
+(<span class="dv">1</span>..<span class="dv">10</span>).each {|x| print x <span class="kw">if</span> x==<span class="dv">3</span>...x&gt;=<span class="dv">3</span> } <span class="co"># Prints &quot;34&quot;</span>
+
+<span class="dt">ARGF</span>.each <span class="kw">do</span> |line|   <span class="co"># For each line of standard in or of named files</span>
+  print line <span class="kw">if</span> line=~<span class="ot">/TODO/</span>..line=~<span class="ot">/^$/</span> <span class="co"># Print lines when flip-flop is true</span>
+<span class="kw">end</span>
+
+<span class="dt">$state</span> = <span class="dv">false</span>            <span class="co"># Global storage for flip-flop state</span>
+<span class="kw">def</span> flipflop(x)           <span class="co"># Test value of x against flip-flop</span>
+  <span class="kw">if</span> !<span class="dt">$state</span>              <span class="co"># If saved state is false</span>
+    result = (x == <span class="dv">3</span>)     <span class="co"># Result is value of lefthand operand</span>
+    <span class="kw">if</span> result             <span class="co"># If that result is true</span>
+      <span class="dt">$state</span> = !(x == <span class="dv">5</span>)  <span class="co"># Then saved state is not of the righthand operand</span>
+    <span class="kw">end</span>
+    result                <span class="co"># Return result</span>
+  <span class="kw">else</span>                    <span class="co"># Otherwise, if saved state is true</span>
+    <span class="dt">$state</span> = !(x == <span class="dv">5</span>)    <span class="co"># Then save the inverse of the righthand operand</span>
+    <span class="dv">true</span>                  <span class="co"># And return true without testing lefthand</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+
+(<span class="dv">1</span>..<span class="dv">10</span>).each {|x| print x <span class="kw">if</span> flipflop(x) }
+
+<span class="dt">$state2</span> = <span class="dv">false</span>
+<span class="kw">def</span> flipflop2(x)
+  <span class="kw">if</span> !<span class="dt">$state2</span>
+    <span class="dt">$state2</span> = (x == <span class="dv">3</span>)
+  <span class="kw">else</span>
+    <span class="dt">$state2</span> = !(x &gt;= <span class="dv">3</span>)
+    <span class="dv">true</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+
+<span class="co"># Now try it out</span>
+(<span class="dv">1</span>..<span class="dv">10</span>).each {|x| print x <span class="kw">if</span> x==<span class="dv">3</span>...x&gt;=<span class="dv">3</span> }  <span class="co"># Prints &quot;34&quot; </span>
+(<span class="dv">1</span>..<span class="dv">10</span>).each {|x| print x <span class="kw">if</span> flipflop2(x) } <span class="co"># Prints &quot;34&quot; </span></code></pre></div>
+<h4 id="conditional">4.6.10 Conditional: ?:</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="st">&quot;You have </span><span class="ot">#{</span>n<span class="ot">}</span><span class="st"> </span><span class="ot">#{</span>n==<span class="dv">1</span> ? <span class="st">&#39;message&#39;</span> : <span class="st">&#39;messages&#39;</span><span class="ot">}</span><span class="st">&quot;</span>
+
+x==<span class="dv">3</span>?y<span class="st">:z</span>      <span class="co"># This is legal</span>
+<span class="dv">3</span>==x?y<span class="st">:z</span>      <span class="co"># Syntax error: x? is interpreted as a method name</span>
+(<span class="dv">3</span>==x)?y<span class="st">:z</span>    <span class="co"># Okay: parentheses fix the problem</span>
+<span class="dv">3</span>==x ?y<span class="st">:z</span>     <span class="co"># Spaces also resolve the problem</span>
+
+a ? b : c ? d : e    <span class="co"># This expression...</span>
+a ? b : (c ? d : e)  <span class="co"># is evaluated like this..</span>
+(a ? b : c) ? d : e  <span class="co"># NOT like this</span>
+
+max = x&gt;y ? x&gt;z ? x : z : y&gt;z ? y : z
+max = x&gt;y ? (x&gt;z ? x : z) : (y&gt;z ? y : z)  <span class="co"># With explicit parentheses</span></code></pre></div>
+<h4 id="assignment-operators">4.6.11 Assignment Operators</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">x = y = z = <span class="dv">0</span>      <span class="co"># Assign zero to variables x, y, and z</span>
+x = (y = (z = <span class="dv">0</span>))  <span class="co"># This equivalent expression shows order of evaluation</span></code></pre></div>
+<h4 id="the-defined-operator">4.6.12 The defined? Operator</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># Compute f(x), but only if f and x are both defined</span>
+y = f(x) <span class="kw">if</span> <span class="kw">defined?</span> f(x)
+
+<span class="kw">defined?</span> a <span class="kw">and</span> <span class="kw">defined?</span> b    <span class="co"># This works</span>
+<span class="kw">defined?</span> a &amp;&amp; <span class="kw">defined?</span> b     <span class="co"># Evaluated as: defined?((a &amp;&amp; defined? b))</span></code></pre></div>
+<h4 id="statement-modifiers">4.6.13 Statement Modifiers</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">print x <span class="kw">if</span> x</code></pre></div>

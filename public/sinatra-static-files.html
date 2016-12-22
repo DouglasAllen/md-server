@@ -1,0 +1,5 @@
+<h2 id="static-files">Static Files</h2>
+<p>Static files are served from the <code>./public</code> directory. You can specify a different location by setting the <code>:public_folder</code> option:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">set <span class="st">:public_folder</span>, <span class="dt">File</span>.dirname(<span class="dv">__FILE__</span>) + <span class="st">&#39;/static&#39;</span></code></pre></div>
+<p>Note that the public directory name is not included in the URL. A file <code>./public/css/style.css</code> is made available as <code>http://example.com/css/style.css</code>.</p>
+<p>Use the <code>:static_cache_control</code> setting (see below) to add <code>Cache-Control</code> header info.</p>

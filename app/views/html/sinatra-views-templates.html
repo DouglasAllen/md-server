@@ -1,0 +1,601 @@
+<h2 id="views-templates">Views / Templates</h2>
+<p>Each template language is exposed via its own rendering method. These methods simply return a string:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  erb <span class="st">:index</span>
+<span class="kw">end</span></code></pre></div>
+<p>This renders <code>views/index.erb</code>.</p>
+<p>Instead of a template name, you can also just pass in the template content directly:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  code = <span class="st">&quot;&lt;%= Time.now %&gt;&quot;</span>
+  erb code
+<span class="kw">end</span></code></pre></div>
+<p>Templates take a second argument, the options hash:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  erb <span class="st">:index</span>, <span class="st">:layout</span> =&gt; <span class="st">:post</span>
+<span class="kw">end</span></code></pre></div>
+<p>This will render <code>views/index.erb</code> embedded in the <code>views/post.erb</code> (default is <code>views/layout.erb</code>, if it exists).</p>
+<p>Any options not understood by Sinatra will be passed on to the template engine:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  haml <span class="st">:index</span>, <span class="st">:format</span> =&gt; <span class="st">:html5</span>
+<span class="kw">end</span></code></pre></div>
+<p>You can also set options per template language in general:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">set <span class="st">:haml</span>, <span class="st">:format</span> =&gt; <span class="st">:html5</span>
+
+get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  haml <span class="st">:index</span>
+<span class="kw">end</span></code></pre></div>
+<p>Options passed to the render method override options set via <code>set</code>.</p>
+<p>Available Options:</p>
+<dl>
+<dt>
+locals
+</dt>
+<dd>
+<pre><code>List of locals passed to the document. Handy with partials.
+Example: &lt;tt&gt;erb &quot;&lt;%= foo %&gt;&quot;, :locals =&gt; {:foo =&gt; &quot;bar&quot;}&lt;/tt&gt;</code></pre>
+</dd>
+<dt>
+default_encoding
+</dt>
+<dd>
+<pre><code>String encoding to use if uncertain. Defaults to
+&lt;tt&gt;settings.default_encoding&lt;/tt&gt;.</code></pre>
+</dd>
+<dt>
+views
+</dt>
+<dd>
+<pre><code>Views folder to load templates from. Defaults to &lt;tt&gt;settings.views&lt;/tt&gt;.</code></pre>
+</dd>
+<dt>
+layout
+</dt>
+<dd>
+<pre><code>Whether to use a layout (&lt;tt&gt;true&lt;/tt&gt; or &lt;tt&gt;false&lt;/tt&gt;). If it&#39;s a
+Symbol, specifies what template to use. Example:
+&lt;tt&gt;erb :index, :layout =&gt; !request.xhr?&lt;/tt&gt;</code></pre>
+</dd>
+<dt>
+content_type
+</dt>
+<dd>
+<pre><code>Content-Type the template produces. Default depends on template language.</code></pre>
+</dd>
+<dt>
+scope
+</dt>
+<dd>
+<pre><code>Scope to render template under. Defaults to the application instance. If you
+change this, instance variables and helper methods will not be available.</code></pre>
+</dd>
+<dt>
+layout_engine
+</dt>
+<dd>
+<pre><code>Template engine to use for rendering the layout. Useful for languages that
+do not support layouts otherwise. Defaults to the engine used for the
+template. Example: &lt;tt&gt;set :rdoc, :layout_engine =&gt; :erb&lt;/tt&gt;</code></pre>
+</dd>
+<dt>
+layout_options
+</dt>
+<dd>
+<pre><code>Special options only used for rendering the layout. Example:
+&lt;tt&gt;set :rdoc, :layout_options =&gt; { :views =&gt; &#39;views/layouts&#39; }&lt;/tt&gt;</code></pre>
+</dd>
+</dl>
+<p>Templates are assumed to be located directly under the <code>./views</code> directory. To use a different views directory:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">set <span class="st">:views</span>, settings.root + <span class="st">&#39;/templates&#39;</span></code></pre></div>
+<p>One important thing to remember is that you always have to reference templates with symbols, even if they're in a subdirectory (in this case, use: <code>:'subdir/template'</code> or <code>'subdir/template'.to_sym</code>). You must use a symbol because otherwise rendering methods will render any strings passed to them directly.</p>
+<h3 id="literal-templates">Literal Templates</h3>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  haml <span class="st">&#39;%div.title Hello World&#39;</span>
+<span class="kw">end</span></code></pre></div>
+<p>Renders the template string.</p>
+<h3 id="available-template-languages">Available Template Languages</h3>
+<p>Some languages have multiple implementations. To specify what implementation to use (and to be thread-safe), you should simply require it first:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">require <span class="st">&#39;rdiscount&#39;</span> <span class="co"># or require &#39;bluecloth&#39;</span>
+get(<span class="st">&#39;/&#39;</span>) { markdown <span class="st">:index</span> }</code></pre></div>
+<h4 id="haml-templates">Haml Templates</h4>
+<table>
+<tr>
+<pre><code>&lt;td&gt;Dependency&lt;/td&gt;
+&lt;td&gt;&lt;a href=&quot;http://haml.info/&quot; title=&quot;haml&quot;&gt;haml&lt;/a&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;File Extension&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;.haml&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;Example&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;haml :index, :format =&gt; :html5&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+</table>
+<h4 id="erb-templates">Erb Templates</h4>
+<table>
+<tr>
+<pre><code>&lt;td&gt;Dependency&lt;/td&gt;
+&lt;td&gt;
+  &lt;a href=&quot;http://www.kuwata-lab.com/erubis/&quot; title=&quot;erubis&quot;&gt;erubis&lt;/a&gt;
+  or erb (included in Ruby)
+&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;File Extensions&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;.erb&lt;/tt&gt;, &lt;tt&gt;.rhtml&lt;/tt&gt; or &lt;tt&gt;.erubis&lt;/tt&gt; (Erubis only)&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;Example&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;erb :index&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+</table>
+<h4 id="builder-templates">Builder Templates</h4>
+<table>
+<tr>
+<pre><code>&lt;td&gt;Dependency&lt;/td&gt;
+&lt;td&gt;
+  &lt;a href=&quot;https://github.com/jimweirich/builder&quot; title=&quot;builder&quot;&gt;builder&lt;/a&gt;
+&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;File Extension&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;.builder&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;Example&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;builder { |xml| xml.em &quot;hi&quot; }&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+</table>
+<p>It also takes a block for inline templates (see example).</p>
+<h4 id="nokogiri-templates">Nokogiri Templates</h4>
+<table>
+<tr>
+<pre><code>&lt;td&gt;Dependency&lt;/td&gt;
+&lt;td&gt;&lt;a href=&quot;http://nokogiri.org/&quot; title=&quot;nokogiri&quot;&gt;nokogiri&lt;/a&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;File Extension&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;.nokogiri&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;Example&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;nokogiri { |xml| xml.em &quot;hi&quot; }&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+</table>
+<p>It also takes a block for inline templates (see example).</p>
+<h4 id="sass-templates">Sass Templates</h4>
+<table>
+<tr>
+<pre><code>&lt;td&gt;Dependency&lt;/td&gt;
+&lt;td&gt;&lt;a href=&quot;http://sass-lang.com/&quot; title=&quot;sass&quot;&gt;sass&lt;/a&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;File Extension&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;.sass&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;Example&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;sass :stylesheet, :style =&gt; :expanded&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+</table>
+<h4 id="scss-templates">SCSS Templates</h4>
+<table>
+<tr>
+<pre><code>&lt;td&gt;Dependency&lt;/td&gt;
+&lt;td&gt;&lt;a href=&quot;http://sass-lang.com/&quot; title=&quot;sass&quot;&gt;sass&lt;/a&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;File Extension&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;.scss&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;Example&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;scss :stylesheet, :style =&gt; :expanded&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+</table>
+<h4 id="less-templates">Less Templates</h4>
+<table>
+<tr>
+<pre><code>&lt;td&gt;Dependency&lt;/td&gt;
+&lt;td&gt;&lt;a href=&quot;http://www.lesscss.org/&quot; title=&quot;less&quot;&gt;less&lt;/a&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;File Extension&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;.less&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;Example&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;less :stylesheet&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+</table>
+<h4 id="liquid-templates">Liquid Templates</h4>
+<table>
+<tr>
+<pre><code>&lt;td&gt;Dependency&lt;/td&gt;
+&lt;td&gt;&lt;a href=&quot;http://www.liquidmarkup.org/&quot; title=&quot;liquid&quot;&gt;liquid&lt;/a&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;File Extension&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;.liquid&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;Example&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;liquid :index, :locals =&gt; { :key =&gt; &#39;value&#39; }&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+</table>
+<p>Since you cannot call Ruby methods (except for <code>yield</code>) from a Liquid template, you almost always want to pass locals to it.</p>
+<h4 id="markdown-templates">Markdown Templates</h4>
+<table>
+<tr>
+<pre><code>&lt;td&gt;Dependency&lt;/td&gt;
+&lt;td&gt;
+  Anyone of:
+    &lt;a href=&quot;https://github.com/rtomayko/rdiscount&quot; title=&quot;RDiscount&quot;&gt;RDiscount&lt;/a&gt;,
+    &lt;a href=&quot;https://github.com/vmg/redcarpet&quot; title=&quot;RedCarpet&quot;&gt;RedCarpet&lt;/a&gt;,
+    &lt;a href=&quot;http://deveiate.org/projects/BlueCloth&quot; title=&quot;BlueCloth&quot;&gt;BlueCloth&lt;/a&gt;,
+    &lt;a href=&quot;http://kramdown.gettalong.org/&quot; title=&quot;kramdown&quot;&gt;kramdown&lt;/a&gt;,
+    &lt;a href=&quot;https://github.com/bhollis/maruku&quot; title=&quot;maruku&quot;&gt;maruku&lt;/a&gt;
+&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;File Extensions&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;.markdown&lt;/tt&gt;, &lt;tt&gt;.mkd&lt;/tt&gt; and &lt;tt&gt;.md&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;Example&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;markdown :index, :layout_engine =&gt; :erb&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+</table>
+<p>It is not possible to call methods from markdown, nor to pass locals to it. You therefore will usually use it in combination with another rendering engine:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">erb <span class="st">:overview</span>, <span class="st">:locals</span> =&gt; { <span class="st">:text</span> =&gt; markdown(<span class="st">:introduction</span>) }</code></pre></div>
+<p>Note that you may also call the <code>markdown</code> method from within other templates:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="ot">%</span>h1 Hello From Haml<span class="ot">!</span>
+<span class="st">%p= markdown(:greetings)</span></code></pre></div>
+<p>Since you cannot call Ruby from Markdown, you cannot use layouts written in Markdown. However, it is possible to use another rendering engine for the template than for the layout by passing the <code>:layout_engine</code> option.</p>
+<h4 id="textile-templates">Textile Templates</h4>
+<table>
+<tr>
+<pre><code>&lt;td&gt;Dependency&lt;/td&gt;
+&lt;td&gt;&lt;a href=&quot;http://redcloth.org/&quot; title=&quot;RedCloth&quot;&gt;RedCloth&lt;/a&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;File Extension&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;.textile&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;Example&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;textile :index, :layout_engine =&gt; :erb&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+</table>
+<p>It is not possible to call methods from textile, nor to pass locals to it. You therefore will usually use it in combination with another rendering engine:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">erb <span class="st">:overview</span>, <span class="st">:locals</span> =&gt; { <span class="st">:text</span> =&gt; textile(<span class="st">:introduction</span>) }</code></pre></div>
+<p>Note that you may also call the <code>textile</code> method from within other templates:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="ot">%</span>h1 Hello From Haml<span class="ot">!</span>
+<span class="st">%p= textile(:greetings)</span></code></pre></div>
+<p>Since you cannot call Ruby from Textile, you cannot use layouts written in Textile. However, it is possible to use another rendering engine for the template than for the layout by passing the <code>:layout_engine</code> option.</p>
+<h4 id="rdoc-templates">RDoc Templates</h4>
+<table>
+<tr>
+<pre><code>&lt;td&gt;Dependency&lt;/td&gt;
+&lt;td&gt;&lt;a href=&quot;http://rdoc.sourceforge.net/&quot; title=&quot;RDoc&quot;&gt;RDoc&lt;/a&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;File Extension&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;.rdoc&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;Example&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;rdoc :README, :layout_engine =&gt; :erb&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+</table>
+<p>It is not possible to call methods from rdoc, nor to pass locals to it. You therefore will usually use it in combination with another rendering engine:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">erb <span class="st">:overview</span>, <span class="st">:locals</span> =&gt; { <span class="st">:text</span> =&gt; rdoc(<span class="st">:introduction</span>) }</code></pre></div>
+<p>Note that you may also call the <code>rdoc</code> method from within other templates:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="ot">%</span>h1 Hello From Haml<span class="ot">!</span>
+<span class="st">%p= rdoc(:greetings)</span></code></pre></div>
+<p>Since you cannot call Ruby from RDoc, you cannot use layouts written in RDoc. However, it is possible to use another rendering engine for the template than for the layout by passing the <code>:layout_engine</code> option.</p>
+<h4 id="asciidoc-templates">AsciiDoc Templates</h4>
+<table>
+<tr>
+<pre><code>&lt;td&gt;Dependency&lt;/td&gt;
+&lt;td&gt;&lt;a href=&quot;http://asciidoctor.org/&quot; title=&quot;Asciidoctor&quot;&gt;Asciidoctor&lt;/a&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;File Extension&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;.asciidoc&lt;/tt&gt;, &lt;tt&gt;.adoc&lt;/tt&gt; and &lt;tt&gt;.ad&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;Example&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;asciidoc :README, :layout_engine =&gt; :erb&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+</table>
+<p>Since you cannot call Ruby methods directly from an AsciiDoc template, you almost always want to pass locals to it.</p>
+<h4 id="radius-templates">Radius Templates</h4>
+<table>
+<tr>
+<pre><code>&lt;td&gt;Dependency&lt;/td&gt;
+&lt;td&gt;&lt;a href=&quot;https://github.com/jlong/radius&quot; title=&quot;Radius&quot;&gt;Radius&lt;/a&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;File Extension&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;.radius&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;Example&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;radius :index, :locals =&gt; { :key =&gt; &#39;value&#39; }&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+</table>
+<p>Since you cannot call Ruby methods directly from a Radius template, you almost always want to pass locals to it.</p>
+<h4 id="markaby-templates">Markaby Templates</h4>
+<table>
+<tr>
+<pre><code>&lt;td&gt;Dependency&lt;/td&gt;
+&lt;td&gt;&lt;a href=&quot;http://markaby.github.com/&quot; title=&quot;Markaby&quot;&gt;Markaby&lt;/a&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;File Extension&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;.mab&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;Example&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;markaby { h1 &quot;Welcome!&quot; }&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+</table>
+<p>It also takes a block for inline templates (see example).</p>
+<h4 id="rabl-templates">RABL Templates</h4>
+<table>
+<tr>
+<pre><code>&lt;td&gt;Dependency&lt;/td&gt;
+&lt;td&gt;&lt;a href=&quot;https://github.com/nesquena/rabl&quot; title=&quot;Rabl&quot;&gt;Rabl&lt;/a&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;File Extension&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;.rabl&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;Example&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;rabl :index&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+</table>
+<h4 id="slim-templates">Slim Templates</h4>
+<table>
+<tr>
+<pre><code>&lt;td&gt;Dependency&lt;/td&gt;
+&lt;td&gt;&lt;a href=&quot;http://slim-lang.com/&quot; title=&quot;Slim Lang&quot;&gt;Slim Lang&lt;/a&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;File Extension&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;.slim&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;Example&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;slim :index&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+</table>
+<h4 id="creole-templates">Creole Templates</h4>
+<table>
+<tr>
+<pre><code>&lt;td&gt;Dependency&lt;/td&gt;
+&lt;td&gt;&lt;a href=&quot;https://github.com/minad/creole&quot; title=&quot;Creole&quot;&gt;Creole&lt;/a&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;File Extension&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;.creole&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;Example&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;creole :wiki, :layout_engine =&gt; :erb&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+</table>
+<p>It is not possible to call methods from creole, nor to pass locals to it. You therefore will usually use it in combination with another rendering engine:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">erb <span class="st">:overview</span>, <span class="st">:locals</span> =&gt; { <span class="st">:text</span> =&gt; creole(<span class="st">:introduction</span>) }</code></pre></div>
+<p>Note that you may also call the <code>creole</code> method from within other templates:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="ot">%</span>h1 Hello From Haml<span class="ot">!</span>
+<span class="st">%p= creole(:greetings)</span></code></pre></div>
+<p>Since you cannot call Ruby from Creole, you cannot use layouts written in Creole. However, it is possible to use another rendering engine for the template than for the layout by passing the <code>:layout_engine</code> option.</p>
+<h4 id="mediawiki-templates">MediaWiki Templates</h4>
+<table>
+<tr>
+<pre><code>&lt;td&gt;Dependency&lt;/td&gt;
+&lt;td&gt;&lt;a href=&quot;https://github.com/nricciar/wikicloth&quot; title=&quot;WikiCloth&quot;&gt;WikiCloth&lt;/a&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;File Extension&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;.mediawiki&lt;/tt&gt; and &lt;tt&gt;.mw&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;Example&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;mediawiki :wiki, :layout_engine =&gt; :erb&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+</table>
+<p>It is not possible to call methods from MediaWiki markup, nor to pass locals to it. You therefore will usually use it in combination with another rendering engine:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">erb <span class="st">:overview</span>, <span class="st">:locals</span> =&gt; { <span class="st">:text</span> =&gt; mediawiki(<span class="st">:introduction</span>) }</code></pre></div>
+<p>Note that you may also call the <code>mediawiki</code> method from within other templates:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="ot">%</span>h1 Hello From Haml<span class="ot">!</span>
+<span class="st">%p= mediawiki(:greetings)</span></code></pre></div>
+<p>Since you cannot call Ruby from MediaWiki, you cannot use layouts written in MediaWiki. However, it is possible to use another rendering engine for the template than for the layout by passing the <code>:layout_engine</code> option.</p>
+<h4 id="coffeescript-templates">CoffeeScript Templates</h4>
+<table>
+<tr>
+<pre><code>&lt;td&gt;Dependency&lt;/td&gt;
+&lt;td&gt;
+  &lt;a href=&quot;https://github.com/josh/ruby-coffee-script&quot; title=&quot;Ruby CoffeeScript&quot;&gt;
+    CoffeeScript
+  &lt;/a&gt; and a
+  &lt;a href=&quot;https://github.com/sstephenson/execjs/blob/master/README.md#readme&quot; title=&quot;ExecJS&quot;&gt;
+    way to execute javascript
+  &lt;/a&gt;
+&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;File Extension&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;.coffee&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;Example&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;coffee :index&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+</table>
+<h4 id="stylus-templates">Stylus Templates</h4>
+<table>
+<tr>
+<pre><code>&lt;td&gt;Dependency&lt;/td&gt;
+&lt;td&gt;
+  &lt;a href=&quot;https://github.com/lucasmazza/ruby-stylus&quot; title=&quot;Ruby Stylus&quot;&gt;
+    Stylus
+  &lt;/a&gt; and a
+  &lt;a href=&quot;https://github.com/sstephenson/execjs/blob/master/README.md#readme&quot; title=&quot;ExecJS&quot;&gt;
+    way to execute javascript
+  &lt;/a&gt;
+&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;File Extension&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;.styl&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;Example&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;stylus :index&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+</table>
+<p>Before being able to use Stylus templates, you need to load <code>stylus</code> and <code>stylus/tilt</code> first:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">require <span class="st">&#39;sinatra&#39;</span>
+require <span class="st">&#39;stylus&#39;</span>
+require <span class="st">&#39;stylus/tilt&#39;</span>
+
+get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  stylus <span class="st">:example</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="yajl-templates">Yajl Templates</h4>
+<table>
+<tr>
+<pre><code>&lt;td&gt;Dependency&lt;/td&gt;
+&lt;td&gt;&lt;a href=&quot;https://github.com/brianmario/yajl-ruby&quot; title=&quot;yajl-ruby&quot;&gt;yajl-ruby&lt;/a&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;File Extension&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;.yajl&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;Example&lt;/td&gt;
+&lt;td&gt;
+  &lt;tt&gt;
+    yajl :index,
+         :locals =&gt; { :key =&gt; &#39;qux&#39; },
+         :callback =&gt; &#39;present&#39;,
+         :variable =&gt; &#39;resource&#39;
+  &lt;/tt&gt;
+&lt;/td&gt;</code></pre>
+</tr>
+</table>
+<p>The template source is evaluated as a Ruby string, and the resulting json variable is converted using <code>#to_json</code>:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">json = { <span class="st">:foo</span> =&gt; <span class="st">&#39;bar&#39;</span> }
+json[<span class="st">:baz</span>] = key</code></pre></div>
+<p>The <code>:callback</code> and <code>:variable</code> options can be used to decorate the rendered object:</p>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">var</span> resource <span class="op">=</span> <span class="op">{</span><span class="st">&quot;foo&quot;</span><span class="op">:</span><span class="st">&quot;bar&quot;</span><span class="op">,</span><span class="st">&quot;baz&quot;</span><span class="op">:</span><span class="st">&quot;qux&quot;</span><span class="op">};</span>
+<span class="at">present</span>(resource)<span class="op">;</span></code></pre></div>
+<h4 id="wlang-templates">WLang Templates</h4>
+<table>
+<tr>
+<pre><code>&lt;td&gt;Dependency&lt;/td&gt;
+&lt;td&gt;&lt;a href=&quot;https://github.com/blambeau/wlang/&quot; title=&quot;WLang&quot;&gt;WLang&lt;/a&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;File Extension&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;.wlang&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+<tr>
+<pre><code>&lt;td&gt;Example&lt;/td&gt;
+&lt;td&gt;&lt;tt&gt;wlang :index, :locals =&gt; { :key =&gt; &#39;value&#39; }&lt;/tt&gt;&lt;/td&gt;</code></pre>
+</tr>
+</table>
+<p>Since calling ruby methods is not idiomatic in WLang, you almost always want to pass locals to it. Layouts written in WLang and <code>yield</code> are supported, though.</p>
+<h3 id="accessing-variables-in-templates">Accessing Variables in Templates</h3>
+<p>Templates are evaluated within the same context as route handlers. Instance variables set in route handlers are directly accessible by templates:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/:id&#39;</span> <span class="kw">do</span>
+  <span class="ot">@foo</span> = <span class="dt">Foo</span>.find(params[<span class="st">&#39;id&#39;</span>])
+  haml <span class="st">&#39;%h1= @foo.name&#39;</span>
+<span class="kw">end</span></code></pre></div>
+<p>Or, specify an explicit Hash of local variables:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/:id&#39;</span> <span class="kw">do</span>
+  foo = <span class="dt">Foo</span>.find(params[<span class="st">&#39;id&#39;</span>])
+  haml <span class="st">&#39;%h1= bar.name&#39;</span>, <span class="st">:locals</span> =&gt; { <span class="st">:bar</span> =&gt; foo }
+<span class="kw">end</span></code></pre></div>
+<p>This is typically used when rendering templates as partials from within other templates.</p>
+<h3 id="templates-with-yield-and-nested-layouts">Templates with <code>yield</code> and nested layouts</h3>
+<p>A layout is usually just a template that calls <code>yield</code>. Such a template can be used either through the <code>:template</code> option as described above, or it can be rendered with a block as follows:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">erb <span class="st">:post</span>, <span class="st">:layout</span> =&gt; <span class="dv">false</span> <span class="kw">do</span>
+  erb <span class="st">:index</span>
+<span class="kw">end</span></code></pre></div>
+<p>This code is mostly equivalent to <code>erb :index, :layout =&gt; :post</code>.</p>
+<p>Passing blocks to rendering methods is most useful for creating nested layouts:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">erb <span class="st">:main_layout</span>, <span class="st">:layout</span> =&gt; <span class="dv">false</span> <span class="kw">do</span>
+  erb <span class="st">:admin_layout</span> <span class="kw">do</span>
+    erb <span class="st">:user</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<p>This can also be done in fewer lines of code with:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">erb <span class="st">:admin_layout</span>, <span class="st">:layout</span> =&gt; <span class="st">:main_layout</span> <span class="kw">do</span>
+  erb <span class="st">:user</span>
+<span class="kw">end</span></code></pre></div>
+<p>Currently, the following rendering methods accept a block: <code>erb</code>, <code>haml</code>, <code>liquid</code>, <code>slim</code>, <code>wlang</code>. Also the general <code>render</code> method accepts a block.</p>
+<h3 id="named-templates">Named Templates</h3>
+<p>Templates may also be defined using the top-level <code>template</code> method:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">template <span class="st">:layout</span> <span class="kw">do</span>
+  <span class="st">&quot;%html\n  =yield\n&quot;</span>
+<span class="kw">end</span>
+
+template <span class="st">:index</span> <span class="kw">do</span>
+  <span class="st">&#39;%div.title Hello World!&#39;</span>
+<span class="kw">end</span>
+
+get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  haml <span class="st">:index</span>
+<span class="kw">end</span></code></pre></div>
+<p>If a template named &quot;layout&quot; exists, it will be used each time a template is rendered. You can individually disable layouts by passing <code>:layout =&gt; false</code> or disable them by default via <code>set :haml, :layout =&gt; false</code>:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  haml <span class="st">:index</span>, <span class="st">:layout</span> =&gt; !request.xhr?
+<span class="kw">end</span></code></pre></div>
+<h3 id="associating-file-extensions">Associating File Extensions</h3>
+<p>To associate a file extension with a template engine, use <code>Tilt.register</code>. For instance, if you like to use the file extension <code>tt</code> for Textile templates, you can do the following:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">Tilt</span>.register <span class="st">:tt</span>, <span class="dt">Tilt</span>[<span class="st">:textile</span>]</code></pre></div>
+<h3 id="adding-your-own-template-engine">Adding Your Own Template Engine</h3>
+<p>First, register your engine with Tilt, then create a rendering method:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">Tilt</span>.register <span class="st">:myat</span>, <span class="dt">MyAwesomeTemplateEngine</span>
+
+helpers <span class="kw">do</span>
+  <span class="kw">def</span> myat(*args) render(<span class="st">:myat</span>, *args) <span class="kw">end</span>
+<span class="kw">end</span>
+
+get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  myat <span class="st">:index</span>
+<span class="kw">end</span></code></pre></div>
+<p>Renders <code>./views/index.myat</code>. See https://github.com/rtomayko/tilt to learn more about Tilt.</p>
+<h3 id="using-custom-logic-for-template-lookup">Using Custom Logic for Template Lookup</h3>
+<p>To implement your own template lookup mechanism you can write your own <code>#find_template</code> method:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">configure <span class="kw">do</span>
+  set <span class="st">:views</span> [ <span class="st">&#39;./views/a&#39;</span>, <span class="st">&#39;./views/b&#39;</span> ]
+<span class="kw">end</span>
+
+<span class="kw">def</span> find_template(views, name, engine, &amp;block)
+  <span class="dt">Array</span>(views).each <span class="kw">do</span> |v|
+    <span class="dv">super</span>(v, name, engine, &amp;block)
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<h3 id="inline-templates">Inline Templates</h3>
+<p>Templates may be defined at the end of the source file:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">require <span class="st">&#39;sinatra&#39;</span>
+
+get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  haml <span class="st">:index</span>
+<span class="kw">end</span>
+
+<span class="kw">__END__</span>
+
+@@ layout
+%html
+  = yield
+
+@@ index
+%div.title Hello world.</code></pre></div>
+<p>NOTE: Inline templates defined in the source file that requires sinatra are automatically loaded. Call <code>enable :inline_templates</code> explicitly if you have inline templates in other source files.</p>

@@ -1,0 +1,96 @@
+<h1 id="miniportile">MiniPortile</h1>
+<p>This documents versions 2 and up, for which the require file was renamed to <code>mini_portile2</code>. For mini_portile versions 0.6.x and previous, please visit <a href="https://github.com/flavorjones/mini_portile/tree/v0.6.x">the v0.6.x branch</a>.</p>
+<p><a href="https://travis-ci.org/flavorjones/mini_portile?branch=master"><img src="https://travis-ci.org/flavorjones/mini_portile.svg?branch=master" alt="travis status" /></a> <a href="https://ci.appveyor.com/project/flavorjones/mini-portile/branch/master"><img src="https://ci.appveyor.com/api/projects/status/509669xx1qlhqqab/branch/master?svg=true" alt="appveyor status" /></a></p>
+<ul>
+<li>Documentation: http://www.rubydoc.info/github/flavorjones/mini_portile</li>
+<li>Source Code: https://github.com/flavorjones/mini_portile</li>
+<li>Bug Reports: https://github.com/flavorjones/mini_portile/issues</li>
+</ul>
+<p>This project is a minimalistic implementation of a port/recipe system <strong>for developers</strong>.</p>
+<p>Because <em>&quot;Works on my machine&quot;</em> is unacceptable for a library maintainer.</p>
+<h2 id="not-another-package-management-system">Not Another Package Management System</h2>
+<p><code>mini_portile2</code> is not a general package management system. It is not aimed to replace apt, macports or homebrew.</p>
+<p>It's intended primarily to make sure that you, as the developer of a library, can reproduce a user's dependencies and environment by specifying a specific version of an underlying dependency that you'd like to use.</p>
+<p>So, if a user says, &quot;This bug happens on my system that uses libiconv 1.13.1&quot;, <code>mini_portile2</code> should make it easy for you to download, compile and link against libiconv 1.13.1; and run your test suite against it.</p>
+<p>This scenario might be simplified with something like this:</p>
+<pre><code>rake compile LIBICONV_VERSION=1.13.1</code></pre>
+<p>(For your homework, you can make libiconv version be taken from the appropriate <code>ENV</code> variables.)</p>
+<h2 id="sounds-easy-but-wheres-the-catch">Sounds easy, but where's the catch?</h2>
+<p>At this time <code>mini_portile2</code> only supports <strong>autoconf</strong>- or <strong>configure</strong>-based projects. (That is, it assumes the library you want to build contains a <code>configure</code> script, which all the autoconf-based libraries do.)</p>
+<p>As of v2.2.0, there is experimental support for <strong>CMake</strong>-based projects. We welcome your feedback on this, particularly for Windows platforms.</p>
+<h3 id="how-to-use-for-autoconf-projects">How to use (for autoconf projects)</h3>
+<p>Now that you know the catch, and you're still reading this, here is a quick example:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">gem <span class="st">&quot;mini_portile2&quot;</span>, <span class="st">&quot;~&gt; 2.0.0&quot;</span> <span class="co"># NECESSARY if used in extconf.rb. see below.</span>
+require <span class="st">&quot;mini_portile2&quot;</span>
+recipe = <span class="dt">MiniPortile</span>.new(<span class="st">&quot;libiconv&quot;</span>, <span class="st">&quot;1.13.1&quot;</span>)
+recipe.files = [<span class="st">&quot;http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.13.1.tar.gz&quot;</span>]
+recipe.cook
+recipe.activate</code></pre></div>
+<p>The gem version constraint makes sure that your extconf.rb is protected against possible backwards-incompatible changes to <code>mini_portile2</code>. This constraint is REQUIRED if you're using <code>mini_portile2</code> within a gem installation process (e.g., extconf.rb), because Bundler doesn't enforce gem version constraints at install-time (only at run-time.</p>
+<p><code>#cook</code> will download, extract, patch, configure and compile the library into a namespaced structure.</p>
+<p><code>#activate</code> ensures GCC will find this library and prefer it over a system-wide installation.</p>
+<h3 id="how-to-use-for-cmake-projects">How to use (for cmake projects)</h3>
+<p>Same as above, but instead of <code>MiniPortile.new</code>, call <code>MiniPortileCMake.new</code>.</p>
+<h3 id="directory-structure-conventions">Directory Structure Conventions</h3>
+<p><code>mini_portile2</code> follows the principle of <strong>convention over configuration</strong> and established a folder structure where is going to place files and perform work.</p>
+<p>Take the above example, and let's draw some picture:</p>
+<pre><code>mylib
+  |-- ports
+  |   |-- archives
+  |   |   `-- libiconv-1.13.1.tar.gz
+  |   `-- &lt;platform&gt;
+  |       `-- libiconv
+  |           `-- 1.13.1
+  |               |-- bin
+  |               |-- include
+  |               `-- lib
+  `-- tmp
+      `-- &lt;platform&gt;
+          `-- ports</code></pre>
+<p>In above structure, <code>&lt;platform&gt;</code> refers to the architecture that represents the operating system you're using (e.g. i686-linux, i386-mingw32, etc).</p>
+<p>Inside the platform folder, <code>mini_portile2</code> will store the artifacts that result from the compilation process. The library is versioned so you can keep multiple versions around on disk without clobbering anything.</p>
+<p><code>archives</code> is where downloaded source files are cached. It is recommended you avoid trashing that folder to avoid downloading the same file multiple times (save bandwidth, save the world).</p>
+<p><code>tmp</code> is where compilation is performed and can be safely discarded.</p>
+<p>Use the recipe's <code>#path</code> to obtain the full path to the installation directory:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">recipe.cook
+recipe.path <span class="co"># =&gt; /home/luis/projects/myapp/ports/i686-linux/libiconv/1.13.1</span></code></pre></div>
+<h3 id="how-can-i-combine-this-with-my-compilation-task">How can I combine this with my compilation task?</h3>
+<p>In the simplest case, your rake <code>compile</code> task will depend on <code>mini_portile2</code> compilation and most important, activation.</p>
+<p>Example:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">task <span class="st">:libiconv</span> <span class="kw">do</span>
+  recipe = <span class="dt">MiniPortile</span>.new(<span class="st">&quot;libiconv&quot;</span>, <span class="st">&quot;1.13.1&quot;</span>)
+  recipe.files &lt;&lt; {
+    <span class="st">url: &quot;http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.13.1.tar.gz&quot;</span>],
+    <span class="st">md5: &quot;7ab33ebd26687c744a37264a330bbe9a&quot;</span>
+  }
+  checkpoint = <span class="st">&quot;.</span><span class="ot">#{</span>recipe.name<span class="ot">}</span><span class="st">-</span><span class="ot">#{</span>recipe.version<span class="ot">}</span><span class="st">.installed&quot;</span>
+
+  <span class="kw">unless</span> <span class="dt">File</span>.exist?(checkpoint)
+    recipe.cook
+    touch checkpoint
+  <span class="kw">end</span>
+
+  recipe.activate
+<span class="kw">end</span>
+
+task <span class="st">:compile</span> =&gt; [<span class="st">:libiconv</span>] <span class="kw">do</span>
+  <span class="co"># ... your library&#39;s compilation task ...</span>
+<span class="kw">end</span></code></pre></div>
+<p>The above example will:</p>
+<ul>
+<li><strong>download</strong> and verify integrity the sources only once</li>
+<li><strong>compile</strong> the library only once (using a timestamp file)</li>
+<li>ensure compiled library is <strong>activated</strong></li>
+<li>make the compile task depend upon compiled library activation</li>
+</ul>
+<p>As an exercise for the reader, you could specify the libiconv version in an environment variable or a configuration file.</p>
+<h3 id="native-andor-cross-compilation">Native and/or Cross Compilation</h3>
+<p>The above example covers the normal use case: compiling dependencies natively.</p>
+<p><code>MiniPortile</code> also covers another use case, which is the cross-compilation of the dependencies to be used as part of a binary gem compilation.</p>
+<p>It is the perfect complementary tool for <a href="https://github.com/rake-compiler/rake-compiler"><code>rake-compiler</code></a> and its <code>cross</code> rake task.</p>
+<p>Depending on your usage of <code>rake-compiler</code>, you will need to use <code>host</code> to match the installed cross-compiler toolchain.</p>
+<p>Please refer to the examples directory for simplified and practical usage.</p>
+<h3 id="supported-scenarios">Supported Scenarios</h3>
+<p>As mentioned before, <code>MiniPortile</code> requires a GCC compiler toolchain. This has been tested against Ubuntu, OSX and even Windows (RubyInstaller with DevKit)</p>
+<h2 id="license">License</h2>
+<p>This library is licensed under MIT license. Please see LICENSE.txt for details.</p>

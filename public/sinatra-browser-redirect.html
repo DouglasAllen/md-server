@@ -1,0 +1,30 @@
+<h3 id="browser-redirect">Browser Redirect</h3>
+<p>You can trigger a browser redirect with the <code>redirect</code> helper method:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/foo&#39;</span> <span class="kw">do</span>
+  redirect to(<span class="st">&#39;/bar&#39;</span>)
+<span class="kw">end</span></code></pre></div>
+<p>Any additional parameters are handled like arguments passed to <code>halt</code>:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">redirect to(<span class="st">&#39;/bar&#39;</span>), <span class="dv">303</span>
+redirect <span class="st">&#39;http://google.com&#39;</span>, <span class="st">&#39;wrong place, buddy&#39;</span></code></pre></div>
+<p>You can also easily redirect back to the page the user came from with <code>redirect back</code>:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/foo&#39;</span> <span class="kw">do</span>
+  <span class="st">&quot;&lt;a href=&#39;/bar&#39;&gt;do something&lt;/a&gt;&quot;</span>
+<span class="kw">end</span>
+
+get <span class="st">&#39;/bar&#39;</span> <span class="kw">do</span>
+  do_something
+  redirect back
+<span class="kw">end</span></code></pre></div>
+<p>To pass arguments with a redirect, either add them to the query:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">redirect to(<span class="st">&#39;/bar?sum=42&#39;</span>)</code></pre></div>
+<p>Or use a session:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">enable <span class="st">:sessions</span>
+
+get <span class="st">&#39;/foo&#39;</span> <span class="kw">do</span>
+  session[<span class="st">:secret</span>] = <span class="st">&#39;foo&#39;</span>
+  redirect to(<span class="st">&#39;/bar&#39;</span>)
+<span class="kw">end</span>
+
+get <span class="st">&#39;/bar&#39;</span> <span class="kw">do</span>
+  session[<span class="st">:secret</span>]
+<span class="kw">end</span></code></pre></div>

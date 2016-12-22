@@ -1,0 +1,993 @@
+<h1 id="the-ruby-programming-language">The Ruby Programming Language</h1>
+<h2 id="chapter-8">CHAPTER 8</h2>
+<h3 id="reflection-and-metaprogramming">Reflection and Metaprogramming</h3>
+<h4 id="ancestry-and-modules">8.1.1 Ancestry and Modules</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">module</span> A; <span class="kw">end</span>                <span class="co"># Empty module</span>
+<span class="kw">module</span> B; include A; <span class="kw">end</span>;    <span class="co"># Module B includes A</span>
+<span class="kw">class</span> C; include B; <span class="kw">end</span>;     <span class="co"># Class C includes module B</span>
+
+C &lt; B               <span class="co"># =&gt; true: C includes B</span>
+B &lt; A               <span class="co"># =&gt; true: B includes A</span>
+C &lt; A               <span class="co"># =&gt; true</span>
+<span class="dt">Fixnum</span> &lt; <span class="dt">Integer</span>    <span class="co"># =&gt; true: all fixnums are integers</span>
+<span class="dt">Integer</span> &lt;<span class="dt">Comparable</span> <span class="co"># =&gt; true: integers are comparable</span>
+<span class="dt">Integer</span> &lt; <span class="dt">Fixnum</span>    <span class="co"># =&gt; false: not all integers are fixnums</span>
+<span class="dt">String</span> &lt; <span class="dt">Numeric</span>    <span class="co"># =&gt; nil: strings are not numbers</span>
+
+A.ancestors         <span class="co"># =&gt; [A]</span>
+B.ancestors         <span class="co"># =&gt; [B, A]</span>
+C.ancestors         <span class="co"># =&gt; [C, B, A, Object, Kernel]</span>
+<span class="dt">String</span>.ancestors    <span class="co"># =&gt; [String, Enumerable, Comparable, Object, Kernel]</span>
+                    <span class="co"># Note: in Ruby 1.9 String is no longer Enumerable</span>
+
+C.include?(B)       <span class="co"># =&gt; true</span>
+C.include?(A)       <span class="co"># =&gt; true</span>
+B.include?(A)       <span class="co"># =&gt; true</span>
+A.include?(A)       <span class="co"># =&gt; false </span>
+A.include?(B)       <span class="co"># =&gt; false</span>
+
+A.included_modules  <span class="co"># =&gt; []</span>
+B.included_modules  <span class="co"># =&gt; [A]</span>
+C.included_modules  <span class="co"># =&gt; [B, A, Kernel]</span>
+<span class="co">###########################</span>
+<span class="kw">module</span> <span class="dt">Greeter</span>; <span class="kw">def</span> hi; <span class="st">&quot;hello&quot;</span>; <span class="kw">end</span>; <span class="kw">end</span> <span class="co"># A silly module</span>
+s = <span class="st">&quot;string object&quot;</span>
+s.extend(<span class="dt">Greeter</span>)       <span class="co"># Add hi as a singleton method to s</span>
+s.hi                    <span class="co"># =&gt; &quot;hello&quot;</span>
+<span class="dt">String</span>.extend(<span class="dt">Greeter</span>)  <span class="co"># Add hi as a class method of String</span>
+<span class="dt">String</span>.hi               <span class="co"># =&gt; &quot;hello&quot;</span>
+<span class="co">###########################</span>
+<span class="kw">module</span> M
+  <span class="kw">class</span> C
+    <span class="dt">Module</span>.nesting   <span class="co"># =&gt; [M::C, M]</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="defining-classes-and-modules">8.1.2 Defining Classes and Modules</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">M = <span class="dt">Module</span>.new      <span class="co"># Define a new module M</span>
+C = <span class="dt">Class</span>.new       <span class="co"># Define a new class C</span>
+D = <span class="dt">Class</span>.new(C) {  <span class="co"># Define a subclass of C</span>
+  include M         <span class="co"># that includes module M</span>
+}
+D.to_s              <span class="co"># =&gt; &quot;D&quot;: class gets constant name by magic</span></code></pre></div>
+<h4 id="evaluating-strings-and-blocks">8.2 Evaluating Strings and Blocks</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">x = <span class="dv">1</span>
+eval <span class="st">&quot;x + 1&quot;</span>  <span class="co"># =&gt; 2</span></code></pre></div>
+<h4 id="bindings-and-eval">8.2.1 Bindings and eval</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">Object</span>     <span class="co"># Open Object to add a new method</span>
+  <span class="kw">def</span> bindings   <span class="co"># Note plural on this method</span>
+    binding      <span class="co"># This is the predefined Kernel method</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+
+<span class="kw">class</span> <span class="dt">Test</span>       <span class="co"># A simple class with an instance variable</span>
+  <span class="kw">def</span> initialize(x); <span class="ot">@x</span> = x; <span class="kw">end</span>
+<span class="kw">end</span>
+
+t = <span class="dt">Test</span>.new(<span class="dv">10</span>)       <span class="co"># Create a test object</span>
+eval(<span class="st">&quot;@x&quot;</span>, t.bindings) <span class="co"># =&gt; 10: We&#39;ve peeked inside t</span></code></pre></div>
+<h4 id="instance_eval-and-class_eval">8.2.2 instance_eval and class_eval</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">o.instance_eval(<span class="st">&quot;@x&quot;</span>)  <span class="co"># Return the value of o&#39;s instance variable @x</span>
+
+<span class="co"># Define an instance method len of String to return string length</span>
+<span class="dt">String</span>.class_eval(<span class="st">&quot;def len; size; end&quot;</span>)
+
+<span class="co"># Here&#39;s another way to do that</span>
+<span class="co"># The quoted code behaves just as if it was inside &quot;class String&quot; and &quot;end&quot;</span>
+<span class="dt">String</span>.class_eval(<span class="st">&quot;alias len size&quot;</span>)
+
+<span class="co"># Use instance_eval to define class method String.empty</span>
+<span class="co"># Note that quotes within quotes get a little tricky...</span>
+<span class="dt">String</span>.instance_eval(<span class="st">&quot;def empty; &#39;&#39;; end&quot;</span>)
+<span class="co">###########################</span>
+o.instance_eval { <span class="ot">@x</span> }
+<span class="dt">String</span>.class_eval {
+  <span class="kw">def</span> len
+    size
+  <span class="kw">end</span>
+}
+<span class="dt">String</span>.class_eval { <span class="kw">alias</span> len size }
+<span class="dt">String</span>.instance_eval { <span class="kw">def</span> empty; <span class="st">&quot;&quot;</span>; <span class="kw">end</span> }</code></pre></div>
+<h4 id="variables-and-constants">8.3 Variables and Constants</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">global_variables   <span class="co"># =&gt; [&quot;$DEBUG&quot;, &quot;$SAFE&quot;, ...]</span>
+x = <span class="dv">1</span>              <span class="co"># Define a local variable</span>
+local_variables    <span class="co"># =&gt; [&quot;x&quot;]</span>
+
+<span class="co"># Define a simple class</span>
+<span class="kw">class</span> <span class="dt">Point</span>
+  <span class="kw">def</span> initialize(x,y); <span class="ot">@x</span>,<span class="ot">@y</span> = x,y; <span class="kw">end</span> <span class="co"># Define instance variables</span>
+  <span class="ot">@@classvar</span> = <span class="dv">1</span>                        <span class="co"># Define a class variable</span>
+  <span class="dt">ORIGIN</span> = <span class="dt">Point</span>.new(<span class="dv">0</span>,<span class="dv">0</span>)               <span class="co"># Define a constant</span>
+<span class="kw">end</span>
+
+<span class="dt">Point</span>::<span class="dt">ORIGIN</span>.instance_variables <span class="co"># =&gt; [&quot;@y&quot;, &quot;@x&quot;]</span>
+<span class="dt">Point</span>.class_variables            <span class="co"># =&gt; [&quot;@@classvar&quot;]</span>
+<span class="dt">Point</span>.constants                  <span class="co"># =&gt; [&quot;ORIGIN&quot;]</span></code></pre></div>
+<h4 id="querying-setting-and-testing-variables">8.3.1 Querying, Setting, and Testing Variables</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">x = <span class="dv">1</span>
+varname = <span class="st">&quot;x&quot;</span>
+eval(varname)           <span class="co"># =&gt; 1</span>
+eval(<span class="st">&quot;varname = &#39;$g&#39;&quot;</span>)  <span class="co"># Set varname to &quot;$g&quot;</span>
+eval(<span class="st">&quot;</span><span class="ot">#{</span>varname<span class="ot">}</span><span class="st"> = x&quot;</span>)  <span class="co"># Set $g to 1</span>
+eval(varname)           <span class="co"># =&gt; 1</span>
+<span class="co">###########################</span>
+o = <span class="dt">Object</span>.new
+o.instance_variable_set(<span class="st">:@x</span>, <span class="dv">0</span>)   <span class="co"># Note required @ prefix</span>
+o.instance_variable_get(<span class="st">:@x</span>)      <span class="co"># =&gt; 0</span>
+o.instance_variable_defined?(<span class="st">:@x</span>) <span class="co"># =&gt; true</span>
+
+<span class="dt">Object</span>.class_variable_set(<span class="st">:@@x</span>, <span class="dv">1</span>)   <span class="co"># Private in Ruby 1.8</span>
+<span class="dt">Object</span>.class_variable_get(<span class="st">:@@x</span>)      <span class="co"># Private in Ruby 1.8</span>
+<span class="dt">Object</span>.class_variable_defined?(<span class="st">:@@x</span>) <span class="co"># =&gt; true; Ruby 1.9 and later</span>
+
+<span class="dt">Math</span>.const_set(<span class="st">:EPI</span>, <span class="dt">Math</span>::<span class="dt">E</span>*<span class="dt">Math</span>::<span class="dt">PI</span>)
+<span class="dt">Math</span>.const_get(<span class="st">:EPI</span>)             <span class="co"># =&gt; 8.53973422267357</span>
+<span class="dt">Math</span>.const_defined? <span class="st">:EPI</span>         <span class="co"># =&gt; true </span>
+<span class="co">###########################</span>
+<span class="dt">String</span>.class_eval { class_variable_set(<span class="st">:@@x</span>, <span class="dv">1</span>) }  <span class="co"># Set @@x in String</span>
+<span class="dt">String</span>.class_eval { class_variable_get(<span class="st">:@@x</span>) }     <span class="co"># =&gt; 1</span>
+<span class="co">###########################</span>
+o.instance_eval { remove_instance_variable <span class="st">:@x</span> }
+<span class="dt">String</span>.class_eval { remove_class_variable(<span class="st">:@@x</span>) }
+<span class="dt">Math</span>.send <span class="st">:remove_const</span>, <span class="st">:EPI</span>  <span class="co"># Use send to invoke private method</span>
+<span class="co">###########################</span>
+<span class="kw">def</span> <span class="dt">Symbol</span>.const_missing(name)
+  name <span class="co"># Return the constant name as a symbol</span>
+<span class="kw">end</span>
+<span class="dt">Symbol</span>::<span class="dt">Test</span>   <span class="co"># =&gt; :Test: undefined constant evaluates to a Symbol</span></code></pre></div>
+<h4 id="listing-and-testing-for-methods">8.4.1 Listing and Testing For Methods</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">o = <span class="st">&quot;a string&quot;</span>
+o.methods                <span class="co"># =&gt; [ names of all public methods ]</span>
+o.public_methods         <span class="co"># =&gt; the same thing</span>
+o.public_methods(<span class="dv">false</span>)  <span class="co"># Exclude inherited methods</span>
+o.protected_methods      <span class="co"># =&gt; []: there aren&#39;t any</span>
+o.private_methods        <span class="co"># =&gt; array of all private methods</span>
+o.private_methods(<span class="dv">false</span>) <span class="co"># Exclude inherited private methods</span>
+<span class="kw">def</span> o.single; <span class="dv">1</span>; <span class="kw">end</span>     <span class="co"># Define a singleton method</span>
+o.singleton_methods      <span class="co"># =&gt; [&quot;single&quot;] (or [:single] in 1.9)</span>
+<span class="co">###########################</span>
+<span class="dt">String</span>.instance_methods == <span class="st">&quot;s&quot;</span>.public_methods                <span class="co"># =&gt; true</span>
+<span class="dt">String</span>.instance_methods(<span class="dv">false</span>) == <span class="st">&quot;s&quot;</span>.public_methods(<span class="dv">false</span>)  <span class="co"># =&gt; true</span>
+<span class="dt">String</span>.public_instance_methods == <span class="dt">String</span>.instance_methods    <span class="co"># =&gt; true</span>
+<span class="dt">String</span>.protected_instance_methods       <span class="co"># =&gt; []</span>
+<span class="dt">String</span>.private_instance_methods(<span class="dv">false</span>)  <span class="co"># =&gt; [&quot;initialize_copy&quot;,</span>
+                                        <span class="co">#     &quot;initialize&quot;]</span>
+<span class="co">###########################</span>
+<span class="dt">Math</span>.singleton_methods  <span class="co"># =&gt; [&quot;acos&quot;, &quot;log10&quot;, &quot;atan2&quot;, ... ]</span>
+<span class="co">###########################</span>
+<span class="dt">String</span>.public_method_defined? <span class="st">:reverse</span>     <span class="co"># =&gt; true</span>
+<span class="dt">String</span>.protected_method_defined? <span class="st">:reverse</span>  <span class="co"># =&gt; false</span>
+<span class="dt">String</span>.private_method_defined? <span class="st">:initialize</span> <span class="co"># =&gt; true</span>
+<span class="dt">String</span>.method_defined? <span class="st">:upcase!</span>            <span class="co"># =&gt; true</span></code></pre></div>
+<h4 id="obtaining-method-objects">8.4.2 Obtaining Method Objects</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="st">&quot;s&quot;</span>.method(<span class="st">:reverse</span>)             <span class="co"># =&gt; Method object </span>
+<span class="dt">String</span>.instance_method(<span class="st">:reverse</span>) <span class="co"># =&gt; UnboundMethod object</span></code></pre></div>
+<p>8.4.3 Invoking Methods</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="st">&quot;hello&quot;</span>.send <span class="st">:upcase</span>        <span class="co"># =&gt; &quot;HELLO&quot;: invoke an instance method</span>
+<span class="dt">Math</span>.send(<span class="st">:sin</span>, <span class="dt">Math</span>::<span class="dt">PI</span>/<span class="dv">2</span>) <span class="co"># =&gt; 1.0: invoke a class method</span>
+<span class="co">###########################</span>
+<span class="st">&quot;hello&quot;</span>.send <span class="st">:puts</span>, <span class="st">&quot;world&quot;</span>         <span class="co"># prints &quot;world&quot;</span>
+<span class="co">###########################</span>
+<span class="st">&quot;hello&quot;</span>.public_send <span class="st">:puts</span>, <span class="st">&quot;world&quot;</span>  <span class="co"># raises NoMethodError</span></code></pre></div>
+<h4 id="defining-undefining-and-aliasing-methods">8.4.4 Defining, Undefining, and Aliasing Methods</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># Add an instance method named m to class c with body b </span>
+<span class="kw">def</span> add_method(c, m, &amp;b)
+  c.class_eval {
+    define_method(m, &amp;b)
+  }
+<span class="kw">end</span>
+
+add_method(<span class="dt">String</span>, <span class="st">:greet</span>) { <span class="st">&quot;Hello, &quot;</span> + <span class="dv">self</span> }
+
+<span class="st">&quot;world&quot;</span>.greet   <span class="co"># =&gt; &quot;Hello, world&quot;</span>
+<span class="co">###########################</span>
+<span class="kw">def</span> add_class_method(c, m, &amp;b)
+  eigenclass = <span class="kw">class</span> &lt;&lt; c; <span class="dv">self</span>; <span class="kw">end</span>
+  eigenclass.class_eval {
+    define_method(m, &amp;b)
+  }
+<span class="kw">end</span>
+
+add_class_method(<span class="dt">String</span>, <span class="st">:greet</span>) {|name| <span class="st">&quot;Hello, &quot;</span> + name }
+
+<span class="dt">String</span>.greet(<span class="st">&quot;world&quot;</span>)  <span class="co"># =&gt; &quot;Hello, world&quot;</span>
+<span class="co">###########################</span>
+<span class="dt">String</span>.define_singleton_method(<span class="st">:greet</span>) {|name| <span class="st">&quot;Hello, &quot;</span> + name }
+<span class="co">###########################</span>
+<span class="kw">alias</span> plus +         <span class="co"># Make &quot;plus&quot; a synonym for the + operator</span>
+<span class="co">###########################</span>
+<span class="co"># Create an alias for the method m in the class (or module) c</span>
+<span class="kw">def</span> backup(c, m, prefix=<span class="st">&quot;original&quot;</span>)
+  n = :<span class="st">&quot;</span><span class="ot">#{</span>prefix<span class="ot">}</span><span class="st">_</span><span class="ot">#{</span>m<span class="ot">}</span><span class="st">&quot;</span>    <span class="co"># Compute the alias</span>
+  c.class_eval {           <span class="co"># Because alias_method is private</span>
+    alias_method n, m      <span class="co"># Make n an alias for m</span>
+  }
+<span class="kw">end</span>
+
+backup(<span class="dt">String</span>, <span class="st">:reverse</span>)
+<span class="st">&quot;test&quot;</span>.original_reverse <span class="co"># =&gt; &quot;tset&quot;</span></code></pre></div>
+<h4 id="handling-undefined-methods">8.4.5 Handling Undefined Methods</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">Hash</span>
+  <span class="co"># Allow hash values to be queried and set as if they were attributes.</span>
+  <span class="co"># We simulate attribute getters and setters for any key.</span>
+  <span class="kw">def</span> method_missing(key, *args)
+    text = key.to_s
+
+    <span class="kw">if</span> text[-<span class="dv">1</span>,<span class="dv">1</span>] == <span class="st">&quot;=&quot;</span>               <span class="co"># If key ends with = set a value</span>
+      <span class="dv">self</span>[text.chop.to_sym] = args[<span class="dv">0</span>] <span class="co"># Strip = from key</span>
+    <span class="kw">else</span>                               <span class="co"># Otherwise...</span>
+      <span class="dv">self</span>[key]                        <span class="co"># ...just return the key value</span>
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+
+h = {}         <span class="co"># Create an empty hash object</span>
+h.one = <span class="dv">1</span>      <span class="co"># Same as h[:one] = 1</span>
+puts h.one     <span class="co"># Prints 1. Same as puts h[:one]</span></code></pre></div>
+<h4 id="setting-method-visibility">8.4.6 Setting Method Visibility</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">String</span>.class_eval { <span class="kw">private</span> <span class="st">:reverse</span> }
+<span class="st">&quot;hello&quot;</span>.reverse  <span class="co"># NoMethodError: private method &#39;reverse&#39;</span>
+<span class="co">###########################</span>
+<span class="co"># Make all Math methods private</span>
+<span class="co"># Now we have to include Math in order to invoke its methods</span>
+<span class="dt">Math</span>.private_class_method *<span class="dt">Math</span>.singleton_methods</code></pre></div>
+<h4 id="hooks">8.5 Hooks</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">def</span> <span class="dt">Object</span>.inherited(c)
+  puts <span class="st">&quot;class </span><span class="ot">#{</span>c<span class="ot">}</span><span class="st"> &lt; </span><span class="ot">#{</span><span class="dv">self</span><span class="ot">}</span><span class="st">&quot;</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">module</span> <span class="dt">Final</span>             <span class="co"># A class that includes Final can&#39;t be subclassed</span>
+  <span class="kw">def</span> <span class="dv">self</span>.included(c)   <span class="co"># When included in class c</span>
+    c.instance_eval <span class="kw">do</span>   <span class="co"># Define a class method of c</span>
+      <span class="kw">def</span> inherited(sub) <span class="co"># To detect subclasses</span>
+        raise <span class="dt">Exception</span>, <span class="co"># And abort with an exception</span>
+              <span class="st">&quot;Attempt to create subclass </span><span class="ot">#{</span>sub<span class="ot">}</span><span class="st"> of Final class </span><span class="ot">#{</span><span class="dv">self</span><span class="ot">}</span><span class="st">&quot;</span>
+      <span class="kw">end</span>
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">def</span> <span class="dt">String</span>.method_added(name) 
+  puts <span class="st">&quot;New instance method </span><span class="ot">#{</span>name<span class="ot">}</span><span class="st"> added to String&quot;</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">def</span> <span class="dt">String</span>.singleton_method_added(name)
+  puts <span class="st">&quot;New class method </span><span class="ot">#{</span>name<span class="ot">}</span><span class="st"> added to String&quot;</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="co"># Including this module in a class prevents instances of that class</span>
+<span class="co"># from having singleton methods added to them. Any singleton methods added</span>
+<span class="co"># are immediately removed again.</span>
+<span class="kw">module</span> <span class="dt">Strict</span>
+  <span class="kw">def</span> singleton_method_added(name)
+    <span class="dt">STDERR</span>.puts <span class="st">&quot;Warning: singleton </span><span class="ot">#{</span>name<span class="ot">}</span><span class="st"> added to a Strict object&quot;</span>
+    eigenclass = <span class="kw">class</span> &lt;&lt; <span class="dv">self</span>; <span class="dv">self</span>; <span class="kw">end</span>
+    eigenclass.class_eval { remove_method name }
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="tracing">8.6 Tracing</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">STDERR</span>.puts <span class="st">&quot;</span><span class="ot">#{</span><span class="dv">__FILE__</span><span class="ot">}</span><span class="st">:</span><span class="ot">#{</span><span class="dv">__LINE__</span>): invalid data<span class="st">&quot;</span>
+<span class="st">###########################</span>
+<span class="st">raise &quot;</span><span class="dt">Assertion</span> failed <span class="kw">in</span> <span class="co">#{__method__} at #{__FILE__}:#{__LINE__}&quot;</span>
+<span class="co">###########################</span>
+<span class="dt">SCRIPT_LINES__</span> = {<span class="dv">__FILE__</span> =&gt; <span class="dt">File</span>.readlines(<span class="dv">__FILE__</span>)}
+<span class="co">###########################</span>
+<span class="dt">SCRIPT_LINES__</span>[<span class="dv">__FILE__</span>][<span class="dv">__LINE__-1</span>]
+<span class="co">###########################</span>
+<span class="co"># Print a message every time $SAFE changes</span>
+trace_var(<span class="st">:$SAFE</span>) {|v|
+  puts <span class="st">&quot;$SAFE set to </span><span class="ot">#{</span>v<span class="ot">}</span><span class="st"> at </span><span class="ot">#{</span><span class="dv">caller</span>[<span class="dv">1</span>]<span class="ot">}</span><span class="st">&quot;</span>
+}</code></pre></div>
+<h4 id="objectspace-and-gc">8.7 ObjectSpace and GC</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># Print out a list of all known classes</span>
+<span class="dt">ObjectSpace</span>.each_object(<span class="dt">Class</span>) {|c| puts c }</code></pre></div>
+<h4 id="delaying-and-repeating-execution-after-and-every">8.8.1 Delaying and Repeating Execution: after and every</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">require <span class="st">&#39;afterevery&#39;</span>
+
+<span class="dv">1</span>.upto(<span class="dv">5</span>) {|i| after i { puts i} }  <span class="co"># Slowly print the numbers 1 to 5</span>
+sleep(<span class="dv">5</span>)                            <span class="co"># Wait five seconds</span>
+every <span class="dv">1</span>, <span class="dv">6</span> <span class="kw">do</span> |count|               <span class="co"># Now slowly print 6 to 10</span>
+  puts count
+  <span class="kw">break</span> <span class="kw">if</span> count == <span class="dv">10</span>
+  count + <span class="dv">1</span>                         <span class="co"># The next value of count</span>
+<span class="kw">end</span>
+sleep(<span class="dv">6</span>)                            <span class="co"># Give the above time to run</span>
+<span class="co">###########################</span>
+<span class="co">#</span>
+<span class="co"># Define Kernel methods after and every for deferring blocks of code.</span>
+<span class="co"># Examples:</span>
+<span class="co">#</span>
+<span class="co">#   after 1 { puts &quot;done&quot; }</span>
+<span class="co">#   every 60 { redraw_clock }</span>
+<span class="co">#</span>
+<span class="co"># Both methods return Thread objects. Call kill on the returned objects</span>
+<span class="co"># to cancel the execution of the code.</span>
+<span class="co">#</span>
+<span class="co"># Note that this is a very naive implementation. A more robust</span>
+<span class="co"># implementation would use a single global timer thread for all tasks,</span>
+<span class="co"># would allow a way to retrieve the value of a deferred block, and would</span>
+<span class="co"># provide a way to wait for all pending tasks to complete.</span>
+<span class="co">#</span>
+
+<span class="co"># Execute block after sleeping the specified number of seconds.</span>
+<span class="kw">def</span> after(seconds, &amp;block)  
+  <span class="dt">Thread</span>.new <span class="kw">do</span>     <span class="co"># In a new thread...</span>
+    sleep(seconds)  <span class="co"># First sleep </span>
+    block.call      <span class="co"># Then call the block</span>
+  <span class="kw">end</span>               <span class="co"># Return the Thread object right away</span>
+<span class="kw">end</span>
+
+<span class="co"># Repeatedly sleep and then execute the block.</span>
+<span class="co"># Pass value to the block on the first invocation.  </span>
+<span class="co"># On subsequent invocations, pass the value of the previous invocation.</span>
+<span class="kw">def</span> every(seconds, value=<span class="dv">nil</span>, &amp;block)
+  <span class="dt">Thread</span>.new <span class="kw">do</span>                 <span class="co"># In a new thread...</span>
+    loop <span class="kw">do</span>                     <span class="co"># Loop forever (or until break in block)</span>
+      sleep(seconds)            <span class="co"># Sleep</span>
+      value = block.call(value) <span class="co"># And invoke block</span>
+    <span class="kw">end</span>                         <span class="co"># Then repeat..</span>
+  <span class="kw">end</span>                           <span class="co"># every returns the Thread</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="thread-safety-with-synchronized-blocks">8.8.2 Thread Safety with Synchronized Blocks</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">require <span class="st">&#39;thread&#39;</span>  <span class="co"># Ruby 1.8 keeps Mutex in this library</span>
+
+<span class="co"># Obtain the Mutex associated with the object o, and then evaluate</span>
+<span class="co"># the block under the protection of that Mutex.</span>
+<span class="co"># This works like the synchronized keyword of Java.</span>
+<span class="kw">def</span> synchronized(o)
+  o.mutex.synchronize { <span class="kw">yield</span> }
+<span class="kw">end</span>
+
+<span class="co"># Object.mutex does not actually exist. We&#39;ve got to define it.</span>
+<span class="co"># This method returns a unique Mutex for every object, and</span>
+<span class="co"># always returns the same Mutex for any particular object.</span>
+<span class="co"># It creates Mutexes lazily, which requires synchronization for</span>
+<span class="co"># thread safety.</span>
+<span class="kw">class</span> <span class="dt">Object</span>
+  <span class="co"># Return the Mutex for this object, creating it if necessary.</span>
+  <span class="co"># The tricky part is making sure that two threads don&#39;t call</span>
+  <span class="co"># this at the same time and end up creating two different mutexes.</span>
+  <span class="kw">def</span> mutex
+    <span class="co"># If this object already has a mutex, just return it</span>
+    <span class="kw">return</span> <span class="ot">@__mutex</span> <span class="kw">if</span> <span class="ot">@__mutex</span>
+    
+    <span class="co"># Otherwise, we&#39;ve got to create a mutex for the object.</span>
+    <span class="co"># To do this safely we&#39;ve got to synchronize on our class object.</span>
+    synchronized(<span class="dv">self</span>.class) {
+      <span class="co"># Check again: by the time we enter this synchronized block,</span>
+      <span class="co"># some other thread might have already created the mutex.</span>
+      <span class="ot">@__mutex</span> = <span class="ot">@__mutex</span> || <span class="dt">Mutex</span>.new
+    }
+    <span class="co"># The return value is @__mutex</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+
+<span class="co"># The Object.mutex method defined above needs to lock the class </span>
+<span class="co"># if the object doesn&#39;t have a Mutex yet. If the class doesn&#39;t have</span>
+<span class="co"># its own Mutex yet, then the class of the class (the Class object)</span>
+<span class="co"># will be locked. In order to prevent infinite recursion, we must</span>
+<span class="co"># ensure that the Class object has a mutex.</span>
+<span class="dt">Class</span>.instance_eval { <span class="ot">@__mutex</span> = <span class="dt">Mutex</span>.new }</code></pre></div>
+<h4 id="unicode-codepoint-constants-with-const_missing">8.9.1 Unicode Codepoint Constants with const_missing</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># This module provides constants that define the UTF-8 strings for</span>
+<span class="co"># all Unicode codepoints. It uses const_missing to define them lazily.</span>
+<span class="co"># Examples:</span>
+<span class="co">#   copyright = Unicode::U00A9</span>
+<span class="co">#   euro = Unicode::U20AC</span>
+<span class="co">#   infinity = Unicode::U221E</span>
+<span class="kw">module</span> <span class="dt">Unicode</span>
+  <span class="co"># This method allows us to define Unicode codepoint constants lazily.</span>
+  <span class="kw">def</span> <span class="dv">self</span>.const_missing(name)  <span class="co"># Undefined constant passed as a symbol</span>
+    <span class="co"># Check that the constant name is of the right form.</span>
+    <span class="co"># Capital U followed by a hex number between 0000 and 10FFFF.</span>
+    <span class="kw">if</span> name.to_s =~ <span class="ot">/^U([0-9a-fA-F]{4,5}|10[0-9a-fA-F]{4})$/</span>
+      <span class="co"># $1 is the matched hexadecimal number. Convert to an integer.</span>
+      codepoint = <span class="dt">$1</span>.to_i(<span class="dv">16</span>)
+      <span class="co"># Convert the number to a UTF-8 string with the magic of Array.pack.</span>
+      utf8 = [codepoint].pack(<span class="st">&quot;U&quot;</span>)
+      <span class="co"># Make the UTF-8 string immutable.</span>
+      utf8.freeze
+      <span class="co"># Define a real constant for faster lookup next time, and return</span>
+      <span class="co"># the UTF-8 text for this time.</span>
+      const_set(name, utf8)
+    <span class="kw">else</span> 
+      <span class="co"># Raise an error for constants of the wrong form.</span>
+      raise <span class="dt">NameError</span>, <span class="st">&quot;Uninitialized constant: Unicode::</span><span class="ot">#{</span>name<span class="ot">}</span><span class="st">&quot;</span>
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="tracing-method-invocations-with-method_missing">8.9.2 Tracing Method Invocations with method_missing</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">a = [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>].trace(<span class="st">&quot;a&quot;</span>)
+a.reverse
+puts a[<span class="dv">2</span>]
+puts a.fetch(<span class="dv">3</span>)
+<span class="co">###########################</span>
+<span class="dt">Invoking</span>: a.reverse() at trace1.rb:<span class="dv">66</span>
+<span class="dt">Returning</span>: [<span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">1</span>] from a.reverse to trace1.rb:<span class="dv">66</span>
+<span class="dt">Invoking</span>: a.fetch(<span class="dv">3</span>) at trace1.rb:<span class="dv">67</span>
+<span class="dt">Raising</span>: <span class="dt">IndexError</span><span class="st">:index</span> <span class="dv">3</span> out of array from a.fetch
+<span class="co">###########################</span>
+<span class="co"># Call the trace method of any object to obtain a new object that</span>
+<span class="co"># behaves just like the original, but which traces all method calls</span>
+<span class="co"># on that object. If tracing more than one object, specify a name to</span>
+<span class="co"># appear in the output. By default, messages will be sent to STDERR, </span>
+<span class="co"># but you can specify any stream (or any object that accepts strings</span>
+<span class="co"># as arguments to &lt;&lt;).</span>
+<span class="kw">class</span> <span class="dt">Object</span>
+  <span class="kw">def</span> trace(name=<span class="st">&quot;&quot;</span>, stream=<span class="dt">STDERR</span>)
+    <span class="co"># Return a TracedObject that traces and delegates everything else to us.</span>
+    <span class="dt">TracedObject</span>.new(<span class="dv">self</span>, name, stream)
+  <span class="kw">end</span>
+<span class="kw">end</span>
+
+<span class="co"># This class uses method_missing to trace method invocations and</span>
+<span class="co"># then delegate them to some other object. It deletes most of its own</span>
+<span class="co"># instance methods so that they don&#39;t get in the way of method_missing.</span>
+<span class="co"># Note that only methods invoked through the TracedObject will be traced.</span>
+<span class="co"># If the delegate object calls methods on itself, those invocations</span>
+<span class="co"># will not be traced.</span>
+<span class="kw">class</span> <span class="dt">TracedObject</span>
+  <span class="co"># Undefine all of our noncritical public instance methods.</span>
+  <span class="co"># Note the use of Module.instance_methods and Module.undef_method.</span>
+  instance_methods.each <span class="kw">do</span> |m|
+    m = m.to_sym  <span class="co"># Ruby 1.8 returns strings, instead of symbols</span>
+    <span class="kw">next</span> <span class="kw">if</span> m == <span class="st">:object_id</span> || m == <span class="st">:__id__</span> || m == <span class="st">:__send__</span>
+    undef_method m
+  <span class="kw">end</span>
+
+  <span class="co"># Initialize this TracedObject instance.</span>
+  <span class="kw">def</span> initialize(o, name, stream)
+    <span class="ot">@o</span> = o            <span class="co"># The object we delegate to</span>
+    <span class="ot">@n</span> = name         <span class="co"># The object name to appear in tracing messages</span>
+    <span class="ot">@trace</span> = stream   <span class="co"># Where those tracing messages are sent</span>
+  <span class="kw">end</span>
+
+  <span class="co"># This is the key method of TracedObject. It is invoked for just</span>
+  <span class="co"># about any method invocation on a TracedObject.</span>
+  <span class="kw">def</span> method_missing(*args, &amp;block)
+    m = args.shift         <span class="co"># First arg is the name of the method</span>
+    <span class="kw">begin</span>
+      <span class="co"># Trace the invocation of the method.</span>
+      arglist = args.map {|a| a.inspect}.join(<span class="st">&#39;, &#39;</span>)
+      <span class="ot">@trace</span> &lt;&lt; <span class="st">&quot;Invoking: </span><span class="ot">#{@n}</span><span class="st">.</span><span class="ot">#{</span>m<span class="ot">}</span><span class="st">(</span><span class="ot">#{</span>arglist<span class="ot">}</span><span class="st">) at </span><span class="ot">#{</span><span class="dv">caller</span>[<span class="dv">0</span>]<span class="ot">}</span><span class="st">\n&quot;</span>
+      <span class="co"># Invoke the method on our delegate object and get the return value.</span>
+      r = <span class="ot">@o</span>.send m, *args, &amp;block
+      <span class="co"># Trace a normal return of the method.</span>
+      <span class="ot">@trace</span> &lt;&lt; <span class="st">&quot;Returning: </span><span class="ot">#{</span>r.inspect<span class="ot">}</span><span class="st"> from </span><span class="ot">#{@n}</span><span class="st">.</span><span class="ot">#{</span>m<span class="ot">}</span><span class="st"> to </span><span class="ot">#{</span><span class="dv">caller</span>[<span class="dv">0</span>]<span class="ot">}</span><span class="st">\n&quot;</span>
+      <span class="co"># Return whatever value the delegate object returned.</span>
+      r
+    <span class="kw">rescue</span> <span class="dt">Exception</span> =&gt; e
+      <span class="co"># Trace an abnormal return from the method.</span>
+      <span class="ot">@trace</span> &lt;&lt; <span class="st">&quot;Raising: </span><span class="ot">#{</span>e.class<span class="ot">}</span><span class="st">:</span><span class="ot">#{</span>e<span class="ot">}</span><span class="st"> from </span><span class="ot">#{@n}</span><span class="st">.</span><span class="ot">#{</span>m<span class="ot">}</span><span class="st">\n&quot;</span>
+      <span class="co"># And re-raise whatever exception the delegate object raised.</span>
+      raise
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+
+  <span class="co"># Return the object we delegate to.</span>
+  <span class="kw">def</span> __delegate
+    <span class="ot">@o</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="synchronized-objects-by-delegation">8.9.3 Synchronized Objects by Delegation</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">def</span> synchronized(o)
+  o.mutex.synchronize { <span class="kw">yield</span> }
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">def</span> synchronized(o)
+  <span class="kw">if</span> block_given?
+    o.mutex.synchronize { <span class="kw">yield</span> }
+  <span class="kw">else</span>
+    <span class="dt">SynchronizedObject</span>.new(o)
+  <span class="kw">end</span>
+<span class="kw">end</span>
+
+<span class="co"># A delegating wrapper class using method_missing for thread safety</span>
+<span class="co"># Instead of extending Object and deleting our methods we just extend</span>
+<span class="co"># BasicObject, which is defined in Ruby 1.9. BasicObject does not </span>
+<span class="co"># inherit from Object or Kernel, so the methods of a BasicObject cannot</span>
+<span class="co"># invoke any top-level methods: they are just not there.</span>
+<span class="kw">class</span> <span class="dt">SynchronizedObject</span>  &lt; <span class="dt">BasicObject</span>
+  <span class="kw">def</span> initialize(o); <span class="ot">@delegate</span> = o;  <span class="kw">end</span>
+  <span class="kw">def</span> __delegate; <span class="ot">@delegate</span>; <span class="kw">end</span>
+
+  <span class="kw">def</span> method_missing(*args, &amp;block)
+    <span class="ot">@delegate</span>.mutex.synchronize {
+      <span class="ot">@delegate</span>.send *args, &amp;block
+    }
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="defining-methods-with-class_eval">8.10.1 Defining Methods with class_eval</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">Module</span>
+  <span class="kw">private</span>     <span class="co"># The methods that follow are both private</span>
+
+  <span class="co"># This method works like attr_reader, but has a shorter name</span>
+  <span class="kw">def</span> readonly(*syms)
+    <span class="kw">return</span> <span class="kw">if</span> syms.size == <span class="dv">0</span>  <span class="co"># If no arguments, do nothing</span>
+    code = <span class="st">&quot;&quot;</span>                 <span class="co"># Start with an empty string of code</span>
+    <span class="co"># Generate a string of Ruby code to define attribute reader methods.</span>
+    <span class="co"># Notice how the symbol is interpolated into the string of code.</span>
+    syms.each <span class="kw">do</span> |s|                     <span class="co"># For each symbol</span>
+      code &lt;&lt; <span class="st">&quot;def </span><span class="ot">#{</span>s<span class="ot">}</span><span class="st">; @</span><span class="ot">#{</span>s<span class="ot">}</span><span class="st">; end\n&quot;</span>   <span class="co"># The method definition</span>
+    <span class="kw">end</span>
+    <span class="co"># Finally, class_eval the generated code to create instance methods.</span>
+    class_eval code
+  <span class="kw">end</span>
+
+  <span class="co"># This method works like attr_accessor, but has a shorter name.</span>
+  <span class="kw">def</span> readwrite(*syms)
+    <span class="kw">return</span> <span class="kw">if</span> syms.size == <span class="dv">0</span>
+    code = <span class="st">&quot;&quot;</span>
+    syms.each <span class="kw">do</span> |s|
+      code &lt;&lt; <span class="st">&quot;def </span><span class="ot">#{</span>s<span class="ot">}</span><span class="st">; @</span><span class="ot">#{</span>s<span class="ot">}</span><span class="st"> end\n&quot;</span>
+      code &lt;&lt; <span class="st">&quot;def </span><span class="ot">#{</span>s<span class="ot">}</span><span class="st">=(value); @</span><span class="ot">#{</span>s<span class="ot">}</span><span class="st"> = value; end\n&quot;</span>
+    <span class="kw">end</span>
+    class_eval code
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="defining-methods-with-define_method">8.10.2 Defining Methods with define_method</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">Point</span>
+  attributes <span class="st">:x</span> =&gt; <span class="dv">0</span>, <span class="st">:y</span> =&gt; <span class="dv">0</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">class</span> <span class="dt">Point</span>
+  attributes x:<span class="dv">0</span>, y:<span class="dv">0</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">class</span> <span class="dt">Module</span>
+  <span class="co"># This method defines attribute reader and writer methods for named</span>
+  <span class="co"># attributes, but expects a hash argument mapping attribute names to</span>
+  <span class="co"># default values. The generated attribute reader methods return the</span>
+  <span class="co"># default value if the instance variable has not yet been defined.</span>
+  <span class="kw">def</span> attributes(hash)
+    hash.each_pair <span class="kw">do</span> |symbol, default|   <span class="co"># For each attribute/default pair</span>
+      getter = symbol                     <span class="co"># Name of the getter method</span>
+      setter = :<span class="st">&quot;</span><span class="ot">#{</span>symbol<span class="ot">}</span><span class="st">=&quot;</span>              <span class="co"># Name of the setter method</span>
+      variable = :<span class="st">&quot;@</span><span class="ot">#{</span>symbol<span class="ot">}</span><span class="st">&quot;</span>            <span class="co"># Name of the instance variable</span>
+      define_method getter <span class="kw">do</span>             <span class="co"># Define the getter method</span>
+        <span class="kw">if</span> instance_variable_defined? variable
+          instance_variable_get variable  <span class="co"># Return variable, if defined</span>
+        <span class="kw">else</span>
+          default                         <span class="co"># Otherwise return default</span>
+        <span class="kw">end</span>
+      <span class="kw">end</span>
+
+      define_method setter <span class="kw">do</span> |value|     <span class="co"># Define setter method</span>
+        instance_variable_set variable,   <span class="co"># Set the instance variable</span>
+                              value       <span class="co"># To the argument value</span>
+      <span class="kw">end</span>
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+
+  <span class="co"># This method works like attributes, but defines class methods instead</span>
+  <span class="co"># by invoking attributes on the eigenclass instead of on self.</span>
+  <span class="co"># Note that the defined methods use class instance variables</span>
+  <span class="co"># instead of regular class variables.  </span>
+  <span class="kw">def</span> class_attrs(hash)
+    eigenclass = <span class="kw">class</span> &lt;&lt; <span class="dv">self</span>; <span class="dv">self</span>; <span class="kw">end</span>
+    eigenclass.class_eval { attributes(hash) }
+  <span class="kw">end</span>
+
+  <span class="co"># Both methods are private</span>
+  <span class="kw">private</span> <span class="st">:attributes</span>, <span class="st">:class_attrs</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="tracing-files-loaded-and-classes-defined">8.11.1 Tracing Files Loaded and Classes Defined</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">require <span class="st">&#39;classtrace&#39;</span>
+<span class="co">###########################</span>
+ruby -rclasstrace my_program.rb  --traceout <span class="ot">/tmp/</span>trace
+<span class="co">###########################</span>
+<span class="co"># We define this module to hold the global state we require, so that</span>
+<span class="co"># we don&#39;t alter the global namespace any more than necessary.</span>
+<span class="kw">module</span> <span class="dt">ClassTrace</span>
+  <span class="co"># This array holds our list of files loaded and classes defined.</span>
+  <span class="co"># Each element is a subarray holding the class defined or the</span>
+  <span class="co"># file loaded and the stack frame where it was defined or loaded.</span>
+  T = []  <span class="co"># Array to hold the files loaded</span>
+
+  <span class="co"># Now define the constant OUT to specify where tracing output goes.</span>
+  <span class="co"># This defaults to STDERR, but can also come from command-line arguments</span>
+  <span class="kw">if</span> x = <span class="dt">ARGV</span>.index(<span class="st">&quot;--traceout&quot;</span>)    <span class="co"># If argument exists</span>
+    <span class="dt">OUT</span> = <span class="dt">File</span>.open(<span class="dt">ARGV</span>[x<span class="dv">+1</span>], <span class="st">&quot;w&quot;</span>)  <span class="co"># Open the specified file</span>
+    <span class="dt">ARGV</span>[x,<span class="dv">2</span>] = <span class="dv">nil</span>                  <span class="co"># And remove the arguments</span>
+  <span class="kw">else</span>
+    <span class="dt">OUT</span> = <span class="dt">STDERR</span>                     <span class="co"># Otherwise default to STDERR</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+
+<span class="co"># Alias chaining step 1: define aliases for the original methods</span>
+<span class="kw">alias</span> original_require require
+<span class="kw">alias</span> original_load load
+
+<span class="co"># Alias chaining step 2: define new versions of the methods </span>
+<span class="kw">def</span> require(file)
+  <span class="dt">ClassTrace</span>::<span class="dt">T</span> &lt;&lt; [file,<span class="dv">caller</span>[<span class="dv">0</span>]]     <span class="co"># Remember what was loaded where</span>
+  original_require(file)                <span class="co"># Invoke the original method</span>
+<span class="kw">end</span>
+<span class="kw">def</span> load(*args)
+  <span class="dt">ClassTrace</span>::<span class="dt">T</span> &lt;&lt; [args[<span class="dv">0</span>],<span class="dv">caller</span>[<span class="dv">0</span>]]  <span class="co"># Remember what was loaded where</span>
+  original_load(*args)                  <span class="co"># Invoke the original method</span>
+<span class="kw">end</span>
+
+<span class="co"># This hook method is invoked each time a new class is defined</span>
+<span class="kw">def</span> <span class="dt">Object</span>.inherited(c)
+  <span class="dt">ClassTrace</span>::<span class="dt">T</span> &lt;&lt; [c,<span class="dv">caller</span>[<span class="dv">0</span>]]        <span class="co"># Remember what was defined where</span>
+<span class="kw">end</span>
+
+<span class="co"># Kernel.at_exit registers a block to be run when the program exits</span>
+<span class="co"># We use it to report the file and class data we collected</span>
+at_exit {
+  o = <span class="dt">ClassTrace</span>::<span class="dt">OUT</span>
+  o.puts <span class="st">&quot;=&quot;</span>*<span class="dv">60</span>
+  o.puts <span class="st">&quot;Files Loaded and Classes Defined:&quot;</span>
+  o.puts <span class="st">&quot;=&quot;</span>*<span class="dv">60</span>
+  <span class="dt">ClassTrace</span>::<span class="dt">T</span>.each <span class="kw">do</span> |what,where|
+    <span class="kw">if</span> what.is_a? <span class="dt">Class</span>  <span class="co"># Report class (with hierarchy) defined</span>
+      o.puts <span class="st">&quot;Defined: </span><span class="ot">#{</span>what.ancestors.join(<span class="st">&#39;&lt;-&#39;</span>)<span class="ot">}</span><span class="st"> at </span><span class="ot">#{</span>where<span class="ot">}</span><span class="st">&quot;</span>
+    <span class="kw">else</span>                 <span class="co"># Report file loaded</span>
+      o.puts <span class="st">&quot;Loaded: </span><span class="ot">#{</span>what<span class="ot">}</span><span class="st"> at </span><span class="ot">#{</span>where<span class="ot">}</span><span class="st">&quot;</span>
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+}</code></pre></div>
+<h4 id="tracing-files-loaded-and-classes-defined-1">8.11.1 Tracing Files Loaded and Classes Defined</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># Define a Module.synchronize_method that alias chains instance methods</span>
+<span class="co"># so they synchronize on the instance before running.</span>
+<span class="kw">class</span> <span class="dt">Module</span>
+  <span class="co"># This is a helper function for alias chaining.</span>
+  <span class="co"># Given a method name (as a string or symbol) and a prefix, create</span>
+  <span class="co"># a unique alias for the method, and return the name of the alias</span>
+  <span class="co"># as a symbol. Any punctuation characters in the original method name</span>
+  <span class="co"># will be converted to numbers so that operators can be aliased.</span>
+  <span class="kw">def</span> create_alias(original, prefix=<span class="st">&quot;alias&quot;</span>)
+    <span class="co"># Stick the prefix on the original name and convert punctuation</span>
+    aka = <span class="st">&quot;</span><span class="ot">#{</span>prefix<span class="ot">}</span><span class="st">_</span><span class="ot">#{</span>original<span class="ot">}</span><span class="st">&quot;</span>
+    aka.gsub!(<span class="ot">/([\=\|\&amp;\+\-\*\/\^\!\?\~\%\&lt;\&gt;\[\]])/</span>) {
+      num = <span class="dt">$1</span>[<span class="dv">0</span>]                       <span class="co"># Ruby 1.8 character -&gt; ordinal</span>
+      num = num.ord <span class="kw">if</span> num.is_a? <span class="dt">String</span> <span class="co"># Ruby 1.9 character -&gt; ordinal</span>
+      <span class="st">&#39;_&#39;</span> + num.to_s
+    }
+    
+    <span class="co"># Keep appending underscores until we get a name that is not in use</span>
+    aka += <span class="st">&quot;_&quot;</span> <span class="kw">while</span> method_defined? aka <span class="kw">or</span> private_method_defined? aka
+
+    aka = aka.to_sym            <span class="co"># Convert the alias name to a symbol</span>
+    alias_method aka, original  <span class="co"># Actually create the alias</span>
+    aka                         <span class="co"># Return the alias name</span>
+  <span class="kw">end</span>
+
+  <span class="co"># Alias chain the named method to add synchronization</span>
+  <span class="kw">def</span> synchronize_method(m)
+    <span class="co"># First, make an alias for the unsynchronized version of the method.</span>
+    aka = create_alias(m, <span class="st">&quot;unsync&quot;</span>) 
+    <span class="co"># Now redefine the original to invoke the alias in a synchronized block.</span>
+    <span class="co"># We want the defined  method to be able to accept blocks, so we</span>
+    <span class="co"># can&#39;t use define_method, and must instead evaluate a string with </span>
+    <span class="co"># class_eval. Note that everything between %Q{ and the matching } </span>
+    <span class="co"># is a double-quoted string, not a block. </span>
+    class_eval <span class="ot">%Q{</span>
+<span class="st">      def </span><span class="ot">#{</span>m<span class="ot">}</span><span class="st">(*args, &amp;block)</span>
+<span class="st">        synchronized(self) { </span><span class="ot">#{</span>aka<span class="ot">}</span><span class="st">(*args, &amp;block) }</span>
+<span class="st">      end</span>
+<span class="st">    </span><span class="ot">}</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+
+<span class="co"># This global synchronized method can now be used in three different ways.</span>
+<span class="kw">def</span> synchronized(*args)
+  <span class="co"># Case 1: with one argument and a block, synchronize on the object</span>
+  <span class="co"># and execute the block</span>
+  <span class="kw">if</span> args.size == <span class="dv">1</span> &amp;&amp; block_given?
+    args[<span class="dv">0</span>].mutex.synchronize { <span class="kw">yield</span> }
+
+  <span class="co"># Case two: with one argument that is not a symbol and no block</span>
+  <span class="co"># return a SynchronizedObject wrapper</span>
+  <span class="kw">elsif</span> args.size == <span class="dv">1</span> <span class="kw">and</span> <span class="kw">not</span> args[<span class="dv">0</span>].is_a? <span class="dt">Symbol</span> <span class="kw">and</span> <span class="kw">not</span> block_given?
+    <span class="dt">SynchronizedObject</span>.new(args[<span class="dv">0</span>])
+
+  <span class="co"># Case three: when invoked on a module with no block, alias chain the</span>
+  <span class="co"># named methods to add synchronization. Or, if there are no arguments, </span>
+  <span class="co"># then alias chain the next method defined.</span>
+  <span class="kw">elsif</span> <span class="dv">self</span>.is_a? <span class="dt">Module</span> <span class="kw">and</span> <span class="kw">not</span> block_given?
+    <span class="kw">if</span> (args.size &gt; <span class="dv">0</span>) <span class="co"># Synchronize the named methods</span>
+      args.each {|m| <span class="dv">self</span>.synchronize_method(m) }
+    <span class="kw">else</span>
+      <span class="co"># If no methods are specified synchronize the next method defined</span>
+      eigenclass = <span class="kw">class</span>&lt;&lt;<span class="kw">self</span><span class="ot">; self; end </span>
+<span class="ot">      eigenclass.class_eval do # Use eigenclass to define class methods</span>
+<span class="ot">        # Define method_added for notification when next method is defined</span>
+<span class="ot">        define_method :method_added do |name|</span>
+<span class="ot">          # First remove this hook method</span>
+<span class="ot">          eigenclass.class_eval { remove_method :method_added }</span>
+<span class="ot">          # Next, synchronize the method that was just added</span>
+<span class="ot">          self.synchronize_method name</span>
+<span class="ot">        end</span>
+<span class="ot">      end</span>
+<span class="ot">    end</span>
+
+<span class="ot">  # Case 4: any other invocation is an error</span>
+<span class="ot">  else</span>
+<span class="ot">    raise ArgumentError, &quot;Invalid arguments to synchronize()&quot;</span>
+<span class="ot">  end</span>
+<span class="ot">end</span></code></pre></div>
+<h4 id="chaining-methods-for-tracing">8.11.3 Chaining Methods for Tracing</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># Define trace! and untrace! instance methods for all objects.</span>
+<span class="co"># trace! &quot;chains&quot; the named methods by defining singleton methods</span>
+<span class="co"># that add tracing functionality and then use super to call the original.</span>
+<span class="co"># untrace! deletes the singleton methods to remove tracing.</span>
+<span class="kw">class</span> <span class="dt">Object</span>
+  <span class="co"># Trace the specified methods, sending output to STDERR.</span>
+  <span class="kw">def</span> trace!(*methods)
+    <span class="ot">@_traced</span> = <span class="ot">@_traced</span> || []    <span class="co"># Remember the set of traced methods</span>
+
+    <span class="co"># If no methods were specified, use all public methods defined </span>
+    <span class="co"># directly (not inherited) by the class of this object </span>
+    methods = public_methods(<span class="dv">false</span>) <span class="kw">if</span> methods.size == <span class="dv">0</span>
+
+    methods.map! {|m| m.to_sym } <span class="co"># Convert any strings to symbols</span>
+    methods -= <span class="ot">@_traced</span>          <span class="co"># Remove methods that are already traced</span>
+    <span class="kw">return</span> <span class="kw">if</span> methods.empty?     <span class="co"># Return early if there is nothing to do</span>
+    <span class="ot">@_traced</span> |= methods          <span class="co"># Add methods to set of traced methods</span>
+
+    <span class="co"># Trace the fact that we&#39;re starting to trace these methods</span>
+    <span class="dt">STDERR</span> &lt;&lt; <span class="st">&quot;Tracing </span><span class="ot">#{</span>methods.join(<span class="st">&#39;, &#39;</span>)<span class="ot">}</span><span class="st"> on </span><span class="ot">#{</span>object_id<span class="ot">}</span><span class="st">\n&quot;</span>
+
+    <span class="co"># Singleton methods are defined in the eigenclass</span>
+    eigenclass = <span class="kw">class</span> &lt;&lt; <span class="dv">self</span>; <span class="dv">self</span>; <span class="kw">end</span>
+
+    methods.each <span class="kw">do</span> |m|         <span class="co"># For each method m</span>
+      <span class="co"># Define a traced singleton version of the method m.</span>
+      <span class="co"># Output tracing information and use super to invoke the</span>
+      <span class="co"># instance method that it is tracing.</span>
+      <span class="co"># We want the defined  methods to be able to accept blocks, so we</span>
+      <span class="co"># can&#39;t use define_method, and must instead evaluate a string.</span>
+      <span class="co"># Note that everything between %Q{ and the matching } is a </span>
+      <span class="co"># double-quoted string, not a block. Also note that there are </span>
+      <span class="co"># two levels of string interpolations here. #{} is interpolated</span>
+      <span class="co"># when the singleton method is defined. And \#{} is interpolated </span>
+      <span class="co"># when the singleton method is invoked.</span>
+      eigenclass.class_eval <span class="ot">%Q{</span>
+<span class="st">        def </span><span class="ot">#{</span>m<span class="ot">}</span><span class="st">(*args, &amp;block)</span>
+<span class="st">          begin</span>
+<span class="st">            STDERR &lt;&lt; &quot;Entering: </span><span class="ot">#{</span>m<span class="ot">}</span><span class="st">(\</span><span class="ot">#{</span>args.join(<span class="st">&#39;, &#39;</span>)<span class="ot">}</span><span class="st">)\n&quot;</span>
+<span class="st">            result = super</span>
+<span class="st">            STDERR &lt;&lt; &quot;Exiting: </span><span class="ot">#{</span>m<span class="ot">}</span><span class="st"> with \</span><span class="ot">#{</span>result<span class="ot">}</span><span class="st">\n&quot;</span>
+<span class="st">            result</span>
+<span class="st">          rescue</span>
+<span class="st">            STDERR &lt;&lt; &quot;Aborting: </span><span class="ot">#{</span>m<span class="ot">}</span><span class="st">: \</span><span class="ot">#{</span><span class="dt">$!</span>.class<span class="ot">}</span><span class="st">: \</span><span class="ot">#{</span><span class="dt">$!</span>.message<span class="ot">}</span><span class="st">&quot;</span>
+<span class="st">            raise</span>
+<span class="st">          end</span>
+<span class="st">        end</span>
+<span class="st">      </span><span class="ot">}</span>
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+
+  <span class="co"># Untrace the specified methods or all traced methods</span>
+  <span class="kw">def</span> untrace!(*methods)
+    <span class="kw">if</span> methods.size == <span class="dv">0</span>    <span class="co"># If no methods specified untrace</span>
+      methods = <span class="ot">@_traced</span>    <span class="co"># all currently traced methods</span>
+      <span class="dt">STDERR</span> &lt;&lt; <span class="st">&quot;Untracing all methods on </span><span class="ot">#{</span>object_id<span class="ot">}</span><span class="st">\n&quot;</span>
+    <span class="kw">else</span>                    <span class="co"># Otherwise, untrace</span>
+      methods.map! {|m| m.to_sym }  <span class="co"># Convert string to symbols</span>
+      methods &amp;= <span class="ot">@_traced</span>   <span class="co"># all specified methods that are traced</span>
+      <span class="dt">STDERR</span> &lt;&lt; <span class="st">&quot;Untracing </span><span class="ot">#{</span>methods.join(<span class="st">&#39;, &#39;</span>)<span class="ot">}</span><span class="st"> on </span><span class="ot">#{</span>object_id<span class="ot">}</span><span class="st">\n&quot;</span>
+    <span class="kw">end</span>
+
+    <span class="ot">@_traced</span> -= methods     <span class="co"># Remove them from our set of traced methods</span>
+
+    <span class="co"># Remove the traced singleton methods from the eigenclass</span>
+    <span class="co"># Note that we class_eval a block here, not a string</span>
+    (<span class="kw">class</span> &lt;&lt; <span class="dv">self</span>; <span class="dv">self</span>; <span class="kw">end</span>).class_eval <span class="kw">do</span>
+      methods.each <span class="kw">do</span> |m|
+        remove_method m     <span class="co"># undef_method would not work correctly</span>
+      <span class="kw">end</span>
+    <span class="kw">end</span>
+
+    <span class="co"># If no methods are traced anymore, remove our instance var </span>
+    <span class="kw">if</span> <span class="ot">@_traced</span>.empty?
+      remove_instance_variable <span class="st">:@_traced</span>
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="simple-xml-output-with-method_missing">8.12.1 Simple XML Output with method_missing</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">pagetitle = <span class="st">&quot;Test Page for XML.generate&quot;</span>
+<span class="dt">XML</span>.generate(<span class="dt">STDOUT</span>) <span class="kw">do</span> 
+  html <span class="kw">do</span>
+    head <span class="kw">do</span>
+      title { pagetitle }
+      comment <span class="st">&quot;This is a test&quot;</span>
+    <span class="kw">end</span>
+    body <span class="kw">do</span>
+      h1(<span class="st">:style</span> =&gt; <span class="st">&quot;font-family:sans-serif&quot;</span>) { pagetitle }
+      ul <span class="st">:type=</span>&gt;<span class="st">&quot;square&quot;</span> <span class="kw">do</span>
+        li { <span class="dt">Time</span>.now }
+        li { <span class="dt">RUBY_VERSION</span> }
+      <span class="kw">end</span>
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+ &lt;html&gt;
+ &lt;head&gt;
+ &lt;title&gt;<span class="dt">Test</span> <span class="dt">Page</span> <span class="kw">for</span> <span class="dt">XML</span>.generate&lt;<span class="ot">/title&gt;</span>
+<span class="ot"> &lt;!-- This is a test --&gt;</span>
+<span class="ot"> &lt;/</span>head&gt;
+ &lt;body&gt;&lt;h1 style=<span class="st">&#39;font-family:sans-serif&#39;</span>&gt;<span class="dt">Test</span> <span class="dt">Page</span> <span class="kw">for</span> <span class="dt">XML</span>.generate&lt;<span class="ot">/h1&gt;</span>
+<span class="ot"> &lt;ul type=&#39;square&#39;&gt;</span>
+<span class="ot"> &lt;li&gt;2007-08-19 16:19:58 -0700&lt;/</span>li&gt;
+ &lt;li&gt;<span class="fl">1.9</span>.<span class="dv">0</span>&lt;<span class="ot">/li&gt;</span>
+<span class="ot"> &lt;/u</span>l&gt;
+ &lt;<span class="ot">/body&gt;</span>
+<span class="ot"> &lt;/</span>html&gt;
+<span class="co">###########################</span>
+<span class="kw">class</span> <span class="dt">XML</span>
+  <span class="co"># Create an instance of this class, specifying a stream or object to</span>
+  <span class="co"># hold the output. This can be any object that responds to &lt;&lt;(String).</span>
+  <span class="kw">def</span> initialize(out)
+    <span class="ot">@out</span> = out  <span class="co"># Remember where to send our output</span>
+  <span class="kw">end</span>
+
+  <span class="co"># Output the specified object as CDATA, return nil.</span>
+  <span class="kw">def</span> content(text)
+    <span class="ot">@out</span> &lt;&lt; text.to_s
+    <span class="dv">nil</span>
+  <span class="kw">end</span>
+
+  <span class="co"># Output the specified object as a comment, return nil.</span>
+  <span class="kw">def</span> comment(text)
+    <span class="ot">@out</span> &lt;&lt; <span class="st">&quot;&lt;!-- </span><span class="ot">#{</span>text<span class="ot">}</span><span class="st"> --&gt;&quot;</span>
+    <span class="dv">nil</span>
+  <span class="kw">end</span>
+
+  <span class="co"># Output a tag with the specified name and attributes.</span>
+  <span class="co"># If there is a block invoke it to output or return content.</span>
+  <span class="co"># Return nil.</span>
+  <span class="kw">def</span> tag(tagname, attributes={})
+    <span class="co"># Output the tag name</span>
+    <span class="ot">@out</span> &lt;&lt; <span class="st">&quot;&lt;</span><span class="ot">#{</span>tagname<span class="ot">}</span><span class="st">&quot;</span>
+
+    <span class="co"># Output the attributes</span>
+    attributes.each {|attr,value| <span class="ot">@out</span> &lt;&lt; <span class="st">&quot; </span><span class="ot">#{</span>attr<span class="ot">}</span><span class="st">=&#39;</span><span class="ot">#{</span>value<span class="ot">}</span><span class="st">&#39;&quot;</span> }
+    
+    <span class="kw">if</span> block_given?
+      <span class="co"># This block has content</span>
+      <span class="ot">@out</span> &lt;&lt; <span class="st">&#39;&gt;&#39;</span>             <span class="co"># End the opening tag</span>
+      content = <span class="kw">yield</span>         <span class="co"># Invoke the block to output or return content</span>
+      <span class="kw">if</span> content              <span class="co"># If any content returned</span>
+        <span class="ot">@out</span> &lt;&lt; content.to_s  <span class="co"># Output it as a string</span>
+      <span class="kw">end</span>
+      <span class="ot">@out</span> &lt;&lt; <span class="st">&quot;&lt;/</span><span class="ot">#{</span>tagname<span class="ot">}</span><span class="st">&gt;&quot;</span> <span class="co"># Close the tag</span>
+    <span class="kw">else</span> 
+      <span class="co"># Otherwise, this is an empty tag, so just close it.</span>
+      <span class="ot">@out</span> &lt;&lt; <span class="st">&#39;/&gt;&#39;</span>
+    <span class="kw">end</span>
+    <span class="dv">nil</span> <span class="co"># Tags output themselves, so they don&#39;t return any content</span>
+  <span class="kw">end</span>
+
+  <span class="co"># The code below is what changes this from an ordinary class into a DSL.</span>
+  <span class="co"># First: any unknown method is treated as the name of a tag.</span>
+  <span class="kw">alias</span> method_missing tag
+
+  <span class="co"># Second: run a block in a new instance of the class.</span>
+  <span class="kw">def</span> <span class="dv">self</span>.generate(out, &amp;block)
+    <span class="dt">XML</span>.new(out).instance_eval(&amp;block)
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="validated-xml-output-with-method-generation">8.12.2 Validated XML Output with Method Generation</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">HTMLForm</span> &lt; <span class="dt">XMLGrammar</span>
+  element <span class="st">:form</span>, <span class="st">:action</span> =&gt; <span class="dt">REQ</span>,
+                 <span class="st">:method</span> =&gt; <span class="st">&quot;GET&quot;</span>,
+                 <span class="st">:enctype</span> =&gt; <span class="st">&quot;application/x-www-form-urlencoded&quot;</span>,
+                 <span class="st">:name</span> =&gt; <span class="dt">OPT</span>
+  element <span class="st">:input</span>, <span class="st">:type</span> =&gt; <span class="st">&quot;text&quot;</span>, <span class="st">:name</span> =&gt; <span class="dt">OPT</span>, <span class="st">:value</span> =&gt; <span class="dt">OPT</span>,
+                  <span class="st">:maxlength</span> =&gt; <span class="dt">OPT</span>, <span class="st">:size</span> =&gt; <span class="dt">OPT</span>, <span class="st">:src</span> =&gt; <span class="dt">OPT</span>,
+                  <span class="st">:checked</span> =&gt; <span class="dt">BOOL</span>, <span class="st">:disabled</span> =&gt; <span class="dt">BOOL</span>, <span class="st">:readonly</span> =&gt; <span class="dt">BOOL</span>
+  element <span class="st">:textarea</span>, <span class="st">:rows</span> =&gt; <span class="dt">REQ</span>, <span class="st">:cols</span> =&gt; <span class="dt">REQ</span>, <span class="st">:name</span> =&gt; <span class="dt">OPT</span>,
+                     <span class="st">:disabled</span> =&gt; <span class="dt">BOOL</span>, <span class="st">:readonly</span> =&gt; <span class="dt">BOOL</span>
+  element <span class="st">:button</span>, <span class="st">:name</span> =&gt; <span class="dt">OPT</span>, <span class="st">:value</span> =&gt; <span class="dt">OPT</span>,
+                   <span class="st">:type</span> =&gt; <span class="st">&quot;submit&quot;</span>, <span class="st">:disabled</span> =&gt; <span class="dt">OPT</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="dt">HTMLForm</span>.generate(<span class="dt">STDOUT</span>) <span class="kw">do</span>
+  comment <span class="st">&quot;This is a simple HTML form&quot;</span>
+  form <span class="st">:name</span> =&gt; <span class="st">&quot;registration&quot;</span>,
+       <span class="st">:action</span> =&gt; <span class="st">&quot;http://www.example.com/register.cgi&quot;</span> <span class="kw">do</span>
+    content <span class="st">&quot;Name:&quot;</span>
+    input <span class="st">:name</span> =&gt; <span class="st">&quot;name&quot;</span>
+    content <span class="st">&quot;Address:&quot;</span>
+    textarea <span class="st">:name</span> =&gt; <span class="st">&quot;address&quot;</span>, <span class="st">:rows=</span>&gt;<span class="dv">6</span>, <span class="st">:cols=</span>&gt;<span class="dv">40</span> <span class="kw">do</span>
+      <span class="st">&quot;Please enter your mailing address here&quot;</span>
+    <span class="kw">end</span>
+    button { <span class="st">&quot;Submit&quot;</span> }
+  <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">class</span> <span class="dt">XMLGrammar</span>
+  <span class="co"># Create an instance of this class, specifying a stream or object to</span>
+  <span class="co"># hold the output. This can be any object that responds to &lt;&lt;(String).</span>
+  <span class="kw">def</span> initialize(out)
+    <span class="ot">@out</span> = out  <span class="co"># Remember where to send our output</span>
+  <span class="kw">end</span>
+
+  <span class="co"># Invoke the block in an instance that outputs to the specified stream.</span>
+  <span class="kw">def</span> <span class="dv">self</span>.generate(out, &amp;block)
+    new(out).instance_eval(&amp;block)
+  <span class="kw">end</span>
+
+  <span class="co"># Define an allowed element (or tag) in the grammar.</span>
+  <span class="co"># This class method is the grammar-specification DSL</span>
+  <span class="co"># and defines the methods that constitute the XML-output DSL.</span>
+  <span class="kw">def</span> <span class="dv">self</span>.element(tagname, attributes={})
+    <span class="ot">@allowed_attributes</span> ||= {}
+    <span class="ot">@allowed_attributes</span>[tagname] = attributes
+
+    class_eval <span class="ot">%Q{</span>
+<span class="st">      def </span><span class="ot">#{</span>tagname<span class="ot">}</span><span class="st">(attributes={}, &amp;block)</span>
+<span class="st">        tag(:</span><span class="ot">#{</span>tagname<span class="ot">}</span><span class="st">,attributes,&amp;block)</span>
+<span class="st">      end</span>
+<span class="st">    </span><span class="ot">}</span>
+  <span class="kw">end</span>
+
+  <span class="co"># These are constants used when defining attribute values.</span>
+  <span class="dt">OPT</span> = <span class="st">:opt</span>     <span class="co"># for optional attributes</span>
+  <span class="dt">REQ</span> = <span class="st">:req</span>     <span class="co"># for required attributes</span>
+  <span class="dt">BOOL</span> = <span class="st">:bool</span>   <span class="co"># for attributes whose value is their own name</span>
+
+  <span class="kw">def</span> <span class="dv">self</span>.allowed_attributes
+    <span class="ot">@allowed_attributes</span>
+  <span class="kw">end</span>
+
+  <span class="co"># Output the specified object as CDATA, return nil.</span>
+  <span class="kw">def</span> content(text)
+    <span class="ot">@out</span> &lt;&lt; text.to_s
+    <span class="dv">nil</span>
+  <span class="kw">end</span>
+
+  <span class="co"># Output the specified object as a comment, return nil.</span>
+  <span class="kw">def</span> comment(text)
+    <span class="ot">@out</span> &lt;&lt; <span class="st">&quot;&lt;!-- </span><span class="ot">#{</span>text<span class="ot">}</span><span class="st"> --&gt;&quot;</span>
+    <span class="dv">nil</span>
+  <span class="kw">end</span>
+
+  <span class="co"># Output a tag with the specified name and attribute.</span>
+  <span class="co"># If there is a block, invoke it to output or return content.</span>
+  <span class="co"># Return nil.</span>
+  <span class="kw">def</span> tag(tagname, attributes={})
+    <span class="co"># Output the tag name</span>
+    <span class="ot">@out</span> &lt;&lt; <span class="st">&quot;&lt;</span><span class="ot">#{</span>tagname<span class="ot">}</span><span class="st">&quot;</span>
+
+    <span class="co"># Get the allowed attributes for this tag.</span>
+    allowed = <span class="dv">self</span>.class.allowed_attributes[tagname]
+
+    <span class="co"># First, make sure that each of the attributes is allowed.</span>
+    <span class="co"># Assuming they are allowed, output all of the specified ones.</span>
+    attributes.each_pair <span class="kw">do</span> |key,value|
+      raise <span class="st">&quot;unknown attribute: </span><span class="ot">#{</span>key<span class="ot">}</span><span class="st">&quot;</span> <span class="kw">unless</span> allowed.include?(key)
+      <span class="ot">@out</span> &lt;&lt; <span class="st">&quot; </span><span class="ot">#{</span>key<span class="ot">}</span><span class="st">=&#39;</span><span class="ot">#{</span>value<span class="ot">}</span><span class="st">&#39;&quot;</span>
+    <span class="kw">end</span>
+
+    <span class="co"># Now look through the allowed attributes, checking for </span>
+    <span class="co"># required attributes that were omitted and for attributes with</span>
+    <span class="co"># default values that we can output.</span>
+    allowed.each_pair <span class="kw">do</span> |key,value|
+      <span class="co"># If this attribute was already output, do nothing.</span>
+      <span class="kw">next</span> <span class="kw">if</span> attributes.has_key? key
+      <span class="kw">if</span> (value == <span class="dt">REQ</span>)
+        raise <span class="st">&quot;required attribute &#39;</span><span class="ot">#{</span>key<span class="ot">}</span><span class="st">&#39; missing in &lt;</span><span class="ot">#{</span>tagname<span class="ot">}</span><span class="st">&gt;&quot;</span>
+      <span class="kw">elsif</span> value.is_a? <span class="dt">String</span>
+        <span class="ot">@out</span> &lt;&lt; <span class="st">&quot; </span><span class="ot">#{</span>key<span class="ot">}</span><span class="st">=&#39;</span><span class="ot">#{</span>value<span class="ot">}</span><span class="st">&#39;&quot;</span>
+      <span class="kw">end</span>
+    <span class="kw">end</span>
+
+    <span class="kw">if</span> block_given?
+      <span class="co"># This block has content</span>
+      <span class="ot">@out</span> &lt;&lt; <span class="st">&#39;&gt;&#39;</span>             <span class="co"># End the opening tag</span>
+      content = <span class="kw">yield</span>         <span class="co"># Invoke the block to output or return content</span>
+      <span class="kw">if</span> content              <span class="co"># If any content returned</span>
+        <span class="ot">@out</span> &lt;&lt; content.to_s  <span class="co"># Output it as a string</span>
+      <span class="kw">end</span>
+      <span class="ot">@out</span> &lt;&lt; <span class="st">&quot;&lt;/</span><span class="ot">#{</span>tagname<span class="ot">}</span><span class="st">&gt;&quot;</span> <span class="co"># Close the tag</span>
+    <span class="kw">else</span> 
+      <span class="co"># Otherwise, this is an empty tag, so just close it.</span>
+      <span class="ot">@out</span> &lt;&lt; <span class="st">&#39;/&gt;&#39;</span>
+    <span class="kw">end</span>
+    <span class="dv">nil</span> <span class="co"># Tags output themselves, so they don&#39;t return any content.</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>

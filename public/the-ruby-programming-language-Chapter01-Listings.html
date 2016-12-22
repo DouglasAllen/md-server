@@ -1,0 +1,630 @@
+<h1 id="the-ruby-programming-language">The Ruby Programming Language</h1>
+<h2 id="chapter-1">CHAPTER 1</h2>
+<h3 id="introduction">Introduction</h3>
+<h4 id="ruby-is-object-oriented">1.1.1 Ruby Is Object-Oriented</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dv">1</span>.class      <span class="co"># =&gt; Fixnum: the number 1 is a Fixnum</span>
+<span class="fl">0.0</span>.class    <span class="co"># =&gt; Float: floating-point numbers have class Float</span>
+<span class="dv">true</span>.class   <span class="co"># =&gt; TrueClass: true is a the singleton instance of TrueClass</span>
+<span class="dv">false</span>.class  <span class="co"># =&gt; FalseClass</span>
+<span class="dv">nil</span>.class    <span class="co"># =&gt; NilClass</span></code></pre></div>
+<h4 id="blocks-and-iterators">1.1.2 Blocks and Iterators</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dv">3</span>.times { print <span class="st">&quot;Ruby! &quot;</span> }   <span class="co"># Prints &quot;Ruby! Ruby! Ruby! &quot;</span>
+<span class="dv">1</span>.upto(<span class="dv">9</span>) {|x| print x }     <span class="co"># Prints &quot;123456789&quot;</span>
+
+a = [<span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">1</span>]     <span class="co"># This is an array literal</span>
+a[<span class="dv">3</span>] = a[<span class="dv">2</span>] - <span class="dv">1</span>   <span class="co"># Use square brackets to query and set array elements</span>
+a.each <span class="kw">do</span> |elt|   <span class="co"># each is an iterator. The block has a parameter elt</span>
+  print elt<span class="dv">+1</span>     <span class="co"># Prints &quot;4321&quot;</span>
+<span class="kw">end</span>               <span class="co"># This block was delimited with do/end instead of {}</span>
+
+a = [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>]                <span class="co"># Start with an array</span>
+b = a.map {|x| x*x }         <span class="co"># Square elements: b is [1,4,9,16]</span>
+c = a.select {|x| x%<span class="dv">2</span>==<span class="dv">0</span> }   <span class="co"># Select even elements: c is [2,4]</span>
+a.inject <span class="kw">do</span> |sum,x|          <span class="co"># Compute the sum of the elements =&gt; 10</span>
+  sum + x 
+<span class="kw">end</span>
+
+h = {                         <span class="co"># A hash that maps number names to digits</span>
+  <span class="st">:one</span> =&gt; <span class="dv">1</span>,                  <span class="co"># The &quot;arrows&quot; show mappings: key=&gt;value</span>
+  <span class="st">:two</span> =&gt; <span class="dv">2</span>                   <span class="co"># The colons indicate Symbol literals</span>
+}  
+h[<span class="st">:one</span>]                       <span class="co"># =&gt; 1.  Access a value by key</span>
+h[<span class="st">:three</span>] = <span class="dv">3</span>                 <span class="co"># Add a new key/value pair to the hash</span>
+h.each <span class="kw">do</span> |key,value|         <span class="co"># Iterate through the key/value pairs</span>
+  print <span class="st">&quot;</span><span class="ot">#{</span>value<span class="ot">}</span><span class="st">:</span><span class="ot">#{</span>key<span class="ot">}</span><span class="st">; &quot;</span>   <span class="co"># Note variables substituted into string </span>
+<span class="kw">end</span>                           <span class="co"># Prints &quot;1:one; 2:two; 3:three; &quot;</span>
+
+<span class="dt">File</span>.open(<span class="st">&quot;data.txt&quot;</span>) <span class="kw">do</span> |f| <span class="co"># Open named file and pass stream to block</span>
+  line = f.readline          <span class="co"># Use the stream to read from the file</span>
+<span class="kw">end</span>                          <span class="co"># Stream automatically closed at block end</span>
+
+t = <span class="dt">Thread</span>.new <span class="kw">do</span>       <span class="co"># Run this block in a new thread</span>
+  <span class="dt">File</span>.read(<span class="st">&quot;data.txt&quot;</span>) <span class="co"># Read a file in the background</span>
+<span class="kw">end</span>                     <span class="co"># File contents available as thread value</span>
+
+print <span class="st">&quot;</span><span class="ot">#{</span>value<span class="ot">}</span><span class="st">:</span><span class="ot">#{</span>key<span class="ot">}</span><span class="st">; &quot;</span>    <span class="co"># Note variables substituted into string </span></code></pre></div>
+<h4 id="expressions-and-operators-in-ruby">1.1.3 Expressions and Operators in Ruby</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">minimum <span class="kw">= if</span> x &lt; y <span class="kw">then</span> x <span class="kw">else</span> y <span class="kw">end</span>
+
+<span class="dv">1</span> + <span class="dv">2</span>                    <span class="co"># =&gt; 3: addition</span>
+<span class="dv">1</span> * <span class="dv">2</span>                    <span class="co"># =&gt; 2: multiplication</span>
+<span class="dv">1</span> + <span class="dv">2</span> == <span class="dv">3</span>               <span class="co"># =&gt; true: == tests equality</span>
+<span class="dv">2</span> ** <span class="dv">1024</span>                <span class="co"># 2 to the power 1024: Ruby has arbitrary size ints</span>
+<span class="st">&quot;Ruby&quot;</span> + <span class="st">&quot; rocks!&quot;</span>       <span class="co"># =&gt; &quot;Ruby rocks!&quot;: string concatenation</span>
+<span class="st">&quot;Ruby! &quot;</span> * <span class="dv">3</span>             <span class="co"># =&gt; &quot;Ruby! Ruby! Ruby! &quot;: string repetition</span>
+<span class="st">&quot;%d %s&quot;</span> % [<span class="dv">3</span>, <span class="st">&quot;rubies&quot;</span>]  <span class="co"># =&gt; &quot;3 Rubies&quot;: Python-style, printf formatting</span>
+max = x &gt; y ? x : y      <span class="co"># The conditional operator</span></code></pre></div>
+<h4 id="methods">1.1.4 Methods</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">def</span> square(x)   <span class="co"># Define a method named square with one parameter x</span>
+  x*x           <span class="co"># Return x squared</span>
+<span class="kw">end</span>             <span class="co"># End of the method</span>
+
+<span class="kw">def</span> <span class="dt">Math</span>.square(x)  <span class="co"># Define a class method of the Math module</span>
+  x*x
+<span class="kw">end</span></code></pre></div>
+<h4 id="assignment">1.1.5 Assignment</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">x = <span class="dv">1</span>
+
+x += <span class="dv">1</span>          <span class="co"># Increment x: note Ruby does not have ++.</span>
+y -= <span class="dv">1</span>          <span class="co"># Decrement y: no -- operator, either.</span>
+
+x, y = <span class="dv">1</span>, <span class="dv">2</span>     <span class="co"># Same as x = 1; y = 2</span>
+a, b = b, a     <span class="co"># Swap the value of two variables</span>
+x,y,z = [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>] <span class="co"># Array elements automatically assigned to variables</span>
+
+<span class="co"># Define a method to convert Cartesian (x,y) coordinates to Polar</span>
+<span class="kw">def</span> polar(x,y)
+  theta = <span class="dt">Math</span>.atan2(y,x)   <span class="co"># Compute the angle</span>
+  r = <span class="dt">Math</span>.hypot(x,y)       <span class="co"># Compute the distance</span>
+  [r, theta]                <span class="co"># The last expression is the return value</span>
+<span class="kw">end</span>
+
+<span class="co"># Here&#39;s how we use this method with parallel assignment</span>
+distance, angle = polar(<span class="dv">2</span>,<span class="dv">2</span>)
+
+o.x=(<span class="dv">1</span>)         <span class="co"># Normal method invocation syntax</span>
+o.x = <span class="dv">1</span>         <span class="co"># Method invocation through assignment</span></code></pre></div>
+<h4 id="regexp-and-range">1.1.7 Regexp and Range</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="ot">/[Rr]uby/</span>        <span class="co"># Matches &quot;Ruby&quot; or &quot;ruby&quot;</span>
+<span class="ot">/\d{5}/</span>          <span class="co"># Matches 5 consecutive digits</span>
+<span class="dv">1</span>..<span class="dv">3</span>             <span class="co"># All x where 1 &lt;= x &lt;= 3</span>
+<span class="dv">1</span>...<span class="dv">3</span>            <span class="co"># All x where 1 &lt;= x &lt; 3</span>
+
+<span class="co"># Determine US generation name based on birth year</span>
+<span class="co"># Case expression tests ranges with ===</span>
+generation = <span class="kw">case</span> birthyear
+             <span class="kw">when</span> <span class="dv">1946</span>..<span class="dv">1963</span>: <span class="st">&quot;Baby Boomer&quot;</span>
+             <span class="kw">when</span> <span class="dv">1964</span>..<span class="dv">1976</span>: <span class="st">&quot;Generation X&quot;</span>
+             <span class="kw">when</span> <span class="dv">1978</span>..<span class="dv">2000</span>: <span class="st">&quot;Generation Y&quot;</span>
+             <span class="kw">else</span> <span class="dv">nil</span>
+             <span class="kw">end</span>
+
+<span class="co"># A method to ask the user to confirm something</span>
+<span class="kw">def</span> are_you_sure?                  <span class="co"># Define a method. Note question mark!</span>
+  <span class="kw">while</span> <span class="dv">true</span>                       <span class="co"># Loop until we explicitly return</span>
+    print <span class="st">&quot;Are you sure? [y/n]: &quot;</span>  <span class="co"># Ask the user a question</span>
+    response = gets                <span class="co"># Get her answer</span>
+    <span class="kw">case</span> response                  <span class="co"># Begin case conditional</span>
+    <span class="kw">when</span> <span class="ot">/^[yY]/</span>                   <span class="co"># If response begins with y or Y</span>
+      <span class="kw">return</span> <span class="dv">true</span>                  <span class="co"># Return true from the method</span>
+    <span class="kw">when</span> <span class="ot">/^[nN]/</span>, <span class="ot">/^$/</span>             <span class="co"># If response begins with n,N or is empty</span>
+      <span class="kw">return</span> <span class="dv">false</span>                 <span class="co"># Return false</span>
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="classes-and-modules">1.1.8 Classes and Modules</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co">#</span>
+<span class="co"># This class represents a sequence of numbers characterized by the three</span>
+<span class="co"># parameters from, to, and by. The numbers x in the sequence obey the</span>
+<span class="co"># following two constraints:</span>
+<span class="co">#</span>
+<span class="co">#    from &lt;= x &lt;= to</span>
+<span class="co">#    x = from + n*by, where n is an integer</span>
+<span class="co"># </span>
+<span class="kw">class</span> <span class="dt">Sequence</span>
+  <span class="co"># This is an enumerable class; it defines an each iterator below.</span>
+  include <span class="dt">Enumerable</span>   <span class="co"># Include the methods of this module in this class</span>
+
+  <span class="co"># The initialize method is special; it is automatically invoked to</span>
+  <span class="co"># initialize newly created instances of the class</span>
+  <span class="kw">def</span> initialize(from, to, by)
+    <span class="co"># Just save our parameters into instance variables for later use</span>
+    <span class="ot">@from</span>, <span class="ot">@to</span>, <span class="ot">@by</span> = from, to, by  <span class="co"># Note parallel assignment and @ prefix</span>
+  <span class="kw">end</span>
+
+  <span class="co"># This is the iterator required by the Enumerable module</span>
+  <span class="kw">def</span> each
+    x = <span class="ot">@from</span>       <span class="co"># Start at the starting point</span>
+    <span class="kw">while</span> x &lt;= <span class="ot">@to</span>  <span class="co"># While we haven&#39;t reached the end</span>
+      <span class="kw">yield</span> x       <span class="co"># Pass x to the block associated with the iterator</span>
+      x += <span class="ot">@by</span>      <span class="co"># Increment x</span>
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+
+  <span class="co"># Define the length method (following arrays) to return the number of</span>
+  <span class="co"># values in the sequence</span>
+  <span class="kw">def</span> length
+    <span class="kw">return</span> <span class="dv">0</span> <span class="kw">if</span> <span class="ot">@from</span> &gt; <span class="ot">@to</span>       <span class="co"># Note if used as a statement modifier </span>
+    <span class="dt">Integer</span>((<span class="ot">@to</span>-<span class="ot">@from</span>)/<span class="ot">@by</span>) + <span class="dv">1</span>  <span class="co"># Compute and return length of sequence</span>
+  <span class="kw">end</span>
+
+  <span class="co"># Define another name for the same method.</span>
+  <span class="co"># It is common for methods to have multiple names in Ruby</span>
+  <span class="kw">alias</span> size length  <span class="co"># size is now a synonym for length</span>
+
+  <span class="co"># Override the array-access operator to give random access to the sequence</span>
+  <span class="kw">def</span>[](index)
+    <span class="kw">return</span> <span class="dv">nil</span> <span class="kw">if</span> index &lt; <span class="dv">0</span> <span class="co"># Return nil for negative indexes</span>
+    v = <span class="ot">@from</span> + index*<span class="ot">@by</span>   <span class="co"># Compute the value</span>
+    <span class="kw">if</span> v &lt;= <span class="ot">@to</span>             <span class="co"># If it is part of the sequence</span>
+      v                     <span class="co"># Return it</span>
+    <span class="kw">else</span>                    <span class="co"># Otherwise...</span>
+      <span class="dv">nil</span>                   <span class="co"># Return nil</span>
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+
+  <span class="co"># Override arithmetic operators to return new Sequence objects</span>
+  <span class="kw">def</span> *(factor)
+    <span class="dt">Sequence</span>.new(<span class="ot">@from</span>*factor, <span class="ot">@to</span>*factor, <span class="ot">@by</span>*factor)
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> +(offset)
+    <span class="dt">Sequence</span>.new(<span class="ot">@from</span>+offset, <span class="ot">@to</span>+offset, <span class="ot">@by</span>)
+  <span class="kw">end</span>
+<span class="kw">end</span>
+
+s = <span class="dt">Sequence</span>.new(<span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">2</span>)  <span class="co"># From 1 to 10 by 2&#39;s</span>
+s.each {|x| print x }       <span class="co"># Prints &quot;13579&quot;</span>
+print s[s.size<span class="dv">-1</span>]           <span class="co"># Prints 9</span>
+t = (s<span class="dv">+1</span>)*<span class="dv">2</span>                 <span class="co"># From 4 to 22 by 4&#39;s</span>
+
+<span class="kw">module</span> <span class="dt">Sequences</span>                   <span class="co"># Begin a new module</span>
+  <span class="kw">def</span> <span class="dv">self</span>.fromtoby(from, to, by)  <span class="co"># A singleton method of the module</span>
+    x = from
+    <span class="kw">while</span> x &lt;= to
+      <span class="kw">yield</span> x
+      x += by
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+
+<span class="dt">Sequences</span>.fromtoby(<span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">2</span>) {|x| print x }  <span class="co"># Prints &quot;13579&quot;</span>
+
+<span class="kw">class</span> <span class="dt">Range</span>                  <span class="co"># Open an existing class for additions</span>
+  <span class="kw">def</span> by(step)               <span class="co"># Define an iterator named by</span>
+    x = <span class="dv">self</span>.begin           <span class="co"># Start at one endpoint of the range</span>
+    <span class="kw">if</span> exclude_end?          <span class="co"># For ... ranges that exclude the end</span>
+      <span class="kw">while</span> x &lt; <span class="dv">self</span>.end     <span class="co"># Test with the &lt; operator</span>
+        <span class="kw">yield</span> x
+        x += step
+      <span class="kw">end</span>
+    <span class="kw">else</span>                     <span class="co"># Otherwise, for .. ranges that include the end</span>
+      <span class="kw">while</span> x &lt;= <span class="dv">self</span>.end    <span class="co"># Test with &lt;= operator</span>
+        <span class="kw">yield</span> x
+        x += step
+      <span class="kw">end</span>
+    <span class="kw">end</span>
+  <span class="kw">end</span>                        <span class="co"># End of method definition</span>
+<span class="kw">end</span>                          <span class="co"># End of class modification</span>
+
+<span class="co"># Examples</span>
+(<span class="dv">0</span>..<span class="dv">10</span>).by(<span class="dv">2</span>) {|x| print x}  <span class="co"># Prints &quot;0246810&quot;</span>
+(<span class="dv">0</span>...<span class="dv">10</span>).by(<span class="dv">2</span>) {|x| print x} <span class="co"># Prints &quot;02468&quot;</span></code></pre></div>
+<h4 id="the-ruby-interpreter">1.2.1 The Ruby Interpreter</h4>
+<pre class="rdoc"><code>% ruby -e &#39;puts &quot;hello world!&quot;&#39;
+
+hello world!
+
+% ruby hello.rb
+
+hello world!</code></pre>
+<h4 id="displaying-output">1.2.2 Displaying Output</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dv">9</span>.downto(<span class="dv">1</span>) {|n| print n }   <span class="co"># No newline between numbers</span>
+puts <span class="st">&quot; blastoff!&quot;</span>            <span class="co"># End with a newline</span></code></pre></div>
+<pre class="rdoc"><code>% ruby count.rb
+
+987654321 blastoff!</code></pre>
+<h4 id="interactive-ruby-with-irb">1.2.3 Interactive Ruby with irb</h4>
+<pre class="rdoc"><code>$ irb --simple-prompt       # Start irb from the terminal</code></pre>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dv">2</span>**<span class="dv">3</span>                     <span class="co"># Try exponentiation</span>
+<span class="co"># =&gt; 8 </span>
+<span class="st">&quot;Ruby! &quot;</span> * <span class="dv">3</span>             <span class="co"># Try string repetition</span>
+<span class="co"># =&gt; &quot;Ruby! Ruby! Ruby! &quot;</span>
+<span class="dv">1</span>.upto(<span class="dv">3</span>){|x| puts x }   <span class="co"># Try an iterator</span>
+<span class="co"># 1                           # Three lines of output </span>
+<span class="co"># 2                           # Because we called puts 3 times</span>
+<span class="co"># 3</span>
+<span class="co"># =&gt; 1                        # The return value of 1.upto(3)</span>
+quit                     <span class="co"># Exit irb</span></code></pre></div>
+<pre class="rdoc"><code>$                           # Back to the terminal prompt</code></pre>
+<h4 id="viewing-ruby-documentation-with-ri">1.2.4 Viewing Ruby Documentation with ri</h4>
+<pre class="rdoc"><code>ri Array
+
+ri Array.sort
+
+ri Hash#each
+
+ri Math::sqrt</code></pre>
+<h4 id="ruby-package-management-with-gem">1.2.5 Ruby Package Management with gem</h4>
+<pre class="rdoc"><code>gem install rails
+
+Successfully installed activesupport-1.4.4
+
+Successfully installed activerecord-1.15.5
+
+Successfully installed actionpack-1.13.5
+
+Successfully installed actionmailer-1.3.5
+
+Successfully installed actionwebservice-1.2.5
+
+Successfully installed rails-1.2.5
+
+6 gems installed
+
+Installing ri documentation for activesupport-1.4.4...
+
+Installing ri documentation for activerecord-1.15.5...
+
+...etc...
+
+gem list               # List installed gems
+
+gem enviroment         # Display RubyGems configuration information
+
+gem update rails       # Update a named gem
+
+gem update             # Update all installed gems
+
+gem update --system    # Update RubyGems itself
+
+gem uninstall rails    # Remove an installed gem</code></pre>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">require <span class="st">&#39;rubygems&#39;</span>               <span class="co"># Not necessary in Ruby 1.9</span>
+gem <span class="st">&#39;RedCloth&#39;</span>, <span class="st">&#39;&gt; 2.0&#39;</span>, <span class="st">&#39;&lt; 4.0&#39;</span> <span class="co"># Activate RedCloth version 2.x or 3.x</span>
+require <span class="st">&#39;RedCloth&#39;</span>               <span class="co"># And now load it</span></code></pre></div>
+<h4 id="a-sudoku-solver-in-ruby">1.4 A Sudoku Solver in Ruby</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co">#</span>
+<span class="co"># This module defines a Sudoku::Puzzle class to represent a 9x9</span>
+<span class="co"># Sudoku puzzle and also defines exception classes raised for </span>
+<span class="co"># invalid input and over-constrained puzzles. This module also defines </span>
+<span class="co"># the method Sudoku.solve to solve a puzzle. The solve method uses</span>
+<span class="co"># the Sudoku.scan method, which is also defined here.</span>
+<span class="co"># </span>
+<span class="co"># Use this module to solve Sudoku puzzles with code like this:</span>
+<span class="co">#</span>
+<span class="co">#  require &#39;sudoku&#39;</span>
+<span class="co">#  puts Sudoku.solve(Sudoku::Puzzle.new(ARGF.readlines))</span>
+<span class="co">#</span>
+<span class="kw">module</span> <span class="dt">Sudoku</span>
+
+  <span class="co">#</span>
+  <span class="co"># The Sudoku::Puzzle class represents the state of a 9x9 Sudoku puzzle.</span>
+  <span class="co"># </span>
+  <span class="co"># Some definitions and terminology used in this implementation: </span>
+  <span class="co">#</span>
+  <span class="co"># - Each element of a puzzle is called a &quot;cell&quot;.</span>
+  <span class="co"># - Rows and columns are numbered from 0 to 8, and the coordinates [0,0]</span>
+  <span class="co">#   refer to the cell in the upper-left corner of the puzzle.</span>
+  <span class="co"># - The nine 3x3 subgrids are known as &quot;boxes&quot; and are also numbered from</span>
+  <span class="co">#   0 to 8, ordered from left to right and top to bottom. The box in</span>
+  <span class="co">#   the upper-left is box 0. The box in the upper-right is box 2. The</span>
+  <span class="co">#   box in the middle is box 4. The box in the lower-right is box 8.</span>
+  <span class="co"># </span>
+  <span class="co"># Create a new puzzle with Sudoku::Puzzle.new, specifying the initial</span>
+  <span class="co"># state as a string or as an array of strings. The string(s) should use</span>
+  <span class="co"># the characters 1 through 9 for the given values, and &#39;.&#39; for cells</span>
+  <span class="co"># whose value is unspecified. Whitespace in the input is ignored.</span>
+  <span class="co">#</span>
+  <span class="co"># Read and write access to individual cells of the puzzle is through the</span>
+  <span class="co"># [] and []= operators, which expect two-dimensional [row,column] indexing.</span>
+  <span class="co"># These methods use numbers (not characters) 0 to 9 for cell contents.</span>
+  <span class="co"># 0 represents an unknown value.</span>
+  <span class="co"># </span>
+  <span class="co"># The has_duplicates? predicate returns true if the puzzle is invalid</span>
+  <span class="co"># because any row, column, or box includes the same digit twice.</span>
+  <span class="co">#</span>
+  <span class="co"># The each_unknown method is an iterator that loops through the cells of</span>
+  <span class="co"># the puzzle and invokes the associated block once for each cell whose</span>
+  <span class="co"># value is unknown.</span>
+  <span class="co">#</span>
+  <span class="co"># The possible method returns an array of integers in the range 1..9.</span>
+  <span class="co"># The elements of the array are the only values allowed in the specified</span>
+  <span class="co"># cell. If this array is empty, then the puzzle is over-specified and </span>
+  <span class="co"># cannot be solved. If the array has only one element, then that element</span>
+  <span class="co"># must be the value for that cell of the puzzle.</span>
+  <span class="co">#</span>
+  <span class="kw">class</span> <span class="dt">Puzzle</span>
+
+    <span class="co"># These constants are used for translating between the external </span>
+    <span class="co"># string representation of a puzzle and the internal representation.</span>
+    <span class="dt">ASCII</span> = <span class="st">&quot;.123456789&quot;</span>
+    <span class="dt">BIN</span> = <span class="st">&quot;\000\001\002\003\004\005\006\007\010\011&quot;</span>
+
+    <span class="co"># This is the initialization method for the class. It is automatically</span>
+    <span class="co"># invoked on new Puzzle instances created with Puzzle.new. Pass the input</span>
+    <span class="co"># puzzle as an array of lines or as a single string. Use ASCII digits 1</span>
+    <span class="co"># to 9 and use the &#39;.&#39; character for unknown cells. Whitespace, </span>
+    <span class="co"># including newlines, will be stripped.</span>
+    <span class="kw">def</span> initialize(lines)
+      <span class="kw">if</span> (lines.respond_to? <span class="st">:join</span>)  <span class="co"># If argument looks like an array of lines</span>
+        s = lines.join              <span class="co"># Then join them into a single string</span>
+      <span class="kw">else</span>                          <span class="co"># Otherwise, assume we have a string</span>
+        s = lines.dup               <span class="co"># And make a private copy of it</span>
+      <span class="kw">end</span>
+
+      <span class="co"># Remove whitespace (including newlines) from the data</span>
+      <span class="co"># The &#39;!&#39; in gsub! indicates that this is a mutator method that</span>
+      <span class="co"># alters the string directly rather than making a copy.</span>
+      s.gsub!(<span class="ot">/\s/</span>, <span class="st">&quot;&quot;</span>)  <span class="co"># /\s/ is a Regexp that matches any whitespace</span>
+
+      <span class="co"># Raise an exception if the input is the wrong size.</span>
+      <span class="co"># Note that we use unless instead of if, and use it in modifier form.</span>
+      raise <span class="dt">Invalid</span>, <span class="st">&quot;Grid is the wrong size&quot;</span> <span class="kw">unless</span> s.size == <span class="dv">81</span>
+      
+      <span class="co"># Check for invalid characters, and save the location of the first.</span>
+      <span class="co"># Note that we assign and test the value assigned at the same time.</span>
+      <span class="kw">if</span> i = s.index(<span class="ot">/[^123456789\.]/</span>)
+        <span class="co"># Include the invalid character in the error message.</span>
+        <span class="co"># Note the Ruby expression inside #{} in string literal.</span>
+        raise <span class="dt">Invalid</span>, <span class="st">&quot;Illegal character </span><span class="ot">#{</span>s[i,<span class="dv">1</span>]<span class="ot">}</span><span class="st"> in puzzle&quot;</span>
+      <span class="kw">end</span>
+
+      <span class="co"># The following two lines convert our string of ASCII characters</span>
+      <span class="co"># to an array of integers, using two powerful String methods.</span>
+      <span class="co"># The resulting array is stored in the instance variable @grid</span>
+      <span class="co"># The number 0 is used to represent an unknown value.</span>
+      s.tr!(<span class="dt">ASCII</span>, <span class="dt">BIN</span>)      <span class="co"># Translate ASCII characters into bytes</span>
+      <span class="ot">@grid</span> = s.unpack(<span class="st">&#39;c*&#39;</span>) <span class="co"># Now unpack the bytes into an array of numbers</span>
+
+      <span class="co"># Make sure that the rows, columns, and boxes have no duplicates.</span>
+      raise <span class="dt">Invalid</span>, <span class="st">&quot;Initial puzzle has duplicates&quot;</span> <span class="kw">if</span> has_duplicates?
+    <span class="kw">end</span>
+
+    <span class="co"># Return the state of the puzzle as a string of 9 lines with 9 </span>
+    <span class="co"># characters (plus newline) each.  </span>
+    <span class="kw">def</span> to_s
+      <span class="co"># This method is implemented with a single line of Ruby magic that</span>
+      <span class="co"># reverses the steps in the initialize() method. Writing dense code</span>
+      <span class="co"># like this is probably not good coding style, but it demonstrates</span>
+      <span class="co"># the power and expressiveness of the language.</span>
+      <span class="co">#</span>
+      <span class="co"># Broken down, the line below works like this:</span>
+      <span class="co"># (0..8).collect invokes the code in curly braces 9 times--once</span>
+      <span class="co"># for each row--and collects the return value of that code into an</span>
+      <span class="co"># array. The code in curly braces takes a subarray of the grid</span>
+      <span class="co"># representing a single row and packs its numbers into a string.</span>
+      <span class="co"># The join() method joins the elements of the array into a single</span>
+      <span class="co"># string with newlines between them. Finally, the tr() method</span>
+      <span class="co"># translates the binary string representation into ASCII digits.</span>
+      (<span class="dv">0</span>..<span class="dv">8</span>).collect{|r| <span class="ot">@grid</span>[r*<span class="dv">9</span>,<span class="dv">9</span>].pack(<span class="st">&#39;c9&#39;</span>)}.join(<span class="st">&quot;\n&quot;</span>).tr(<span class="dt">BIN</span>,<span class="dt">ASCII</span>)
+    <span class="kw">end</span>
+
+    <span class="co"># Return a duplicate of this Puzzle object.</span>
+    <span class="co"># This method overrides Object.dup to copy the @grid array.</span>
+    <span class="kw">def</span> dup
+      copy = <span class="dv">super</span>       <span class="co"># Make a shallow copy by calling Object.dup</span>
+      <span class="ot">@grid</span> = <span class="ot">@grid</span>.dup  <span class="co"># Make a new copy of the internal data </span>
+      copy               <span class="co"># Return the copied object</span>
+    <span class="kw">end</span>
+
+    <span class="co"># We override the array access operator to allow access to the </span>
+    <span class="co"># individual cells of a puzzle. Puzzles are two-dimensional,</span>
+    <span class="co"># and must be indexed with row and column coordinates.</span>
+    <span class="kw">def</span> [](row, col)
+      <span class="co"># Convert two-dimensional (row,col) coordinates into a one-dimensional</span>
+      <span class="co"># array index and get and return the cell value at that index</span>
+      <span class="ot">@grid</span>[row*<span class="dv">9</span> + col]
+    <span class="kw">end</span>
+
+    <span class="co"># This method allows the array access operator to be used on the </span>
+    <span class="co"># lefthand side of an assignment operation. It sets the value of </span>
+    <span class="co"># the cell at (row, col) to newvalue.</span>
+    <span class="kw">def</span> []=(row, col, newvalue)
+      <span class="co"># Raise an exception unless the new value is in the range 0 to 9.</span>
+      <span class="kw">unless</span> (<span class="dv">0</span>..<span class="dv">9</span>).include? newvalue
+        raise <span class="dt">Invalid</span>, <span class="st">&quot;illegal cell value&quot;</span> 
+      <span class="kw">end</span>
+      <span class="co"># Set the appropriate element of the internal array to the value.</span>
+      <span class="ot">@grid</span>[row*<span class="dv">9</span> + col] = newvalue
+    <span class="kw">end</span>
+
+    <span class="co"># This array maps from one-dimensional grid index to box number.</span>
+    <span class="co"># It is used in the method below. The name BoxOfIndex begins with a </span>
+    <span class="co"># capital letter, so this is a constant. Also, the array has been</span>
+    <span class="co"># frozen, so it cannot be modified.</span>
+    <span class="dt">BoxOfIndex</span> = [
+      <span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>,
+      <span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">4</span>,<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">5</span>,<span class="dv">5</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">4</span>,<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">5</span>,<span class="dv">5</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">4</span>,<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">5</span>,<span class="dv">5</span>,
+      <span class="dv">6</span>,<span class="dv">6</span>,<span class="dv">6</span>,<span class="dv">7</span>,<span class="dv">7</span>,<span class="dv">7</span>,<span class="dv">8</span>,<span class="dv">8</span>,<span class="dv">8</span>,<span class="dv">6</span>,<span class="dv">6</span>,<span class="dv">6</span>,<span class="dv">7</span>,<span class="dv">7</span>,<span class="dv">7</span>,<span class="dv">8</span>,<span class="dv">8</span>,<span class="dv">8</span>,<span class="dv">6</span>,<span class="dv">6</span>,<span class="dv">6</span>,<span class="dv">7</span>,<span class="dv">7</span>,<span class="dv">7</span>,<span class="dv">8</span>,<span class="dv">8</span>,<span class="dv">8</span>
+    ].freeze
+
+    <span class="co"># This method defines a custom looping construct (an &quot;iterator&quot;) for</span>
+    <span class="co"># Sudoku puzzles.  For each cell whose value is unknown, this method</span>
+    <span class="co"># passes (&quot;yields&quot;) the row number, column number, and box number to the </span>
+    <span class="co"># block associated with this iterator.</span>
+    <span class="kw">def</span> each_unknown
+      <span class="dv">0</span>.upto <span class="dv">8</span> <span class="kw">do</span> |row|             <span class="co"># For each row</span>
+        <span class="dv">0</span>.upto <span class="dv">8</span> <span class="kw">do</span> |col|           <span class="co"># For each column</span>
+          index = row*<span class="dv">9</span>+col         <span class="co"># Cell index for (row,col)</span>
+          <span class="kw">next</span> <span class="kw">if</span> <span class="ot">@grid</span>[index] != <span class="dv">0</span> <span class="co"># Move on if we know the cell&#39;s value </span>
+          box = <span class="dt">BoxOfIndex</span>[index]   <span class="co"># Figure out the box for this cell</span>
+          <span class="kw">yield</span> row, col, box       <span class="co"># Invoke the associated block</span>
+        <span class="kw">end</span>
+      <span class="kw">end</span>
+    <span class="kw">end</span>
+
+    <span class="co"># Returns true if any row, column, or box has duplicates.</span>
+    <span class="co"># Otherwise returns false. Duplicates in rows, columns, or boxes are not</span>
+    <span class="co"># allowed in Sudoku, so a return value of true means an invalid puzzle.</span>
+    <span class="kw">def</span> has_duplicates?
+      <span class="co"># uniq! returns nil if all the elements in an array are unique.</span>
+      <span class="co"># So if uniq! returns something then the board has duplicates.</span>
+      <span class="dv">0</span>.upto(<span class="dv">8</span>) {|row| <span class="kw">return</span> <span class="dv">true</span> <span class="kw">if</span> rowdigits(row).uniq! }
+      <span class="dv">0</span>.upto(<span class="dv">8</span>) {|col| <span class="kw">return</span> <span class="dv">true</span> <span class="kw">if</span> coldigits(col).uniq! }
+      <span class="dv">0</span>.upto(<span class="dv">8</span>) {|box| <span class="kw">return</span> <span class="dv">true</span> <span class="kw">if</span> boxdigits(box).uniq! }
+      
+      <span class="dv">false</span>  <span class="co"># If all the tests have passed, then the board has no duplicates</span>
+    <span class="kw">end</span>
+
+    <span class="co"># This array holds a set of all Sudoku digits. Used below.</span>
+    <span class="dt">AllDigits</span> = [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">9</span>].freeze
+
+    <span class="co"># Return an array of all values that could be placed in the cell </span>
+    <span class="co"># at (row,col) without creating a duplicate in the row, column, or box.</span>
+    <span class="co"># Note that the + operator on arrays does concatenation but that the - </span>
+    <span class="co"># operator performs a set difference operation.</span>
+    <span class="kw">def</span> possible(row, col, box)
+      <span class="dt">AllDigits</span> - (rowdigits(row) + coldigits(col) + boxdigits(box))
+    <span class="kw">end</span>
+
+    <span class="kw">private</span>  <span class="co"># All methods after this line are private to the class</span>
+
+    <span class="co"># Return an array of all known values in the specified row.</span>
+    <span class="kw">def</span> rowdigits(row)
+      <span class="co"># Extract the subarray that represents the row and remove all zeros.</span>
+      <span class="co"># Array subtraction is set difference, with duplicate removal.</span>
+      <span class="ot">@grid</span>[row*<span class="dv">9</span>,<span class="dv">9</span>] - [<span class="dv">0</span>]
+    <span class="kw">end</span>
+
+    <span class="co"># Return an array of all known values in the specified column.</span>
+    <span class="kw">def</span> coldigits(col)
+      result = []                <span class="co"># Start with an empty array</span>
+      col.step(<span class="dv">80</span>, <span class="dv">9</span>) {|i|       <span class="co"># Loop from col by nines up to 80</span>
+        v = <span class="ot">@grid</span>[i]             <span class="co"># Get value of cell at that index</span>
+        result &lt;&lt; v <span class="kw">if</span> (v != <span class="dv">0</span>)  <span class="co"># Add it to the array if non-zero</span>
+      }
+      result                     <span class="co"># Return the array</span>
+    <span class="kw">end</span>
+
+    <span class="co"># Map box number to the index of the upper-left corner of the box.</span>
+    <span class="dt">BoxToIndex</span> = [<span class="dv">0</span>, <span class="dv">3</span>, <span class="dv">6</span>, <span class="dv">27</span>, <span class="dv">30</span>, <span class="dv">33</span>, <span class="dv">54</span>, <span class="dv">57</span>, <span class="dv">60</span>].freeze
+
+    <span class="co"># Return an array of all the known values in the specified box.</span>
+    <span class="kw">def</span> boxdigits(b)
+      <span class="co"># Convert box number to index of upper-left corner of the box.</span>
+      i = <span class="dt">BoxToIndex</span>[b]
+      <span class="co"># Return an array of values, with 0 elements removed.</span>
+      [
+        <span class="ot">@grid</span>[i],    <span class="ot">@grid</span>[i<span class="dv">+1</span>],  <span class="ot">@grid</span>[i<span class="dv">+2</span>],
+        <span class="ot">@grid</span>[i<span class="dv">+9</span>],  <span class="ot">@grid</span>[i<span class="dv">+10</span>], <span class="ot">@grid</span>[i<span class="dv">+11</span>],
+        <span class="ot">@grid</span>[i<span class="dv">+18</span>], <span class="ot">@grid</span>[i<span class="dv">+19</span>], <span class="ot">@grid</span>[i<span class="dv">+20</span>]
+      ] - [<span class="dv">0</span>]
+    <span class="kw">end</span>
+  <span class="kw">end</span>  <span class="co"># This is the end of the Puzzle class</span>
+
+  <span class="co"># An exception of this class indicates invalid input,</span>
+  <span class="kw">class</span> <span class="dt">Invalid</span> &lt; <span class="dt">StandardError</span>
+  <span class="kw">end</span>
+
+  <span class="co"># An exception of this class indicates that a puzzle is over-constrained</span>
+  <span class="co"># and that no solution is possible.</span>
+  <span class="kw">class</span> <span class="dt">Impossible</span> &lt; <span class="dt">StandardError</span>
+  <span class="kw">end</span>
+
+  <span class="co">#</span>
+  <span class="co"># This method scans a Puzzle, looking for unknown cells that have only</span>
+  <span class="co"># a single possible value. If it finds any, it sets their value. Since</span>
+  <span class="co"># setting a cell alters the possible values for other cells, it </span>
+  <span class="co"># continues scanning until it has scanned the entire puzzle without </span>
+  <span class="co"># finding any cells whose value it can set.</span>
+  <span class="co">#</span>
+  <span class="co"># This method returns three values. If it solves the puzzle, all three </span>
+  <span class="co"># values are nil. Otherwise, the first two values returned are the row and</span>
+  <span class="co"># column of a cell whose value is still unknown. The third value is the</span>
+  <span class="co"># set of values possible at that row and column. This is a minimal set of</span>
+  <span class="co"># possible values: there is no unknown cell in the puzzle that has fewer</span>
+  <span class="co"># possible values. This complex return value enables a useful heuristic </span>
+  <span class="co"># in the solve() method: that method can guess at values for cells where</span>
+  <span class="co"># the guess is most likely to be correct.</span>
+  <span class="co"># </span>
+  <span class="co"># This method raises Impossible if it finds a cell for which there are</span>
+  <span class="co"># no possible values. This can happen if the puzzle is over-constrained,</span>
+  <span class="co"># or if the solve() method below has made an incorrect guess.</span>
+  <span class="co">#</span>
+  <span class="co"># This method mutates the specified Puzzle object in place.</span>
+  <span class="co"># If has_duplicates? is false on entry, then it will be false on exit.</span>
+  <span class="co">#</span>
+  <span class="kw">def</span> <span class="dt">Sudoku</span>.scan(puzzle)
+    unchanged = <span class="dv">false</span>  <span class="co"># This is our loop variable</span>
+
+    <span class="co"># Loop until we&#39;ve scanned the whole board without making a change.</span>
+    <span class="kw">until</span> unchanged 
+      unchanged = <span class="dv">true</span>      <span class="co"># Assume no cells will be changed this time</span>
+      rmin,cmin,pmin = <span class="dv">nil</span>  <span class="co"># Track cell with minimal possible set</span>
+      min = <span class="dv">10</span>              <span class="co"># More than the maximal number of possibilities</span>
+
+      <span class="co"># Loop through cells whose value is unknown.</span>
+      puzzle.each_unknown <span class="kw">do</span> |row, col, box|
+        <span class="co"># Find the set of values that could go in this cell</span>
+        p = puzzle.possible(row, col, box)
+        
+        <span class="co"># Branch based on the size of the set p. </span>
+        <span class="co"># We care about 3 cases: p.size==0, p.size==1, and p.size &gt; 1.</span>
+        <span class="kw">case</span> p.size
+        <span class="kw">when</span> <span class="dv">0</span>  <span class="co"># No possible values means the puzzle is over-constrained</span>
+          raise <span class="dt">Impossible</span>
+        <span class="kw">when</span> <span class="dv">1</span>  <span class="co"># We&#39;ve found a unique value, so set it in the grid</span>
+          puzzle[row,col] = p[<span class="dv">0</span>] <span class="co"># Set that position on the grid to the value</span>
+          unchanged = <span class="dv">false</span>      <span class="co"># Note that we&#39;ve made a change</span>
+        <span class="kw">else</span>    <span class="co"># For any other number of possibilities</span>
+          <span class="co"># Keep track of the smallest set of possibilities.</span>
+          <span class="co"># But don&#39;t bother if we&#39;re going to repeat this loop.</span>
+          <span class="kw">if</span> unchanged &amp;&amp; p.size &lt; min
+            min = p.size                    <span class="co"># Current smallest size</span>
+            rmin, cmin, pmin = row, col, p  <span class="co"># Note parallel assignment</span>
+          <span class="kw">end</span>
+        <span class="kw">end</span>
+      <span class="kw">end</span>
+    <span class="kw">end</span>
+      
+    <span class="co"># Return the cell with the minimal set of possibilities.</span>
+    <span class="co"># Note multiple return values.</span>
+    <span class="kw">return</span> rmin, cmin, pmin
+  <span class="kw">end</span>
+
+  <span class="co"># Solve a Sudoku puzzle using simple logic, if possible, but fall back</span>
+  <span class="co"># on brute-force when necessary. This is a recursive method. It either</span>
+  <span class="co"># returns a solution or raises an exception. The solution is returned</span>
+  <span class="co"># as a new Puzzle object with no unknown cells. This method does not </span>
+  <span class="co"># modify the Puzzle it is passed. Note that this method cannot detect</span>
+  <span class="co"># an under-constrained puzzle.</span>
+  <span class="kw">def</span> <span class="dt">Sudoku</span>.solve(puzzle)
+    <span class="co"># Make a private copy of the puzzle that we can modify.</span>
+    puzzle = puzzle.dup
+
+    <span class="co"># Use logic to fill in as much of the puzzle as we can.</span>
+    <span class="co"># This method mutates the puzzle we give it, but always leaves it valid.</span>
+    <span class="co"># It returns a row, a column, and set of possible values at that cell.</span>
+    <span class="co"># Note parallel assignment of these return values to three variables.</span>
+    r,c,p = scan(puzzle)
+
+    <span class="co"># If we solved it with logic, return the solved puzzle.</span>
+    <span class="kw">return</span> puzzle <span class="kw">if</span> r == <span class="dv">nil</span>
+    
+    <span class="co"># Otherwise, try each of the values in p for cell [r,c].</span>
+    <span class="co"># Since we&#39;re picking from a set of possible values, the guess leaves</span>
+    <span class="co"># the puzzle in a valid state. The guess will either lead to a solution</span>
+    <span class="co"># or to an impossible puzzle. We&#39;ll know we have an impossible</span>
+    <span class="co"># puzzle if a recursive call to scan throws an exception. If this happens</span>
+    <span class="co"># we need to try another guess, or re-raise an exception if we&#39;ve tried</span>
+    <span class="co"># all the options we&#39;ve got.</span>
+    p.each <span class="kw">do</span> |guess|        <span class="co"># For each value in the set of possible values</span>
+      puzzle[r,c] = guess    <span class="co"># Guess the value</span>
+      
+      <span class="kw">begin</span>
+        <span class="co"># Now try (recursively) to solve the modified puzzle.</span>
+        <span class="co"># This recursive invocation will call scan() again to apply logic</span>
+        <span class="co"># to the modified board, and will then guess another cell if needed.</span>
+        <span class="co"># Remember that solve() will either return a valid solution or </span>
+        <span class="co"># raise an exception.  </span>
+        <span class="kw">return</span> solve(puzzle)  <span class="co"># If it returns, we just return the solution</span>
+      <span class="kw">rescue</span> <span class="dt">Impossible</span>
+        <span class="kw">next</span>                  <span class="co"># If it raises an exception, try the next guess</span>
+      <span class="kw">end</span>
+    <span class="kw">end</span>
+
+    <span class="co"># If we get here, then none of our guesses worked out</span>
+    <span class="co"># so we must have guessed wrong sometime earlier.</span>
+    raise <span class="dt">Impossible</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>

@@ -1,0 +1,58 @@
+<p><strong>Project is no longer maintained, please use <a href="http://www.sinatrarb.com/contrib/">sinatra-contrib</a> instead.</strong></p>
+<h1 id="sinatrabigband">Sinatra::BigBand</h1>
+<p>BigBand is a stack of <a href="http://sinatrarb.com">Sinatra</a> extensions, most of them developed as part of BigBand, but usable without, each of available as a separate gem. All BigBand extensions follow the same release cycle.</p>
+<h2 id="usage">Usage</h2>
+<p>Simply replace <code>Sinatra::Base</code> with <code>Sinatra::BigBand</code> in your application.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">require <span class="st">&#39;sinatra/big_band&#39;</span>
+<span class="kw">class</span> <span class="dt">MyApp</span> &lt; <span class="dt">Sinatra</span>::<span class="dt">BigBand</span>
+  <span class="co"># ...</span>
+<span class="kw">end</span></code></pre></div>
+<h2 id="the-bigband-stack">The BigBand Stack</h2>
+<p>Sinatra Extensions</p>
+<ul>
+<li><a href="http://github.com/rkh/sinatra-advanced-routes">Sinatra::AdvancedRoutes</a> – Makes routes first class objects</li>
+<li><a href="http://github.com/rkh/sinatra-compass">Sinatra::Compass</a> – Integrates the Compass stylesheet framework</li>
+<li><a href="http://github.com/rkh/sinatra-config-file">Sinatra::ConfigFile</a> – Adds YAML config file support</li>
+<li><a href="http://github.com/rkh/sinatra-more-server">Sinatra::MoreServer</a> – Adds support for more web servers to Sinatra::Base#run!</li>
+<li><a href="http://github.com/rkh/sinatra-namespace">Sinatra::Namespace</a> – Adds namespaces, allows namespaces to have local helpers.</li>
+<li><a href="http://github.com/rkh/sinatra-reloader">Sinatra::Reloader</a> – Advanced and fast code reloader</li>
+<li><a href="http://github.com/rkh/sinatra-sugar">Sinatra::Sugar</a> – Extensions for Sinatra's standard methods, like #set or #register</li>
+</ul>
+<p>Sinatra tool integration:</p>
+<ul>
+<li><a href="http://github.com/rkh/async-rack">AsyncRack</a> – Makes standard rack middleware play nice with <code>async.callback</code></li>
+<li><a href="http://github.com/rkh/haml-more">Haml::More</a> – Adds more functionality to Haml and Sass</li>
+<li><a href="http://github.com/rkh/monkey-lib">monkey-lib</a> – Thin layer over ruby extension libraries (like ActiveSupport) to make those pluggable</li>
+<li><a href="http://github.com/rkh/sinatra-test-helper">Sinatra::TestHelper</a> – Adds helper methods and better integration for various testing frameworks</li>
+<li><a href="http://github.com/rkh/sinatra-extension">Sinatra::Extension</a> – Mixin to ease Sinatra extension development.</li>
+<li><a href="http://github.com/rkh/yard-sinatra">Yard::Sinatra</a> – Displays Sinatra routes (including comments) in YARD output</li>
+</ul>
+<p>Besides those extensions, there are others in the BigBand stack, that are external:</p>
+<ul>
+<li><a href="http://github.com/nakajima/rack-flash">Rack Flash</a> by <a href="http://github.com/nakajima">Pat Nakajima</a></li>
+<li><a href="http://github.com/raggi/sinatra-default_charset">Sinatra::DefaultCharset</a> by <a href="http://github.com/raggi">James Tucker</a></li>
+</ul>
+<h2 id="general-goals">General Goals</h2>
+<ul>
+<li>No sub-project relies on BigBand</li>
+<li>All sub-projects should work with MRI/REE &gt;= 1.8.6 (including 1.9.x), JRuby &gt;= 1.4.0 (&gt;= 1.6.0 recommended) and Rubinius &gt;= 1.0</li>
+<li>Some sub-projects should work with MagLev and IronRuby (partial MacRuby support planned for later release)</li>
+<li>Ease to modify the stack</li>
+</ul>
+<h2 id="setup-via-gem">Setup via gem</h2>
+<p>Try:</p>
+<pre><code>gem install big_band</code></pre>
+<h2 id="running-the-specs-manual-setup">Running the specs / Manual setup</h2>
+<p>Try something like this:</p>
+<pre><code># dependencies, rather mainstream. just in case you don&#39;t have one of those.
+gem install sinatra rspec rack-test rake
+
+# get the source
+git clone git://github.com/rkh/big_band.git
+rake setup:read_only
+
+# run the specs
+rake spec
+
+# run with multiple ruby implementations using rvm
+rvm specs ree,1.9.1,rbx,jruby</code></pre>

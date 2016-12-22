@@ -1,0 +1,137 @@
+<p>http://ruby-doc.org/core-2.1.1/ENV.html</p>
+<h2 id="class-env-object">Class ENV &lt; Object</h2>
+<p>ENV is a hash-like accessor for environment variables. Public Class Methods</p>
+<h3 id="envname">ENV[name]</h3>
+<p>ENV[name] → value</p>
+<p>Retrieves the value for environment variable name as a String. Returns nil if the named variable does not exist.</p>
+<h3 id="envname-1">ENV[name] =</h3>
+<p>ENV[name] = value</p>
+<p>Sets the environment variable name to value. If the value given is nil the environment variable is deleted.</p>
+<h3 id="assocname">assoc(name)</h3>
+<p>assoc(name) → Array or nil</p>
+<p>Returns an Array of the name and value of the environment variable with name or nil if the name cannot be found.</p>
+<h3 id="clear">clear</h3>
+<p>clear</p>
+<p>Removes every environment variable.</p>
+<h3 id="deletename">delete(name)</h3>
+<p>delete(name) → value delete(name) { |name| } → value</p>
+<p>Deletes the environment variable with name and returns the value of the variable. If a block is given it will be called when the named environment does not exist.</p>
+<h3 id="delete_if">delete_if</h3>
+<p>delete_if { |name, value| } → Hash delete_if → Enumerator</p>
+<p>Deletes every environment variable for which the block evaluates to true.</p>
+<p>If no block is given an enumerator is returned instead.</p>
+<h3 id="each">each</h3>
+<p>each { |name, value| } → Hash each → Enumerator each_pair { |name, value| } → Hash each_pair → Enumerator</p>
+<p>Yields each environment variable name and value.</p>
+<p>If no block is given an Enumerator is returned.</p>
+<h3 id="each_key">each_key</h3>
+<p>each_key { |name| } → Hash each_key → Enumerator</p>
+<p>Yields each environment variable name.</p>
+<p>An Enumerator is returned if no block is given.</p>
+<h3 id="each_pair">each_pair</h3>
+<p>each_pair { |name, value| } → Hash each_pair → Enumerator</p>
+<p>Yields each environment variable name and value.</p>
+<p>If no block is given an Enumerator is returned.</p>
+<h3 id="each_value">each_value</h3>
+<p>each_value { |value| } → Hash each_value → Enumerator</p>
+<p>Yields each environment variable value.</p>
+<p>An Enumerator is returned if no block was given.</p>
+<p>empty? → true or false Returns true when there are no environment variables</p>
+<h3 id="fetchname">fetch(name)</h3>
+<p>fetch(name) → value fetch(name, default) → value fetch(name) { |missing_name| ... } → value</p>
+<p>Retrieves the environment variable name.</p>
+<p>If the given name does not exist and neither default nor a block a provided an IndexError is raised. If a block is given it is called with the missing name to provide a value. If a default value is given it will be returned when no block is given.</p>
+<h3 id="has_keyname">has_key?(name)</h3>
+<p>has_key?(name) → true or false</p>
+<p>Returns true if there is an environment variable with the given name.</p>
+<h3 id="has_valuevalue">has_value?(value)</h3>
+<p>has_value?(value) → true or false</p>
+<p>Returns true if there is an environment variable with the given value.</p>
+<h3 id="includename">include?(name)</h3>
+<p>include?(name) → true or false</p>
+<p>Returns true if there is an environment variable with the given name.</p>
+<h3 id="indexvalue">index(value)</h3>
+<p>index(value) → key</p>
+<p>Deprecated method that is equivalent to ::key</p>
+<h3 id="inspect">inspect</h3>
+<p>inspect → string</p>
+<p>Returns the contents of the environment as a String.</p>
+<h3 id="invert">invert</h3>
+<p>invert → Hash</p>
+<p>Returns a new hash created by using environment variable names as values and values as names.</p>
+<h3 id="keep_if">keep_if</h3>
+<p>keep_if { |name, value| } → Hash keep_if → Enumerator</p>
+<p>Deletes every environment variable where the block evaluates to false.</p>
+<p>Returns an enumerator if no block was given.</p>
+<h3 id="keyvalue">key(value)</h3>
+<p>key(value) → name</p>
+<p>Returns the name of the environment variable with value. If the value is not found nil is returned.</p>
+<h3 id="keyname">key?(name)</h3>
+<p>key?(name) → true or false</p>
+<p>Returns true if there is an environment variable with the given name.</p>
+<h3 id="keys">keys</h3>
+<p>keys → Array</p>
+<p>Returns every environment variable name in an Array</p>
+<h3 id="length">length</h3>
+<p>length</p>
+<p>Returns the number of environment variables.</p>
+<h3 id="membername">member?(name</h3>
+<p>member?(name) → true or false</p>
+<p>Returns true if there is an environment variable with the given name.</p>
+<h3 id="rassocvalue">rassoc(value)</h3>
+<p>rassoc(value)</p>
+<p>Returns an Array of the name and value of the environment variable with value or nil if the value cannot be found.</p>
+<h3 id="rehash">rehash</h3>
+<p>rehash</p>
+<p>Re-hashing the environment variables does nothing. It is provided for compatibility with Hash.</p>
+<h3 id="reject">reject</h3>
+<p>reject { |name, value| } → Hash reject → Enumerator</p>
+<p>Same as ENV#delete_if, but works on (and returns) a copy of the environment.</p>
+<h3 id="reject-1">reject!</h3>
+<p>reject! { |name, value| } → ENV or nil reject! → Enumerator</p>
+<p>Equivalent to ENV#delete_if but returns nil if no changes were made.</p>
+<p>Returns an Enumerator if no block was given.</p>
+<h3 id="replacehash">replace(hash)</h3>
+<p>replace(hash) → env</p>
+<p>Replaces the contents of the environment variables with the contents of hash.</p>
+<h3 id="select">select</h3>
+<p>select { |name, value| } → Hash select → Enumerator</p>
+<p>Returns a copy of the environment for entries where the block returns true.</p>
+<p>Returns an Enumerator if no block was given.</p>
+<h3 id="select-1">select!</h3>
+<p>select! { |name, value| } → ENV or nil select! → Enumerator</p>
+<p>Equivalent to ENV#keep_if but returns nil if no changes were made.</p>
+<h3 id="shift">shift</h3>
+<p>shift → Array or nil</p>
+<p>Removes an environment variable name-value pair from ENV and returns it as an Array. Returns nil if when the environment is empty.</p>
+<h3 id="size">size</h3>
+<p>size</p>
+<p>Returns the number of environment variables.</p>
+<h3 id="storename-value">store(name, value)</h3>
+<p>store(name, value) → value</p>
+<p>Sets the environment variable name to value. If the value given is nil the environment variable is deleted.</p>
+<h3 id="to_a">to_a</h3>
+<p>to_a → Array</p>
+<p>Converts the environment variables into an array of names and value arrays.</p>
+<p>ENV.to_a # =&gt; [[&quot;TERM&quot;, &quot;xterm-color&quot;], [&quot;SHELL&quot;, &quot;/bin/bash&quot;], ...]</p>
+<h3 id="to_h">to_h</h3>
+<p>to_h → hash</p>
+<p>Creates a hash with a copy of the environment variables.</p>
+<h3 id="to_hash">to_hash</h3>
+<p>to_hash → hash</p>
+<p>Creates a hash with a copy of the environment variables.</p>
+<h3 id="to_s">to_s</h3>
+<p>to_s → &quot;ENV&quot;</p>
+<p>Returns “ENV”</p>
+<h3 id="updatehash">update(hash)</h3>
+<p>update(hash) → Hash update(hash) { |name, old_value, new_value| } → Hash</p>
+<p>Adds the contents of hash to the environment variables. If no block is specified entries with duplicate keys are overwritten, otherwise the value of each duplicate name is determined by calling the block with the key, its value from the environment and its value from the hash.</p>
+<h3 id="valuevalue">value?(value)</h3>
+<p>value?(value) → true or false</p>
+<p>Returns true if there is an environment variable with the given value.</p>
+<h3 id="values">values</h3>
+<p>values → Array</p>
+<p>Returns every environment variable value as an Array</p>
+<h3 id="values_atname-...">values_at(name, ...)</h3>
+<p>values_at(name, ...) → Array</p>
+<p>Returns an array containing the environment variable values associated with the given names. See also ::select.</p>

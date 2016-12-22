@@ -1,0 +1,120 @@
+<h1 id="thin">Thin</h1>
+<p>Tiny, fast &amp; funny HTTP server</p>
+<p>Thin is a Ruby web server that glues together 3 of the best Ruby libraries in web history:</p>
+<ul>
+<li>The Mongrel parser: the root of Mongrel speed and security</li>
+<li>Event Machine: a network I/O library with extremely high scalability, performance and stability</li>
+<li>Rack: a minimal interface between webservers and Ruby frameworks</li>
+</ul>
+<p>Which makes it, with all humility, the most secure, stable, fast and extensible Ruby web server bundled in an easy to use gem for your own pleasure.</p>
+<pre><code>Site:  http://code.macournoyer.com/thin/
+Group: http://groups.google.com/group/thin-ruby/topics
+Bugs:  http://github.com/macournoyer/thin/issues
+Code:  http://github.com/macournoyer/thin
+IRC:   #thin on freenode</code></pre>
+<h2 id="installation">Installation</h2>
+<p>For the latest stable version:</p>
+<p><code>gem install thin</code></p>
+<p>Or from source:</p>
+<pre><code>git clone git://github.com/macournoyer/thin.git
+cd thin
+rake install</code></pre>
+<h2 id="usage">Usage</h2>
+<p>A +thin+ script offers an easy way to start your Rack application:</p>
+<pre><code>cd to/your/app
+thin start</code></pre>
+<p>When using with Rails and Bundler, make sure to add <code>gem 'thin'</code> to your Gemfile.</p>
+<p>See example directory for samples.</p>
+<h3 id="command-line-examples">Command Line Examples</h3>
+<p>Use a rackup file and bind to localhost port 8080:</p>
+<pre><code>thin -R config.ru -a 127.0.0.1 -p 8080 start</code></pre>
+<p>Store the server process ID, log to a file and daemonize:</p>
+<pre><code>thin -p 9292 -P tmp/pids/thin.pid -l logs/thin.log -d start</code></pre>
+<p>Thin is quite flexible in that many options can be specified at the command line (see below for usage).</p>
+<h3 id="configuration-files">Configuration files</h3>
+<p>You can create configuration files in yaml format and feed them to thin using <code>thin -C config.yml</code>. Here is an example config file:</p>
+<div class="sourceCode"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span class="ot">--- </span>
+<span class="fu">user:</span> www-data
+<span class="fu">group:</span> www-data
+<span class="fu">pid:</span> tmp/pids/thin.pid
+<span class="fu">timeout:</span> 30
+<span class="fu">wait:</span> 30
+<span class="fu">log:</span> log/thin.log
+<span class="fu">max_conns:</span> 1024
+<span class="fu">require:</span> <span class="kw">[]</span>
+<span class="fu">environment:</span> production
+<span class="fu">max_persistent_conns:</span> 512
+<span class="fu">servers:</span> 1
+<span class="fu">threaded:</span> true
+<span class="fu">no-epoll:</span> true
+<span class="fu">daemonize:</span> true
+<span class="fu">socket:</span> tmp/sockets/thin.sock
+<span class="fu">chdir:</span> /path/to/your/apps/root
+<span class="fu">tag:</span> a-name-to-show-up-in-ps aux</code></pre></div>
+<h3 id="command-line-options">Command Line Options</h3>
+<p>This is the usage for the thin command which can be obtained by running <code>thin -h</code> at the command line.</p>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="ex">Usage</span>: thin [options] start<span class="kw">|</span><span class="ex">stop</span><span class="kw">|</span><span class="ex">restart</span><span class="kw">|</span><span class="ex">config</span><span class="kw">|</span><span class="fu">install</span>
+
+<span class="ex">Server</span> options:
+    <span class="ex">-a</span>, --address HOST               bind to HOST address (default: 0.0.0.0)
+    <span class="ex">-p</span>, --port PORT                  use PORT (default: 3000)
+    <span class="ex">-S</span>, --socket FILE                bind to unix domain socket
+    <span class="ex">-y</span>, --swiftiply [KEY]            Run using swiftiply
+    <span class="ex">-A</span>, --adapter NAME               Rack adapter to use (default: autodetect)
+                                     <span class="kw">(</span><span class="ex">rack</span>, rails, ramaze, merb, file<span class="kw">)</span>
+    <span class="ex">-R</span>, --rackup FILE                Load a Rack config file instead of Rack adapter
+    <span class="ex">-c</span>, --chdir DIR                  Change to dir before starting
+        <span class="ex">--stats</span> PATH                 Mount the Stats adapter under PATH
+
+<span class="ex">SSL</span> options:
+        <span class="ex">--ssl</span>                        Enables SSL
+        <span class="ex">--ssl-key-file</span> PATH          Path to private key
+        <span class="ex">--ssl-cert-file</span> PATH         Path to certificate
+        <span class="ex">--ssl-disable-verify</span>         Disables (optional) <span class="ex">client</span> cert requests
+
+<span class="ex">Adapter</span> options:
+    <span class="ex">-e</span>, --environment ENV            Framework environment (default: development)
+        <span class="ex">--prefix</span> PATH                Mount the app under PATH (start with /)
+
+<span class="ex">Daemon</span> options:
+    <span class="ex">-d</span>, --daemonize                  Run daemonized in the background
+    <span class="ex">-l</span>, --log FILE                   File to redirect output (default: /home/robert/log/thin.log)
+    <span class="ex">-P</span>, --pid FILE                   File to store PID (default: tmp/pids/thin.pid)
+    <span class="ex">-u</span>, --user NAME                  User to run daemon as (use with -g)
+    <span class="ex">-g</span>, --group NAME                 Group to run daemon as (use with -u)
+        <span class="ex">--tag</span> NAME                   Additional text to display in process listing
+
+<span class="ex">Cluster</span> options:
+    <span class="ex">-s</span>, --servers NUM                Number of servers to start
+    <span class="ex">-o</span>, --only NUM                   Send command to only one server of the cluster
+    <span class="ex">-C</span>, --config FILE                Load options from config file
+        <span class="ex">--all</span> [DIR]                  Send command to each config files in DIR
+    <span class="ex">-O</span>, --onebyone                   Restart the cluster one by one (only works with restart command)
+    <span class="ex">-w</span>, --wait NUM                   Maximum wait time for server to be started in seconds (use with -O)
+
+<span class="ex">Tuning</span> options:
+    <span class="ex">-b</span>, --backend CLASS              Backend to use, full classname
+    <span class="ex">-t</span>, --timeout SEC                Request or command timeout in sec (default: 30)
+    <span class="ex">-f</span>, --force                      Force the execution of the command
+        <span class="ex">--max-conns</span> NUM              Maximum number of open file descriptors (default: 1024)
+                                     <span class="ex">Might</span> require sudo to set higher than 1024
+        <span class="ex">--max-persistent-conns</span> NUM   Maximum number of persistent connections
+                                     <span class="kw">(</span><span class="ex">default</span>: 100<span class="kw">)</span>
+        <span class="ex">--threaded</span>                   Call the Rack application in threads [experimental]
+        <span class="ex">--threadpool-size</span> NUM        Sets the size of the EventMachine threadpool.
+                                     <span class="kw">(</span><span class="ex">default</span>: 20<span class="kw">)</span>
+        <span class="ex">--no-epoll</span>                   Disable the use of epoll
+
+<span class="ex">Common</span> options:
+    <span class="ex">-r</span>, --require FILE               require the library
+    <span class="ex">-q</span>, --quiet                      Silence all logging
+    <span class="ex">-D</span>, --debug                      Enable debug logging
+    <span class="ex">-V</span>, --trace                      Set tracing on (log raw request/response)
+    <span class="ex">-h</span>, --help                       Show this message
+    <span class="ex">-v</span>, --version                    Show version</code></pre></div>
+<h2 id="license">License</h2>
+<p>Ruby License, http://www.ruby-lang.org/en/LICENSE.txt.</p>
+<h2 id="credits">Credits</h2>
+<p>The parser was stolen from Mongrel http://mongrel.rubyforge.org by Zed Shaw. Mongrel is copyright 2007 Zed A. Shaw and contributors. It is licensed under the Ruby license and the GPL2.</p>
+<p>Thin is copyright Marc-Andre Cournoyer <a href="mailto:macournoyer@gmail.com">macournoyer@gmail.com</a></p>
+<p>Get help at http://groups.google.com/group/thin-ruby/ Report bugs at https://github.com/macournoyer/thin/issues and major security issues directly to me macournoyer@gmail.com.</p>

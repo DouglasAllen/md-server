@@ -1,0 +1,31 @@
+<h1 id="rdocrouge">RDoc::Rouge</h1>
+<p><a href="https://travis-ci.org/zzak/rdoc-rouge"><img src="https://travis-ci.org/zzak/rdoc-rouge.png?branch=master" alt="Build Status" /></a></p>
+<p>Syntax highlighting for RDoc using the pygments friendly Rouge.</p>
+<h2 id="installation">Installation</h2>
+<p>Add this line to your application's Gemfile:</p>
+<pre><code>gem &#39;rdoc-rouge&#39;</code></pre>
+<p>And then execute:</p>
+<pre><code>$ bundle</code></pre>
+<p>Or install it yourself as:</p>
+<pre><code>$ gem install rdoc-rouge</code></pre>
+<h2 id="usage">Usage</h2>
+<pre><code>require &#39;rdoc/rouge&#39;
+renderer = RDoc::Rouge::Renderer
+html = renderer.parse &lt;&lt;-markdown
+```ruby
+def hello(who)
+  puts &quot;Hello, #{who}!&quot;
+end
+```
+markdown</code></pre>
+<p>If you just want to generate a table of contents from your markdown, we have exposed RDoc::Markup::ToTableOfContents</p>
+<pre><code>RDoc::Rouge::Renderer.new(:toc =&gt; true).parse(&quot;# markdown&quot;)
+#=&gt; &quot;&lt;li&gt;&lt;a href=&#39;#label-markdown&#39;&gt;markdown&lt;/a&gt;&lt;/li&gt;&quot;</code></pre>
+<h2 id="contributing">Contributing</h2>
+<ol style="list-style-type: decimal">
+<li>Fork it</li>
+<li>Create your feature branch (<code>git checkout -b my-new-feature</code>)</li>
+<li>Commit your changes (<code>git commit -am 'Add some feature'</code>)</li>
+<li>Push to the branch (<code>git push origin my-new-feature</code>)</li>
+<li>Create new Pull Request</li>
+</ol>

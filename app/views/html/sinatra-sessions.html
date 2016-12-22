@@ -1,0 +1,27 @@
+<h3 id="using-sessions">Using Sessions</h3>
+<p>A session is used to keep state during requests. If activated, you have one session hash per user session:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">enable <span class="st">:sessions</span>
+
+get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  <span class="st">&quot;value = &quot;</span> &lt;&lt; session[<span class="st">:value</span>].inspect
+<span class="kw">end</span>
+
+get <span class="st">&#39;/:value&#39;</span> <span class="kw">do</span>
+  session[<span class="st">&#39;value&#39;</span>] = params[<span class="st">&#39;value&#39;</span>]
+<span class="kw">end</span></code></pre></div>
+<p>Note that <code>enable :sessions</code> actually stores all data in a cookie. This might not always be what you want (storing lots of data will increase your traffic, for instance). You can use any Rack session middleware: in order to do so, do <strong>not</strong> call <code>enable :sessions</code>, but instead pull in your middleware of choice as you would any other middleware:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">use <span class="dt">Rack</span>::<span class="dt">Session</span>::<span class="dt">Pool</span>, <span class="st">:expire_after</span> =&gt; <span class="dv">2592000</span>
+
+get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  <span class="st">&quot;value = &quot;</span> &lt;&lt; session[<span class="st">:value</span>].inspect
+<span class="kw">end</span>
+
+get <span class="st">&#39;/:value&#39;</span> <span class="kw">do</span>
+  session[<span class="st">&#39;value&#39;</span>] = params[<span class="st">&#39;value&#39;</span>]
+<span class="kw">end</span></code></pre></div>
+<p>To improve security, the session data in the cookie is signed with a session secret. A random secret is generated for you by Sinatra. However, since this secret will change with every start of your application, you might want to set the secret yourself, so all your application instances share it:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">set <span class="st">:session_secret</span>, <span class="st">&#39;super secret&#39;</span></code></pre></div>
+<p>If you want to configure it further, you may also store a hash with options in the <code>sessions</code> setting:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">set <span class="st">:sessions</span>, <span class="st">:domain</span> =&gt; <span class="st">&#39;foo.com&#39;</span></code></pre></div>
+<p>To share your session across other apps on subdomains of foo.com, prefix the domain with a <em>.</em> like this instead:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">set <span class="st">:sessions</span>, <span class="st">:domain</span> =&gt; <span class="st">&#39;.foo.com&#39;</span></code></pre></div>

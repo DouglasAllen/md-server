@@ -1,0 +1,44 @@
+<h3 id="accessing-the-request-object">Accessing the Request Object</h3>
+<p>The incoming request object can be accessed from request level (filter, routes, error handlers) through the <code>request</code> method:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># app running on http://example.com/example</span>
+get <span class="st">&#39;/foo&#39;</span> <span class="kw">do</span>
+  t =<span class="ot"> %w[</span><span class="st">text/css text/html application/javascript</span><span class="ot">]</span>
+  request.accept              <span class="co"># [&#39;text/html&#39;, &#39;*/*&#39;]</span>
+  request.accept? <span class="st">&#39;text/xml&#39;</span>  <span class="co"># true</span>
+  request.preferred_type(t)   <span class="co"># &#39;text/html&#39;</span>
+  request.body                <span class="co"># request body sent by the client (see below)</span>
+  request.scheme              <span class="co"># &quot;http&quot;</span>
+  request.script_name         <span class="co"># &quot;/example&quot;</span>
+  request.path_info           <span class="co"># &quot;/foo&quot;</span>
+  request.port                <span class="co"># 80</span>
+  request.request_method      <span class="co"># &quot;GET&quot;</span>
+  request.query_string        <span class="co"># &quot;&quot;</span>
+  request.content_length      <span class="co"># length of request.body</span>
+  request.media_type          <span class="co"># media type of request.body</span>
+  request.host                <span class="co"># &quot;example.com&quot;</span>
+  request.get?                <span class="co"># true (similar methods for other verbs)</span>
+  request.form_data?          <span class="co"># false</span>
+  request[<span class="st">&quot;some_param&quot;</span>]       <span class="co"># value of some_param parameter. [] is a shortcut to the params hash.</span>
+  request.referrer            <span class="co"># the referrer of the client or &#39;/&#39;</span>
+  request.user_agent          <span class="co"># user agent (used by :agent condition)</span>
+  request.cookies             <span class="co"># hash of browser cookies</span>
+  request.xhr?                <span class="co"># is this an ajax request?</span>
+  request.url                 <span class="co"># &quot;http://example.com/example/foo&quot;</span>
+  request.path                <span class="co"># &quot;/example/foo&quot;</span>
+  request.ip                  <span class="co"># client IP address</span>
+  request.secure?             <span class="co"># false (would be true over ssl)</span>
+  request.forwarded?          <span class="co"># true (if running behind a reverse proxy)</span>
+  request.env                 <span class="co"># raw env hash handed in by Rack</span>
+<span class="kw">end</span></code></pre></div>
+<p>Some options, like <code>script_name</code> or <code>path_info</code>, can also be written:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">before { request.path_info = <span class="st">&quot;/&quot;</span> }
+
+get <span class="st">&quot;/&quot;</span> <span class="kw">do</span>
+  <span class="st">&quot;all requests end up here&quot;</span>
+<span class="kw">end</span></code></pre></div>
+<p>The <code>request.body</code> is an IO or StringIO object:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">post <span class="st">&quot;/api&quot;</span> <span class="kw">do</span>
+  request.body.rewind  <span class="co"># in case someone already read it</span>
+  data = <span class="dt">JSON</span>.parse request.body.read
+  <span class="st">&quot;Hello </span><span class="ot">#{</span>data[<span class="st">&#39;name&#39;</span>]<span class="ot">}</span><span class="st">!&quot;</span>
+<span class="kw">end</span></code></pre></div>

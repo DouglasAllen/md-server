@@ -1,0 +1,219 @@
+<h2 id="eot-site-routes.rb">eot-site-routes.rb</h2>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">
+  <span class="co">######################################</span>
+  <span class="co">#                                    #</span>
+  <span class="co">#  app/contollers/menu_contoller.rb  #</span>
+  <span class="co">#                                    #</span>
+  <span class="co">######################################</span>
+
+require <span class="st">&#39;sinatra/base&#39;</span>
+
+<span class="kw">class</span> <span class="dt">MenuController</span>
+
+  <span class="kw">if</span> <span class="dt">ENV</span>.fetch(<span class="st">&quot;RACK_ENV&quot;</span>) == <span class="st">&quot;development&quot;</span>
+    p <span class="st">&quot;you&#39;re in </span><span class="ot">#{</span><span class="dv">__FILE__</span><span class="ot">}</span><span class="st">&quot;</span>
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> home;lambda { haml <span class="st">:home</span> };<span class="kw">end</span>
+
+  <span class="kw">def</span> tutorial;lambda { haml <span class="st">:tutorial</span> };<span class="kw">end</span>  
+
+  <span class="kw">def</span> data;lambda {haml <span class="st">:analemma</span>};<span class="kw">end</span>
+
+  <span class="kw">def</span> eot;lambda {haml <span class="st">:eot</span>};<span class="kw">end</span>
+
+  <span class="kw">def</span> md;lambda {md_arr; erb <span class="st">:md</span>};<span class="kw">end</span>
+
+  <span class="kw">def</span> links;lambda { haml <span class="st">:links</span> };<span class="kw">end</span>
+
+  <span class="kw">def</span> examples;lambda { haml <span class="st">:examples</span> };<span class="kw">end</span>
+
+  <span class="kw">def</span> graph;lambda {haml <span class="st">:graph</span>};<span class="kw">end</span>
+  
+  <span class="kw">def</span> rdoc;lambda {rd_arr ; erb <span class="st">:rdoc</span> };<span class="kw">end</span>
+
+  <span class="kw">def</span> gm;lambda { markdown :<span class="st">&quot;gm&quot;</span>, to_erb };<span class="kw">end</span>
+
+<span class="kw">end</span>
+
+  <span class="co">################################</span>
+  <span class="co">#                              #</span>
+  <span class="co">#  app/helpers/menu_helper.rb  #</span>
+  <span class="co">#                              #</span>
+  <span class="co">################################</span>
+
+require <span class="st">&#39;sinatra/base&#39;</span>
+
+helpers <span class="kw">do</span>
+
+  <span class="kw">if</span> <span class="dt">ENV</span>.fetch(<span class="st">&quot;RACK_ENV&quot;</span>) == <span class="st">&quot;development&quot;</span>
+    p <span class="st">&quot;you&#39;re in </span><span class="ot">#{</span><span class="dv">__FILE__</span><span class="ot">}</span><span class="st">&quot;</span>
+  <span class="kw">end</span>
+
+  <span class="ot">@mc</span> = <span class="dt">MenuController</span>.new
+
+    <span class="dt">HOME</span>     = <span class="ot">@mc</span>.home
+    <span class="dt">TUTORIAL</span> = <span class="ot">@mc</span>.tutorial
+    <span class="dt">GRAPH</span>    = <span class="ot">@mc</span>.graph
+    <span class="dt">DATA</span>     = <span class="ot">@mc</span>.data
+    <span class="dt">EOT</span>      = <span class="ot">@mc</span>.eot
+    <span class="dt">MD</span>       = <span class="ot">@mc</span>.md
+    <span class="dt">RDOC</span>     = <span class="ot">@mc</span>.rdoc
+    <span class="dt">GM</span>       = <span class="ot">@mc</span>.gm
+    <span class="dt">LINKS</span>    = <span class="ot">@mc</span>.links
+    <span class="dt">EXAMPLES</span> = <span class="ot">@mc</span>.examples
+ 
+
+<span class="kw">end</span>
+
+  <span class="co">#######################################</span>
+  <span class="co">#                                     #</span>
+  <span class="co">#  app/helpers/application_helper.rb  #</span>
+  <span class="co">#                                     #</span>
+  <span class="co">#######################################</span>
+
+<span class="co"># application_helper.rb</span>
+
+<span class="kw">module</span> <span class="dt">ApplicationHelper</span>
+
+  <span class="kw">if</span> <span class="dt">ENV</span>.fetch(<span class="st">&quot;RACK_ENV&quot;</span>) == <span class="st">&quot;development&quot;</span>
+    p <span class="st">&quot;you&#39;re in </span><span class="ot">#{</span><span class="dv">__FILE__</span><span class="ot">}</span><span class="st">&quot;</span>
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> title(value = <span class="dv">nil</span>)
+    <span class="ot">@title</span> = value <span class="kw">if</span> value
+    <span class="ot">@title</span> ? <span class="st">&quot;</span><span class="ot">#{@title}</span><span class="st">&quot;</span> : <span class="st">&quot;equationoftime.herokuapp.com/example_view.erb&quot;</span>
+  <span class="kw">end</span>  
+
+  <span class="kw">def</span> get_files(path)
+    dir_list_array = <span class="dt">Array</span>.new
+    <span class="dt">Find</span>.find(path) <span class="kw">do</span> |f|
+      dir_list_array &lt;&lt; <span class="dt">File</span>.basename(f, <span class="st">&quot;.*&quot;</span>) <span class="kw">if</span> !<span class="dt">File</span>.directory?(f) 
+    <span class="kw">end</span>
+    dir_list_array
+  <span class="kw">end</span>
+  
+  <span class="kw">def</span> formatter(page)
+    formatted = <span class="st">&quot;&quot;</span>
+    formatted = page.gsub(<span class="ot">/[-]/</span>, <span class="st">&#39; &#39;</span>).capitalize
+    <span class="kw">return</span> formatted
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> to_erb
+    ngn = {<span class="st">:layout_engine</span> =&gt; <span class="st">:erb</span>} 
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> md_arr
+    <span class="ot">@md_arr</span> = get_files(<span class="st">&#39;./app/views/md&#39;</span>)
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> md_links
+    halt <span class="dv">404</span> <span class="kw">unless</span> <span class="dt">File</span>.exist?(<span class="st">&quot;app/views/md/</span><span class="ot">#{</span>params[<span class="st">:link</span>]<span class="ot">}</span><span class="st">.md&quot;</span>)
+    markdown :<span class="st">&quot;md/</span><span class="ot">#{</span>params[<span class="st">:link</span>]<span class="ot">}</span><span class="st">&quot;</span>, to_erb
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> rd_arr
+    <span class="ot">@rd_arr</span> = get_files(<span class="st">&#39;./app/views/rdoc&#39;</span>)
+  <span class="kw">end</span> 
+
+  <span class="kw">def</span> rd_links
+    halt <span class="dv">404</span> <span class="kw">unless</span> <span class="dt">File</span>.exist?(<span class="st">&quot;app/views/rdoc/</span><span class="ot">#{</span>params[<span class="st">:link</span>]<span class="ot">}</span><span class="st">.rdoc&quot;</span>)
+    rdoc :<span class="st">&quot;rdoc/</span><span class="ot">#{</span>params[<span class="st">:link</span>]<span class="ot">}</span><span class="st">&quot;</span>, to_erb
+  <span class="kw">end</span>
+  
+<span class="kw">end</span>
+
+  <span class="co">######################</span>
+  <span class="co">#                    #</span>
+  <span class="co">#  config/routes.rb  #</span>
+  <span class="co">#                    #</span>
+  <span class="co">######################</span>
+
+
+<span class="kw">class</span> <span class="dt">EotSite</span>
+
+  <span class="kw">if</span> <span class="dt">ENV</span>.fetch(<span class="st">&quot;RACK_ENV&quot;</span>) == <span class="st">&quot;development&quot;</span>
+    p <span class="st">&quot;you&#39;re in </span><span class="ot">#{</span><span class="dv">__FILE__</span><span class="ot">}</span><span class="st">&quot;</span>
+  <span class="kw">end</span>
+
+  get <span class="st">&quot;/&quot;</span>, &amp;<span class="dt">HOME</span>
+
+  get <span class="st">&quot;/tutorial&quot;</span>, &amp;<span class="dt">TUTORIAL</span> 
+
+  get <span class="st">&quot;/graph&quot;</span>, &amp;<span class="dt">GRAPH</span>
+
+  get <span class="st">&quot;/wikipedia&quot;</span>, &amp;<span class="dt">WIKIPEDIA</span>
+
+  get <span class="st">&quot;/analemma&quot;</span>, &amp;<span class="dt">DATA</span>
+
+  get <span class="st">&quot;/eot&quot;</span>, &amp;<span class="dt">EOT</span>
+
+  get <span class="st">&#39;/md&#39;</span>, &amp;<span class="dt">MD</span>
+
+  get <span class="st">&#39;/rdoc&#39;</span>, &amp;<span class="dt">RDOC</span>
+
+  get <span class="st">&quot;/gm&quot;</span>, &amp;<span class="dt">GM</span>
+
+  get <span class="st">&quot;/links&quot;</span>, &amp;<span class="dt">LINKS</span>
+
+  get <span class="st">&quot;/examples&quot;</span>, &amp;<span class="dt">EXAMPLES</span>
+
+  get <span class="st">&quot;/datetime&quot;</span>, &amp;<span class="dt">DT</span>
+ 
+  get <span class="st">&quot;/jcft&quot;</span>, &amp;<span class="dt">JCFT</span>
+
+  get <span class="st">&quot;/mean&quot;</span>, &amp;<span class="dt">MEAN</span>
+
+  get <span class="st">&quot;/eqc&quot;</span>, &amp;<span class="dt">EQC</span>
+
+  get <span class="st">&quot;/ecliplon&quot;</span>, &amp;<span class="dt">ELN</span>
+
+  get <span class="st">&quot;/rghtascn&quot;</span>, &amp;<span class="dt">RA</span>
+
+  get <span class="st">&quot;/final&quot;</span>, &amp;<span class="dt">FIN</span>
+
+  get <span class="st">&quot;/suntimes&quot;</span>, &amp;block = lambda { haml <span class="st">:suntimes</span> }
+
+  post <span class="st">&quot;/suntimes&quot;</span>, &amp;block = lambda { haml <span class="st">:suntimes</span> }
+
+  get <span class="st">&quot;/julian&quot;</span>, &amp;block = lambda { haml <span class="st">:julian</span> }
+
+  get <span class="st">&quot;/solar&quot;</span>, &amp;block = lambda { haml <span class="st">:solar</span> } 
+
+  get <span class="st">&quot;/factor&quot;</span>, &amp;block = lambda { haml <span class="st">:star_time</span> } 
+
+  get <span class="st">&quot;/mysuntimes&quot;</span>, &amp;block = lambda { haml <span class="st">:mysuntimes</span> } 
+
+  get <span class="st">&quot;/gist&quot;</span>, &amp;block = lambda { markdown :<span class="st">&quot;gist&quot;</span>, to_erb }
+
+  get <span class="st">&#39;/gist1&#39;</span>, &amp;block = lambda { haml <span class="st">:gist1</span> } 
+
+  get <span class="st">&#39;/sider&#39;</span>, &amp;block = lambda { haml <span class="st">:sider</span> } 
+
+  post <span class="st">&quot;/sider2&quot;</span>, &amp;block = lambda { haml <span class="st">:stonehenge</span> }
+
+  get <span class="st">&#39;/alex&#39;</span>, &amp;block = lambda { haml <span class="st">:alex</span> } 
+
+  get <span class="st">&#39;/hello&#39;</span>, &amp;block = lambda { haml <span class="st">:hello</span> }
+
+  get <span class="st">&quot;/home&quot;</span>, &amp;block = lambda { haml <span class="st">:index</span> }
+
+  get <span class="st">&#39;/hellos&#39;</span> , &amp;block = lambda { <span class="st">&quot;Hello system!&quot;</span> }  
+
+  get <span class="st">&quot;/oopsa&quot;</span>, &amp;block = lambda { raise <span class="st">&quot;oops&quot;</span> }
+
+  get <span class="st">&#39;/mdview/:link&#39;</span>, &amp;block = lambda { md_links }
+
+  get <span class="st">&#39;/rdview/:link&#39;</span>, &amp;block = lambda { rd_links }
+
+  <span class="co">#get &quot;/docs&quot;, &amp;block = lambda {  }</span>
+
+  not_found <span class="kw">do</span>
+    erb <span class="st">:not_found</span>
+  <span class="kw">end</span>
+
+  get <span class="st">&quot;/example&quot;</span> <span class="kw">do</span>
+    erb <span class="st">:example_view</span>
+  <span class="kw">end</span>
+
+<span class="kw">end</span></code></pre></div>

@@ -1,0 +1,572 @@
+<h1 id="the-ruby-programming-language">The Ruby Programming Language</h1>
+<h2 id="chapter-3">CHAPTER 3</h2>
+<h3 id="datatypes-and-objects">Datatypes and Objects</h3>
+<h4 id="integer-literals">3.1.1 Integer Literals</h4>
+<p>```ruby 0 123 12345678901234567890</p>
+<p>1_000_000_000 # One billion (or 1,000 million in the UK)</p>
+<p>0377 # Octal representation of 255 0b1111_1111 # Binary representation of 255 0xFF # Hexadecimal representation of 255</p>
+<h4 id="floating-point-literals">3.1.2 Floating-Point Literals</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="fl">0.0</span>      
+-<span class="fl">3.14</span>
+<span class="fl">6.02e23</span>       <span class="co"># This means 6.02 &amp;#xD7; 10&lt;superscript&gt;23&lt;/superscript&gt;</span>
+<span class="fl">1_000_000.01</span>  <span class="co"># One million and a little bit more</span></code></pre></div>
+<h4 id="arithmetic-in-ruby">3.1.3 Arithmetic in Ruby</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">x = <span class="dv">5</span>/<span class="dv">2</span>     <span class="co"># result is 2</span>
+y = <span class="fl">5.0</span>/<span class="dv">2</span>   <span class="co"># result is 2.5</span>
+z = <span class="dv">5</span>/<span class="fl">2.0</span>   <span class="co"># result is 2.5</span>
+
+x = <span class="dv">5</span>%<span class="dv">2</span>     <span class="co"># result is 1</span>
+
+x = <span class="fl">1.5</span>%<span class="fl">0.4</span>   <span class="co"># result is 0.3</span>
+
+x**<span class="dv">4</span>          <span class="co"># This is the same thing as x*x*x*x</span>
+x**-<span class="dv">1</span>         <span class="co"># The same thing as 1/x</span>
+x**(<span class="dv">1</span>/<span class="fl">3.0</span>)    <span class="co"># The cube root of x</span>
+x**(<span class="dv">1</span>/<span class="dv">4</span>)      <span class="co"># Oops! Integer division means this is x**0, which is always 1</span>
+x**(<span class="fl">1.0</span>/<span class="fl">4.0</span>)  <span class="co"># This is the fourth-root of x</span>
+
+even = (x[<span class="dv">0</span>] == <span class="dv">0</span>)  <span class="co"># A number is even if the least-significant bit is 0</span></code></pre></div>
+<h4 id="binary-floating-point-and-rounding-errors">3.1.4 Binary Floating-Point and Rounding Errors</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="fl">0.4</span> - <span class="fl">0.3</span> == <span class="fl">0.1</span>    <span class="co"># Evaluates to false in most implementations</span></code></pre></div>
+<h4 id="single-quoted-string-literals">3.2.1.1 Single-quoted string literals</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="st">&#39;This is a simple Ruby string literal&#39;</span>
+
+<span class="st">&#39;Won\&#39;t you read O\&#39;Reilly\&#39;s book?&#39;</span>
+
+<span class="st">&#39;This string literal ends with a single backslash: \\&#39;</span>
+<span class="st">&#39;This is a backslash-quote: \\\&#39;&#39;</span>
+<span class="st">&#39;Two backslashes: \\\\&#39;</span>
+
+<span class="st">&#39;a\b&#39;</span> == <span class="st">&#39;a\\b&#39;</span>
+
+<span class="st">&#39;This is a long string literal \</span>
+<span class="st">that includes a backslash and a newline&#39;</span>
+
+message = 
+<span class="st">&#39;These three literals are &#39;</span>\
+<span class="st">&#39;concatenated into one by the interpreter. &#39;</span>\
+<span class="st">&#39;The resulting string contains no newlines.&#39;</span></code></pre></div>
+<h4 id="double-quoted-string-literals">3.2.1.2 Double-quoted string literals</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="st">&quot;\t\&quot;This quote begins with a tab and ends with a newline\&quot;\n&quot;</span>
+<span class="st">&quot;\\&quot;</span>  <span class="co"># A single backslash</span>
+
+<span class="st">&quot;360 degrees=</span><span class="ot">#{</span><span class="dv">2</span>*<span class="dt">Math</span>::<span class="dt">PI</span><span class="ot">}</span><span class="st"> radians&quot;</span> <span class="co"># &quot;360 degrees=6.28318530717959 radians&quot;</span>
+
+<span class="dt">$salutation</span> = <span class="st">&#39;hello&#39;</span>     <span class="co"># Define a global variable</span>
+
+<span class="st">&quot;My phone #: 555-1234&quot;</span>                <span class="co"># No escape needed</span>
+<span class="st">&quot;Use \</span><span class="ot">#{</span> to interpolate expressions<span class="st">&quot;  # Escape </span><span class="ot">#{</span> with backslash
+
+sprintf(<span class="st">&quot;pi is about %.4f&quot;</span>, <span class="dt">Math</span>::<span class="dt">PI</span>) <span class="co"># Returns &quot;pi is about 3.1416&quot;</span>
+
+<span class="st">&quot;pi is about %.4f&quot;</span> % <span class="dt">Math</span>::<span class="dt">PI</span> <span class="co"># Same as example above</span>
+<span class="st">&quot;%s: %f&quot;</span> % [<span class="st">&quot;pi&quot;</span>, <span class="dt">Math</span>::<span class="dt">PI</span>]   <span class="co"># Array on righthand side for multiple args</span>
+
+<span class="st">&quot;This string literal</span>
+<span class="st">has two lines \</span>
+<span class="st">but is written on three&quot;</span>
+
+<span class="st">&quot;This string has three lines.\r\n&quot;</span> \
+<span class="st">&quot;It is written as three adjacent literals\r\n&quot;</span> \
+<span class="st">&quot;separated by escaped newlines\r\n&quot;</span></code></pre></div>
+<h4 id="unicode-escapes">3.2.1.3 Unicode escapes</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="st">&quot;\u00D7&quot;</span>       <span class="co"># =&gt; &quot;&amp;#xD7;&quot;: leading zeros cannot be dropped</span>
+<span class="st">&quot;\u20ac&quot;</span>       <span class="co"># =&gt; &quot;&amp;#x20AC;&quot;: lowercase letters are okay</span>
+
+<span class="st">&quot;\u{A5}&quot;</span>      <span class="co"># =&gt; &quot;&amp;#xA5;&quot;: same as &quot;\u00A5&quot;</span>
+<span class="st">&quot;\u{3C0}&quot;</span>     <span class="co"># Greek lowercase pi: same as &quot;\u03C0&quot;</span>
+<span class="st">&quot;\u{10ffff}&quot;</span>  <span class="co"># The largest Unicode codepoint</span>
+
+money = <span class="st">&quot;\u{20AC A3 A5}&quot;</span>  <span class="co"># =&gt; &quot;&amp;#x20AC;&amp;#xA3;&amp;#xA5;&quot;</span>
+
+money = <span class="st">&quot;\u{20AC 20 A3 20 A5}&quot;</span>  <span class="co"># =&gt; &quot;&amp;#x20AC; &amp;#xA3; &amp;#xA5;&quot;</span></code></pre></div>
+<h4 id="arbitrary-delimiters-for-string-literals">3.2.1.4 Arbitrary delimiters for string literals</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="ot">%q(</span><span class="st">Don&#39;t worry about escaping &#39; characters!</span><span class="ot">)</span>
+<span class="ot">%Q|</span><span class="st">&quot;How</span><span class="ot"> </span>are you?<span class="st">&quot;, he said|</span>
+<span class="st">%-This string literal ends with a newline\n-  # Q omitted in this one</span>
+
+<span class="st">%q_This string literal contains \_underscores\__</span>
+<span class="st">%Q!Just use a _different_ delimiter\!!</span>
+
+<span class="st"># XML uses paired angle brackets:</span>
+<span class="st">%&lt;&lt;book&gt;&lt;title&gt;Ruby in a Nutshell&lt;/title&gt;&lt;/book&gt;&gt;  # This works</span>
+<span class="st"># Expressions use paired, nested parens:</span>
+<span class="st">%((1+(2*3)) = </span><span class="ot">#{</span>(<span class="dv">1</span>+(<span class="dv">2</span>*<span class="dv">3</span>))<span class="ot">}</span><span class="st">)                        # This works, too</span>
+<span class="st">%(A mismatched paren \( must be escaped)           # Escape needed here</span></code></pre></div>
+<h4 id="here-documents">3.2.1.5 Here documents</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">document = &lt;&lt;<span class="kw">HERE</span><span class="ot">        # This is how we begin a here document</span>
+<span class="ot">This is a string literal.</span>
+<span class="ot">It has two lines and abruptly ends...</span>
+<span class="kw">HERE</span>
+
+greeting = &lt;&lt;<span class="kw">HERE</span><span class="ot"> + &lt;&lt;THERE + &quot;World&quot;</span>
+<span class="ot">Hello</span>
+<span class="kw">HERE</span>
+<span class="dt">There</span>
+<span class="dt">THERE</span>
+
+empty = &lt;&lt;<span class="kw">END</span>
+<span class="kw">END</span>
+
+document = &lt;&lt;&#39;<span class="kw">THIS</span><span class="ot"> IS THE END, MY ONLY FRIEND, THE END&#39;</span>
+<span class="ot">    .</span>
+<span class="ot">    . lots and lots of text goes here</span>
+<span class="ot">    . with no escaping at all.</span>
+<span class="ot">    .</span>
+<span class="ot">THIS IS THE END, MY ONLY FRIEND, THE END</span>
+
+<span class="ot">document = &lt;&lt;-&quot;# # #&quot;    # This is the only place we can put a comment</span>
+<span class="ot">&lt;html&gt;&lt;head&gt;&lt;title&gt;#{</span>title<span class="ot">}&lt;/title&gt;&lt;/head&gt;</span>
+<span class="ot">&lt;body&gt;</span>
+<span class="ot">&lt;h1&gt;#{</span>title<span class="ot">}&lt;/h1&gt;</span>
+<span class="ot">#{</span>body<span class="ot">}</span>
+<span class="ot">&lt;/body&gt;</span>
+<span class="ot">&lt;/html&gt;</span>
+<span class="ot">               # # #</span></code></pre></div>
+<h4 id="backtick-command-execution">3.2.1.6 Backtick command execution</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="st">`ls`</span>
+
+<span class="ot">%x[</span><span class="st">ls</span><span class="ot">]</span>
+
+<span class="kw">if</span> windows
+  listcmd = <span class="st">&#39;dir&#39;</span>
+<span class="kw">else</span>
+  listcmd = <span class="st">&#39;ls&#39;</span>
+<span class="kw">end</span>
+listing = <span class="st">`</span><span class="ot">#{</span>listcmd<span class="ot">}</span><span class="st">`</span>
+
+listing = <span class="dt">Kernel</span>.<span class="st">`(listcmd)</span></code></pre></div>
+<h4 id="string-literals-and-mutability">3.2.1.7 String literals and mutability</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dv">10</span>.times { puts <span class="st">&quot;test&quot;</span>.object_id }</code></pre></div>
+<h4 id="character-literals">3.2.2 Character Literals</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">?A   <span class="co"># Character literal for the ASCII character A</span>
+?<span class="st">&quot;   # Character literal for the double-quote character</span>
+<span class="st">??   # Character literal for the question mark character</span>
+
+<span class="st">?\u20AC == ?&amp;#x20AC;    # =&gt; true: Ruby 1.9 only</span>
+<span class="st">?&amp;#x20AC; == &quot;</span>\u20AC<span class="st">&quot;   # =&gt; true</span>
+
+<span class="st">?\t      # Character literal for the TAB character</span>
+<span class="st">?\C-x    # Character literal for Ctrl-X</span>
+<span class="st">?\111    # Literal for character whose encoding is 0111 (octal)</span>
+
+<span class="st">planet = &quot;</span><span class="dt">Earth</span><span class="st">&quot;</span>
+<span class="st">&quot;</span><span class="dt">Hello</span><span class="st">&quot; + &quot;</span> <span class="st">&quot; + planet    # Produces &quot;</span><span class="dt">Hello</span> <span class="dt">Earth</span><span class="st">&quot;</span>
+
+<span class="st">&quot;</span><span class="dt">Hello</span> planet <span class="co">#&quot; + planet_number.to_s  # to_s converts to a string</span>
+
+<span class="st">&quot;Hello planet #</span><span class="ot">#{</span>planet_number<span class="ot">}</span><span class="st">&quot;</span>
+
+greeting = <span class="st">&quot;Hello&quot;</span>
+greeting &lt;&lt; <span class="st">&quot; &quot;</span> &lt;&lt; <span class="st">&quot;World&quot;</span>
+puts greeting   <span class="co"># Outputs &quot;Hello World&quot;</span>
+
+alphabet = <span class="st">&quot;A&quot;</span>
+alphabet &lt;&lt;<span class="dv"> ?B</span>   <span class="co"># Alphabet is now &quot;AB&quot;</span>
+alphabet &lt;&lt; <span class="dv">67</span>   <span class="co"># And now it is &quot;ABC&quot;</span>
+alphabet &lt;&lt; <span class="dv">256</span>  <span class="co"># Error in Ruby 1.8: codes must be &gt;=0 and &lt; 256</span>
+
+ellipsis = <span class="st">&#39;.&#39;</span>*<span class="dv">3</span>    <span class="co"># Evaluates to &#39;...&#39;</span>
+
+a = <span class="dv">0</span>;
+<span class="st">&quot;</span><span class="ot">#{</span>a=a<span class="dv">+1</span><span class="ot">}</span><span class="st"> &quot;</span> * <span class="dv">3</span>   <span class="co"># Returns &quot;1 1 1 &quot;, not &quot;1 2 3 &quot;</span></code></pre></div>
+<h4 id="string-operators">3.2.3 String Operators</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">planet = <span class="st">&quot;Earth&quot;</span>
+<span class="st">&quot;Hello&quot;</span> + <span class="st">&quot; &quot;</span> + planet    <span class="co"># Produces &quot;Hello Earth&quot;</span>
+
+<span class="st">&quot;Hello planet #&quot;</span> + planet_number.to_s  <span class="co"># to_s converts to a string</span>
+
+<span class="st">&quot;Hello planet #</span><span class="ot">#{</span>planet_number<span class="ot">}</span><span class="st">&quot;</span>
+
+greeting = <span class="st">&quot;Hello&quot;</span>
+greeting &lt;&lt; <span class="st">&quot; &quot;</span> &lt;&lt; <span class="st">&quot;World&quot;</span>
+puts greeting   <span class="co"># Outputs &quot;Hello World&quot;</span>
+
+alphabet = <span class="st">&quot;A&quot;</span>
+alphabet &lt;&lt;<span class="dv"> ?B</span>   <span class="co"># Alphabet is now &quot;AB&quot;</span>
+alphabet &lt;&lt; <span class="dv">67</span>   <span class="co"># And now it is &quot;ABC&quot;</span>
+alphabet &lt;&lt; <span class="dv">256</span>  <span class="co"># Error in Ruby 1.8: codes must be &gt;=0 and &lt; 256</span>
+
+ellipsis = <span class="st">&#39;.&#39;</span>*<span class="dv">3</span>    <span class="co"># Evaluates to &#39;...&#39;</span>
+
+a = <span class="dv">0</span>;
+<span class="st">&quot;</span><span class="ot">#{</span>a=a<span class="dv">+1</span><span class="ot">}</span><span class="st"> &quot;</span> * <span class="dv">3</span>   <span class="co"># Returns &quot;1 1 1 &quot;, not &quot;1 2 3 &quot;</span></code></pre></div>
+<h4 id="accessing-characters-and-substrings">3.2.4 Accessing Characters and Substrings</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">s = <span class="st">&#39;hello&#39;</span>;   <span class="co"># Ruby 1.8</span>
+s[<span class="dv">0</span>]           <span class="co"># 104: the ASCII character code for the first character &#39;h&#39;</span>
+s[s.length<span class="dv">-1</span>]  <span class="co"># 111: the character code of the last character &#39;o&#39;</span>
+s[-<span class="dv">1</span>]          <span class="co"># 111: another way of accessing the last character</span>
+s[-<span class="dv">2</span>]          <span class="co"># 108: the second-to-last character</span>
+s[-s.length]   <span class="co"># 104: another way of accessing the first character</span>
+s[s.length]    <span class="co"># nil: there is no character at that index</span>
+
+s = <span class="st">&#39;hello&#39;</span>;   <span class="co"># Ruby 1.9</span>
+s[<span class="dv">0</span>]           <span class="co"># &#39;h&#39;: the first character of the string, as a string</span>
+s[s.length<span class="dv">-1</span>]  <span class="co"># &#39;o&#39;: the last character &#39;o&#39;</span>
+s[-<span class="dv">1</span>]          <span class="co"># &#39;o&#39;: another way of accessing the last character</span>
+s[-<span class="dv">2</span>]          <span class="co"># &#39;l&#39;: the second-to-last character</span>
+s[-s.length]   <span class="co"># &#39;h&#39;: another way of accessing the first character</span>
+s[s.length]    <span class="co"># nil: there is no character at that index</span>
+
+s[<span class="dv">0</span>] =<span class="dv"> ?H</span>        <span class="co"># Replace first character with a capital H</span>
+s[-<span class="dv">1</span>] =<span class="dv"> ?O</span>       <span class="co"># Replace last character with a capital O</span>
+s[s.length] =<span class="dv"> ?!</span> <span class="co"># ERROR! Can&#39;t assign beyond the end of the string</span>
+
+s = <span class="st">&quot;hello&quot;</span>      <span class="co"># Begin with a greeting</span>
+s[-<span class="dv">1</span>] = <span class="st">&quot;&quot;</span>       <span class="co"># Delete the last character; s is now &quot;hell&quot;</span>
+s[-<span class="dv">1</span>] = <span class="st">&quot;p!&quot;</span>     <span class="co"># Change new last character and add one; s is now &quot;help!&quot;</span>
+
+s = <span class="st">&quot;hello&quot;</span>
+s[<span class="dv">0</span>,<span class="dv">2</span>]          <span class="co"># &quot;he&quot;</span>
+s[-<span class="dv">1</span>,<span class="dv">1</span>]         <span class="co"># &quot;o&quot;: returns a string, not the character code ?o</span>
+s[<span class="dv">0</span>,<span class="dv">0</span>]          <span class="co"># &quot;&quot;: a zero-length substring is always empty</span>
+s[<span class="dv">0</span>,<span class="dv">10</span>]         <span class="co"># &quot;hello&quot;: returns all the characters that are available</span>
+s[s.length,<span class="dv">1</span>]   <span class="co"># &quot;&quot;: there is an empty string immediately beyond the end</span>
+s[s.length<span class="dv">+1</span>,<span class="dv">1</span>] <span class="co"># nil: it is an error to read past that</span>
+s[<span class="dv">0</span>,-<span class="dv">1</span>]         <span class="co"># nil: negative lengths don&#39;t make any sense</span>
+
+s = <span class="st">&quot;hello&quot;</span>
+s[<span class="dv">0</span>,<span class="dv">1</span>] = <span class="st">&quot;H&quot;</span>              <span class="co"># Replace first letter with a capital letter</span>
+s[s.length,<span class="dv">0</span>] = <span class="st">&quot; world&quot;</span>  <span class="co"># Append by assigning beyond the end of the string</span>
+s[<span class="dv">5</span>,<span class="dv">0</span>] = <span class="st">&quot;,&quot;</span>              <span class="co"># Insert a comma, without deleting anything</span>
+s[<span class="dv">5</span>,<span class="dv">6</span>] = <span class="st">&quot;&quot;</span>               <span class="co"># Delete with no insertion; s == &quot;Hellod&quot;</span>
+
+s = <span class="st">&quot;hello&quot;</span>
+s[<span class="dv">2</span>..<span class="dv">3</span>]           <span class="co"># &quot;ll&quot;: characters 2 and 3</span>
+s[-<span class="dv">3</span>..-<span class="dv">1</span>]         <span class="co"># &quot;llo&quot;: negative indexes work, too</span>
+s[<span class="dv">0</span>..<span class="dv">0</span>]           <span class="co"># &quot;h&quot;: this Range includes one character index</span>
+s[<span class="dv">0</span>...<span class="dv">0</span>]          <span class="co"># &quot;&quot;: this Range is empty</span>
+s[<span class="dv">2</span>..<span class="dv">1</span>]           <span class="co"># &quot;&quot;: this Range is also empty</span>
+s[<span class="dv">7</span>..<span class="dv">10</span>]          <span class="co"># nil: this Range is outside the string bounds</span>
+s[-<span class="dv">2</span>..-<span class="dv">1</span>] = <span class="st">&quot;p!&quot;</span>     <span class="co"># Replacement: s becomes &quot;help!&quot;</span>
+s[<span class="dv">0</span>...<span class="dv">0</span>] = <span class="st">&quot;Please &quot;</span> <span class="co"># Insertion: s becomes &quot;Please help!&quot;</span>
+s[<span class="dv">6</span>..<span class="dv">10</span>] = <span class="st">&quot;&quot;</span>        <span class="co"># Deletion: s becomes &quot;Please!&quot;</span>
+
+s = <span class="st">&quot;hello&quot;</span>       <span class="co"># Start with the word &quot;hello&quot;</span>
+<span class="kw">while</span>(s[<span class="st">&quot;l&quot;</span>])     <span class="co"># While the string contains the substring &quot;l&quot;</span>
+  s[<span class="st">&quot;l&quot;</span>] = <span class="st">&quot;L&quot;</span>;   <span class="co"># Replace first occurrence of &quot;l&quot; with &quot;L&quot;</span>
+<span class="kw">end</span>               <span class="co"># Now we have &quot;heLLo&quot;</span>
+
+s[<span class="ot">/[aeiou]/</span>] = <span class="st">&#39;*&#39;</span>      <span class="co"># Replace first vowel with an asterisk</span></code></pre></div>
+<h4 id="iterating-strings">3.2.5 Iterating Strings</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">s = <span class="st">&quot;&amp;#xA5;1000&quot;</span>
+s.each_char {|x| print <span class="st">&quot;</span><span class="ot">#{</span>x<span class="ot">}</span><span class="st"> &quot;</span> }         <span class="co"># Prints &quot;&amp;#xA5; 1 0 0 0&quot;. Ruby 1.9 </span>
+<span class="dv">0</span>.upto(s.size<span class="dv">-1</span>) {|i| print <span class="st">&quot;</span><span class="ot">#{</span>s[i]<span class="ot">}</span><span class="st"> &quot;</span>}  <span class="co"># Inefficient with multibyte chars</span></code></pre></div>
+<h4 id="multibyte-characters-in-ruby-1.9">3.2.6.1 Multibyte characters in Ruby 1.9</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># -*- coding: utf-8 -*-   # Specify Unicode UTF-8 characters</span>
+
+<span class="co"># This is a string literal containing a multibyte multiplication character</span>
+s = <span class="st">&quot;2&amp;#xD7;2=4&quot;</span>
+
+<span class="co"># The string contains 6 bytes which encode 5 characters</span>
+s.length        <span class="co"># =&gt; 5: Characters:  &#39;2&#39;   &#39;&amp;#xD7;&#39;   &#39;2&#39;   &#39;=&#39;   &#39;4&#39;</span>
+s.bytesize      <span class="co"># =&gt; 6: Bytes (hex): 32   c3 97  32    3d    34 </span>
+
+<span class="co"># -*- coding: utf-8 -*-</span>
+s = <span class="st">&quot;2&amp;#xD7;2=4&quot;</span>     <span class="co"># Note multibyte multiplication character</span>
+s.encoding      <span class="co"># =&gt; &lt;Encoding: UTF-8&gt;</span>
+t = <span class="st">&quot;2+2=4&quot;</span>     <span class="co"># All characters are in the ASCII subset of UTF-8</span>
+t.encoding      <span class="co"># =&gt; &lt;Encoding: ASCII-8BIT&gt;</span>
+
+text = stream.readline.force_encoding(<span class="st">&quot;utf-8&quot;</span>)
+bytes = text.dup.force_encoding(<span class="dv">nil</span>)   <span class="co"># nil encoding means binary</span>
+
+s = <span class="st">&quot;\xa4&quot;</span>.force_encoding(<span class="st">&quot;utf-8&quot;</span>)  <span class="co"># This is not a valid UTF-8 string</span>
+s.valid_encoding?                   <span class="co"># =&gt; false</span>
+
+<span class="co"># -*- coding: utf-8 -*-</span>
+euro1 = <span class="st">&quot;\u20AC&quot;</span>                     <span class="co"># Start with the Unicode Euro character</span>
+puts euro1                           <span class="co"># Prints &quot;&amp;#x20AC;&quot;</span>
+euro1.encoding                       <span class="co"># =&gt; &lt;Encoding:UTF-8&gt;</span>
+euro1.bytesize                       <span class="co"># =&gt; 3</span>
+
+euro2 = euro1.encode(<span class="st">&quot;iso-8859-15&quot;</span>)  <span class="co"># Transcode to Latin-15</span>
+puts euro2.inspect                   <span class="co"># Prints &quot;\xA4&quot;</span>
+euro2.encoding                       <span class="co"># =&gt; &lt;Encoding:iso-8859-15&gt;</span>
+euro2.bytesize                       <span class="co"># =&gt; 1</span>
+
+euro3 = euro2.encode(<span class="st">&quot;utf-8&quot;</span>)        <span class="co"># Transcode back to UTF-8</span>
+euro1 == euro3                       <span class="co"># =&gt; true</span>
+
+<span class="co"># Interpret a byte as an iso-8859-15 codepoint, and transcode to UTF-8</span>
+byte = <span class="st">&quot;\xA4&quot;</span>
+char = byte.encode(<span class="st">&quot;utf-8&quot;</span>, <span class="st">&quot;iso-8859-15&quot;</span>)
+
+text = bytes.encode(to, from)
+text = bytes.dup.force_encoding(from).encode(to)
+
+<span class="co"># The iso-8859-1 encoding doesn&#39;t have a Euro sign, so this raises an exception</span>
+<span class="st">&quot;\u20AC&quot;</span>.encode(<span class="st">&quot;iso-8859-1&quot;</span>)</code></pre></div>
+<h4 id="the-encoding-class">3.2.6.2 The Encoding class</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">Encoding</span>::<span class="dt">ASCII_8BIT</span>     <span class="co"># Also ::BINARY</span>
+<span class="dt">Encoding</span>::<span class="dt">UTF_8</span>          <span class="co"># UTF-8-encoded Unicode characters</span>
+<span class="dt">Encoding</span>::<span class="dt">EUC_JP</span>         <span class="co"># EUC-encoded Japanese</span>
+<span class="dt">Encoding</span>::<span class="dt">SHIFT_JIS</span>      <span class="co"># Japanese: also ::SJIS, ::WINDOWS_31J, ::CP932</span>
+
+encoding = <span class="dt">Encoding</span>.find(<span class="st">&quot;utf-8&quot;</span>)</code></pre></div>
+<h4 id="multibyte-characters-in-ruby-1.8">3.2.6.3 Multibyte characters in Ruby 1.8</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">$KCODE</span> = <span class="st">&quot;u&quot;</span>        <span class="co"># Specify Unicode UTF-8, or start Ruby with -Ku option</span>
+require <span class="st">&quot;jcode&quot;</span>     <span class="co"># Load multibyte character support</span>
+
+mb = <span class="st">&quot;2\303\2272=4&quot;</span> <span class="co"># This is &quot;2&amp;#xD7;2=4&quot; with a Unicode multiplication sign</span>
+mb.length           <span class="co"># =&gt; 6: there are 6 bytes in this string</span>
+mb.jlength          <span class="co"># =&gt; 5: but only 5 characters</span>
+mb.mbchar?          <span class="co"># =&gt; 1: position of the first multibyte char, or nil</span>
+mb.each_byte <span class="kw">do</span> |c| <span class="co"># Iterate through the bytes of the string.</span>
+  print c, <span class="st">&quot; &quot;</span>      <span class="co"># c is Fixnum</span>
+<span class="kw">end</span>                 <span class="co"># Outputs &quot;50 195 151 50 61 52 &quot;</span>
+mb.each_char <span class="kw">do</span> |c| <span class="co"># Iterate through the characters of the string</span>
+  print c, <span class="st">&quot; &quot;</span>      <span class="co"># c is a String with jlength 1 and variable length</span>
+<span class="kw">end</span>                 <span class="co"># Outputs &quot;2 &amp;#xD7; 2 = 4 &quot;</span></code></pre></div>
+<h4 id="arrays">3.3 Arrays</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">[<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>]         <span class="co"># An array that holds three Fixnum objects</span>
+[-<span class="dv">10</span>...<span class="dv">0</span>, <span class="dv">0</span>..<span class="dv">10</span>,] <span class="co"># An array of two ranges; trailing commas are allowed</span>
+[[<span class="dv">1</span>,<span class="dv">2</span>],[<span class="dv">3</span>,<span class="dv">4</span>],[<span class="dv">5</span>]] <span class="co"># An array of nested arrays</span>
+[x+y, x-y, x*y]   <span class="co"># Array elements can be arbitrary expressions</span>
+[]                <span class="co"># The empty array has size 0</span>
+
+words =<span class="ot"> %w[</span><span class="st">this is a test</span><span class="ot">]</span>  <span class="co"># Same as: [&#39;this&#39;, &#39;is&#39;, &#39;a&#39;, &#39;test&#39;]</span>
+open =<span class="ot"> %w| </span>( [ { &lt; |        <span class="co"># Same as: [&#39;(&#39;, &#39;[&#39;, &#39;{&#39;, &#39;&lt;&#39;]</span>
+white =<span class="ot"> %W(</span><span class="st">\s \t \r \n</span><span class="ot">)</span>     <span class="co"># Same as: [&quot;\s&quot;, &quot;\t&quot;, &quot;\r&quot;, &quot;\n&quot;]</span>
+
+empty = <span class="dt">Array</span>.new       <span class="co"># []: returns a new empty array</span>
+nils = <span class="dt">Array</span>.new(<span class="dv">3</span>)     <span class="co"># [nil, nil, nil]: new array with 3 nil elements</span>
+zeros = <span class="dt">Array</span>.new(<span class="dv">4</span>, <span class="dv">0</span>) <span class="co"># [0, 0, 0, 0]: new array with 4 0 elements</span>
+copy = <span class="dt">Array</span>.new(nils)  <span class="co"># Make a new copy of an existing array</span>
+count = <span class="dt">Array</span>.new(<span class="dv">3</span>) {|i| i<span class="dv">+1</span>}  <span class="co"># [1,2,3]: 3 elements computed from index</span>
+
+a = [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">9</span>, <span class="dv">16</span>]   <span class="co"># Array holds the squares of the indexes</span>
+a[<span class="dv">0</span>]        <span class="co"># First element is 0</span>
+a[-<span class="dv">1</span>]       <span class="co"># Last element is 16</span>
+a[-<span class="dv">2</span>]       <span class="co"># Second to last element is 9</span>
+a[a.size<span class="dv">-1</span>] <span class="co"># Another way to query the last element</span>
+a[-a.size]  <span class="co"># Another way to query the first element</span>
+a[<span class="dv">8</span>]        <span class="co"># Querying beyond the end returns nil</span>
+a[-<span class="dv">8</span>]       <span class="co"># Querying before the start returns nil, too</span>
+
+a[<span class="dv">0</span>] = <span class="st">&quot;zero&quot;</span>   <span class="co"># a is [&quot;zero&quot;, 1, 4, 9, 16]</span>
+a[-<span class="dv">1</span>] = <span class="dv">1</span>..<span class="dv">16</span>   <span class="co"># a is [&quot;zero&quot;, 1, 4, 9, 1..16]</span>
+a[<span class="dv">8</span>] = <span class="dv">64</span>       <span class="co"># a is [&quot;zero&quot;, 1, 4, 9, 1..16, nil, nil, nil, 64]</span>
+a[-<span class="dv">9</span>] = <span class="dv">81</span>      <span class="co"># Error: can&#39;t assign before the start of an array</span>
+
+a = (<span class="st">&#39;a&#39;</span>..<span class="st">&#39;e&#39;</span>).to_a   <span class="co"># Range converted to [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;]</span>
+a[<span class="dv">0</span>,<span class="dv">0</span>]                <span class="co"># []: this subarray has zero elements</span>
+a[<span class="dv">1</span>,<span class="dv">1</span>]                <span class="co"># [&#39;b&#39;]: a one-element array</span>
+a[-<span class="dv">2</span>,<span class="dv">2</span>]               <span class="co"># [&#39;d&#39;,&#39;e&#39;]: the last two elements of the array</span>
+a[<span class="dv">0</span>..<span class="dv">2</span>]               <span class="co"># [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;]: the first three elements</span>
+a[-<span class="dv">2</span>..-<span class="dv">1</span>]             <span class="co"># [&#39;d&#39;,&#39;e&#39;]: the last two elements of the array</span>
+a[<span class="dv">0</span>...-<span class="dv">1</span>]             <span class="co"># [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;]: all but the last element</span>
+
+a[<span class="dv">0</span>,<span class="dv">2</span>] = [<span class="st">&#39;A&#39;</span>, <span class="st">&#39;B&#39;</span>]      <span class="co"># a becomes [&#39;A&#39;, &#39;B&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;]</span>
+a[<span class="dv">2</span>...<span class="dv">5</span>]=[<span class="st">&#39;C&#39;</span>, <span class="st">&#39;D&#39;</span>, <span class="st">&#39;E&#39;</span>] <span class="co"># a becomes [&#39;A&#39;, &#39;B&#39;, &#39;C&#39;, &#39;D&#39;, &#39;E&#39;]</span>
+a[<span class="dv">0</span>,<span class="dv">0</span>] = [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>]         <span class="co"># Insert elements at the beginning of a</span>
+a[<span class="dv">0</span>..<span class="dv">2</span>] = []             <span class="co"># Delete those elements</span>
+a[-<span class="dv">1</span>,<span class="dv">1</span>] = [<span class="st">&#39;Z&#39;</span>]          <span class="co"># Replace last element with another</span>
+a[-<span class="dv">1</span>,<span class="dv">1</span>] = <span class="st">&#39;Z&#39;</span>            <span class="co"># For single elements, the array is optional</span>
+a[-<span class="dv">2</span>,<span class="dv">2</span>] = <span class="dv">nil</span>  <span class="co"># Delete last 2 elements in 1.8; replace with nil in 1.9</span>
+
+a = [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>] + [<span class="dv">4</span>, <span class="dv">5</span>]    <span class="co"># [1, 2, 3, 4, 5]</span>
+a = a + [[<span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">8</span>]]       <span class="co"># [1, 2, 3, 4, 5, [6, 7, 8]]</span>
+a =
+a + <span class="dv">9</span>                 <span class="co"># Error: righthand side must be an array</span>
+
+[<span class="st">&#39;a&#39;</span>, <span class="st">&#39;b&#39;</span>, <span class="st">&#39;c&#39;</span>, <span class="st">&#39;b&#39;</span>, <span class="st">&#39;a&#39;</span>] - [<span class="st">&#39;b&#39;</span>, <span class="st">&#39;c&#39;</span>, <span class="st">&#39;d&#39;</span>]    <span class="co"># [&#39;a&#39;, &#39;a&#39;]</span>
+
+a = []        <span class="co"># Start with an empty array</span>
+a &lt;&lt; <span class="dv">1</span>        <span class="co"># a is [1]</span>
+a &lt;&lt; <span class="dv">2</span> &lt;&lt; <span class="dv">3</span>   <span class="co"># a is [1, 2, 3]</span>
+a &lt;&lt; [<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>]  <span class="co"># a is [1, 2, 3, [4, 5, 6]]</span>
+
+a = [<span class="dv">0</span>] * <span class="dv">8</span>    <span class="co"># [0, 0, 0, 0, 0, 0, 0, 0]</span>
+
+a = [<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">4</span>]
+b = [<span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">2</span>]
+a | b    <span class="co"># [1, 2, 3, 4, 5]: duplicates are removed</span>
+b | a    <span class="co"># [5, 4, 3, 2, 1]: elements are the same, but order is different</span>
+a &amp; b    <span class="co"># [2, 3, 4]</span>
+b &amp; a    <span class="co"># [4, 3, 2]</span>
+
+a = (<span class="st">&#39;A&#39;</span>..<span class="st">&#39;Z&#39;</span>).to_a    <span class="co"># Begin with an array of letters</span>
+a.each {|x| print x }  <span class="co"># Print the alphabet, one letter at a time</span></code></pre></div>
+<h4 id="hashes">3.4 Hashes</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># This hash will map the names of digits to the digits themselves</span>
+numbers = <span class="dt">Hash</span>.new     <span class="co"># Create a new, empty, hash object</span>
+numbers[<span class="st">&quot;one&quot;</span>] = <span class="dv">1</span>     <span class="co"># Map the String &quot;one&quot; to the Fixnum 1</span>
+numbers[<span class="st">&quot;two&quot;</span>] = <span class="dv">2</span>     <span class="co"># Note that we are using array notation here</span>
+numbers[<span class="st">&quot;three&quot;</span>] = <span class="dv">3</span>
+
+sum = numbers[<span class="st">&quot;one&quot;</span>] + numbers[<span class="st">&quot;two&quot;</span>]  <span class="co"># Retrieve values like this</span></code></pre></div>
+<h4 id="hash-literals">3.4.1 Hash Literals</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">numbers = { <span class="st">&quot;one&quot;</span> =&gt; <span class="dv">1</span>, <span class="st">&quot;two&quot;</span> =&gt; <span class="dv">2</span>, <span class="st">&quot;three&quot;</span> =&gt; <span class="dv">3</span> }
+
+numbers = { <span class="st">:one</span> =&gt; <span class="dv">1</span>, <span class="st">:two</span> =&gt; <span class="dv">2</span>, <span class="st">:three</span> =&gt; <span class="dv">3</span> }
+
+numbers = { <span class="st">:one</span>, <span class="dv">1</span>, <span class="st">:two</span>, <span class="dv">2</span>, <span class="st">:three</span>, <span class="dv">3</span> } <span class="co"># Same, but harder to read</span>
+
+numbers = { <span class="st">:one</span> =&gt; <span class="dv">1</span>, <span class="st">:two</span> =&gt; <span class="dv">2</span>, } <span class="co"># Extra comma ignored</span>
+
+numbers = { <span class="st">one: </span><span class="dv">1</span>, <span class="st">two: </span><span class="dv">2</span>, <span class="st">three: </span><span class="dv">3</span> }</code></pre></div>
+<h4 id="ranges">3.5 Ranges</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dv">1</span>..<span class="dv">10</span>      <span class="co"># The integers 1 through 10, including 10</span>
+<span class="fl">1.0</span>...<span class="fl">10.0</span> <span class="co"># The numbers between 1.0 and 10.0, excluding 10.0 itself</span>
+
+cold_war = <span class="dv">1945</span>..<span class="dv">1989</span>
+cold_war.include? birthdate.year
+
+r = <span class="st">&#39;a&#39;</span>..<span class="st">&#39;c&#39;</span>
+r.each {|l| print <span class="st">&quot;[</span><span class="ot">#{</span>l<span class="ot">}</span><span class="st">]&quot;</span>}     <span class="co"># Prints &quot;[a][b][c]&quot;</span>
+r.step(<span class="dv">2</span>) { |l| print <span class="st">&quot;[</span><span class="ot">#{</span>l<span class="ot">}</span><span class="st">]&quot;</span>} <span class="co"># Prints &quot;[a][c]&quot;</span>
+r.to_a                          <span class="co"># =&gt; [&#39;a&#39;,&#39;b&#39;,&#39;c&#39;]: Enumerable defines to_a</span>
+
+<span class="dv">1</span>..<span class="dv">3</span>.to_a    <span class="co"># Tries to call to_a on the number 3</span>
+(<span class="dv">1</span>..<span class="dv">3</span>).to_a  <span class="co"># =&gt; [1,2,3]</span></code></pre></div>
+<h4 id="testing-membership-in-a-range">3.5.1 Testing Membership in a Range</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">begin</span> &lt;= x &lt;= <span class="kw">end</span>
+
+<span class="kw">begin</span> &lt;= x &lt; <span class="kw">end</span>
+
+r = <span class="dv">0</span>...<span class="dv">100</span>      <span class="co"># The range of integers 0 through 99</span>
+r.member? <span class="dv">50</span>     <span class="co"># =&gt; true: 50 is a member of the range</span>
+r.include? <span class="dv">100</span>   <span class="co"># =&gt; false: 100 is excluded from the range</span>
+r.include? <span class="fl">99.9</span>  <span class="co"># =&gt; true: 99.9 is less than 100</span>
+
+triples = <span class="st">&quot;AAA&quot;</span>..<span class="st">&quot;ZZZ&quot;</span>
+triples.include? <span class="st">&quot;ABC&quot;</span>        <span class="co"># true; fast in 1.8 and slow in 1.9</span>
+triples.include? <span class="st">&quot;ABCD&quot;</span>       <span class="co"># true in 1.8, false in 1.9</span>
+triples.cover?   <span class="st">&quot;ABCD&quot;</span>       <span class="co"># true and fast in 1.9</span>
+triples.to_a.include? <span class="st">&quot;ABCD&quot;</span>  <span class="co"># false and slow in 1.8 and 1.9</span></code></pre></div>
+<h4 id="symbols">3.6 Symbols</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="st">:symbol</span>                   <span class="co"># A Symbol literal</span>
+:<span class="st">&quot;symbol&quot;</span>                 <span class="co"># The same literal</span>
+:<span class="st">&#39;another long symbol&#39;</span>    <span class="co"># Quotes are useful for symbols with spaces</span>
+s = <span class="st">&quot;string&quot;</span>
+sym = :<span class="st">&quot;</span><span class="ot">#{</span>s<span class="ot">}</span><span class="st">&quot;</span>             <span class="co"># The Symbol :string</span>
+
+<span class="ot">%</span>s<span class="ot">[</span><span class="st">&quot;</span><span class="ot">]</span>     <span class="co"># Same as :&#39;&quot;&#39;</span>
+
+o.respond_to? <span class="st">:each</span>
+
+name = <span class="st">:size</span>
+<span class="kw">if</span> o.respond_to? name
+  o.send(name)
+<span class="kw">end</span>
+
+str = <span class="st">&quot;string&quot;</span>     <span class="co"># Begin with a string</span>
+sym = str.intern   <span class="co"># Convert to a symbol</span>
+sym = str.to_sym   <span class="co"># Another way to do the same thing</span>
+str = sym.to_s     <span class="co"># Convert back to a string</span>
+str = sym.id2name  <span class="co"># Another way to do it</span></code></pre></div>
+<h4 id="true-false-and-nil">3.7 True, False, and Nil</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">o == <span class="dv">nil</span>   <span class="co"># Is o nil?</span>
+o.n
+il?     <span class="co"># Another way to test</span></code></pre></div>
+<h4 id="object-references">3.8.1 Object References</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">s = <span class="st">&quot;Ruby&quot;</span> <span class="co"># Create a String object. Store a reference to it in s.</span>
+t = s      <span class="co"># Copy the reference to t. s and t both refer to the same object.</span>
+t[-<span class="dv">1</span>] = <span class="st">&quot;&quot;</span> <span class="co"># Modify the object through the reference in t.</span>
+print s    <span class="co"># Access the modified object through s. Prints &quot;Rub&quot;. </span>
+t = <span class="st">&quot;Java&quot;</span> <span class="co"># t now refers to a different object.</span>
+print s,t  <span class="co"># Prints &quot;RubJava&quot;.</span></code></pre></div>
+<h4 id="object-lifetime">3.8.2 Object Lifetime</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">myObject = myClass.new</code></pre></div>
+<h4 id="object-class-and-object-type">3.8.4 Object Class and Object Type</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">o = <span class="st">&quot;test&quot;</span>  <span class="co"># This is a value</span>
+o.class     <span class="co"># Returns an object representing the String class</span>
+
+o.class                       <span class="co"># String: o is a String object</span>
+o.class.superclass            <span class="co"># Object: superclass of String is Object</span>
+o.class.superclass.superclass <span class="co"># nil: Object has no superclass</span>
+
+<span class="co"># Ruby 1.9 only</span>
+<span class="dt">Object</span>.superclass             <span class="co"># BasicObject: Object has a superclass in 1.9</span>
+<span class="dt">BasicObject</span>.superclass        <span class="co"># nil: BasicObject has no superclass</span>
+
+o.class == <span class="dt">String</span>       <span class="co"># true if is o a String</span>
+
+o.instance_of? <span class="dt">String</span>   <span class="co"># true if o is a String</span>
+
+x = <span class="dv">1</span>                    <span class="co"># This is the value we&#39;re working with</span>
+x.instance_of? <span class="dt">Fixnum</span>    <span class="co"># true: is an instance of Fixnum</span>
+x.instance_of? <span class="dt">Numeric</span>   <span class="co"># false: instance_of? doesn&#39;t check inheritance</span>
+x.is_a? <span class="dt">Fixnum</span>           <span class="co"># true: x is a Fixnum</span>
+x.is_a? <span class="dt">Integer</span>          <span class="co"># true: x is an Integer</span>
+x.is_a? <span class="dt">Numeric</span>          <span class="co"># true: x is a Numeric</span>
+x.is_a? <span class="dt">Comparable</span>       <span class="co"># true: works with mixin modules, too</span>
+x.is_a? <span class="dt">Object</span>           <span class="co"># true for any value of x</span>
+
+<span class="dt">Numeric</span> === x            <span class="co"># true: x is_a Numeric</span>
+
+o.respond_to? :<span class="st">&quot;&lt;&lt;&quot;</span>  <span class="co"># true if o has an &lt;&lt; operator</span>
+
+o.respond_to? :<span class="st">&quot;&lt;&lt;&quot;</span> <span class="kw">and</span> <span class="kw">not</span> o.is_a? <span class="dt">Numeric</span> </code></pre></div>
+<h4 id="the-equal-method">3.8.5.1 The equal? method</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">a = <span class="st">&quot;Ruby&quot;</span>       <span class="co"># One reference to one String object</span>
+b = c = <span class="st">&quot;Ruby&quot;</span>   <span class="co"># Two references to another String object</span>
+a.equal?(b)      <span class="co"># false: a and b are different objects</span>
+b.equal?(c)      <span class="co"># true: b and c refer to the same object</span>
+
+a.object_id == b.object_id   <span class="co"># Works like a.equal?(b)</span></code></pre></div>
+<h4 id="the-operator">3.8.5.2 The == operator</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">a = <span class="st">&quot;Ruby&quot;</span>    <span class="co"># One String object</span>
+b = <span class="st">&quot;Ruby&quot;</span>    <span class="co"># A different String object with the same content</span>
+a.equal?(b)   <span class="co"># false: a and b do not refer to the same object</span>
+a == b        <span class="co"># true: but these two distinct objects have equal values</span></code></pre></div>
+<h4 id="the-eql-method">3.8.5.3 The eql? method</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dv">1</span> == <span class="fl">1.0</span>    <span class="co"># true: Fixnum and Float objects can be ==</span>
+<span class="dv">1</span>.eql?(<span class="fl">1.0</span>) <span class="co"># false: but they are never eql!</span></code></pre></div>
+<h4 id="the-operator-1">3.8.5.4 The === operator</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">(<span class="dv">1</span>..<span class="dv">10</span>) === <span class="dv">5</span>    <span class="co"># true: 5 is in the range 1..10</span>
+<span class="ot">/\d+/</span> === <span class="st">&quot;123&quot;</span>  <span class="co"># true: the string matches the regular expression</span>
+<span class="dt">String</span> === <span class="st">&quot;s&quot;</span>   <span class="co"># true: &quot;s&quot; is an instance of the class String</span>
+<span class="st">:s</span> === <span class="st">&quot;s&quot;</span>       <span class="co"># true in Ruby 1.9</span></code></pre></div>
+<h4 id="object-order">3.8.6 Object Order</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dv">1</span> &lt;=&gt; <span class="dv">5</span>     <span class="co"># -1</span>
+<span class="dv">5</span> &lt;=&gt; <span class="dv">5</span>     <span class="co"># 0</span>
+<span class="dv">9</span> &lt;=&gt; <span class="dv">5</span>     <span class="co"># 1</span>
+<span class="st">&quot;1&quot;</span> &lt;=&gt; <span class="dv">5</span>   <span class="co"># nil: integers and strings are not comparable</span></code></pre></div>
+<pre class="rdoc"><code>&lt; Less than
+&lt;= Less than or equal
+== Equal
+&gt;= Greater than or equal
+&gt; Greater than</code></pre>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dv">1</span>.between?(<span class="dv">0</span>,<span class="dv">10</span>)  <span class="co"># true: 0 &lt;= 1 &lt;= 10</span>
+
+nan = <span class="fl">0.0</span>/<span class="fl">0.0</span>;     <span class="co"># zero divided by zero is not-a-number</span>
+nan &lt; <span class="dv">0</span>            <span class="co"># false: it is not less than zero</span>
+nan &gt; <span class="dv">0</span>            <span class="co"># false: it is not greater than zero</span>
+nan == <span class="dv">0</span>           <span class="co"># false: it is not equal to zero</span>
+nan == nan         <span class="co"># false: it is not even equal to itself!</span>
+nan.equal?(nan)    <span class="co"># this is true, of course</span></code></pre></div>
+<h4 id="implicit-conversions">3.8.7.2 Implicit conversions</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># Ruby 1.8 only</span>
+e = <span class="dt">Exception</span>.new(<span class="st">&quot;not really an exception&quot;</span>)
+msg = <span class="st">&quot;Error: &quot;</span> + e  <span class="co"># String concatenation with an Exception</span></code></pre></div>
+<h4 id="arithmetic-operator-type-coercions">3.8.7.4 Arithmetic operator type coercions</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="fl">1.1</span>.coerce(<span class="dv">1</span>)      <span class="co"># [1.0, 1.1]: coerce Fixnum to Float</span>
+require <span class="st">&quot;rational&quot;</span> <span class="co"># Use Rational numbers</span>
+r = <span class="dt">Rational</span>(<span class="dv">1</span>,<span class="dv">3</span>)  <span class="co"># One third as a Rational number</span>
+r.coerce(<span class="dv">2</span>)        <span class="co"># [Rational(2,1), Rational(1,3)]: Fixnum to Rational</span></code></pre></div>
+<h4 id="boolean-type-conversions">3.8.7.5 Boolean type conversions</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">if</span> x != <span class="dv">nil</span>   <span class="co"># Expression &quot;x != nil&quot; returns true or false to the if</span>
+  puts x      <span class="co"># Print x if it is defined</span>
+<span class="kw">end</span>
+
+<span class="kw">if</span> x       <span class="co"># If x is non-nil</span>
+  puts x   <span class="co"># Then print it</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="marshaling-objects">3.8.9 Marshaling Objects</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">def</span> deepcopy(o)
+  <span class="dt">Marshal</span>.load(<span class="dt">Marshal</span>.dump(o))
+<span class="kw">end</span></code></pre></div>
+<h4 id="freezing-objects">3.8.10 Freezing Objects</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">s = <span class="st">&quot;ice&quot;</span>      <span class="co"># Strings are mutable objects</span>
+s.freeze       <span class="co"># Make this string immutable</span>
+s.frozen?      <span class="co"># true: it has been frozen</span>
+s.upcase!      <span class="co"># TypeError: can&#39;t modify frozen string</span>
+s[<span class="dv">0</span>] = <span class="st">&quot;ni&quot;</span>    <span class="co"># TypeError: can&#39;t modify frozen string</span></code></pre></div>
+<h4 id="tainting-objects">3.8.11 Tainting Objects</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">s = <span class="st">&quot;untrusted&quot;</span>   <span class="co"># Objects are normally untainted</span>
+s.taint           <span class="co"># Mark this untrusted object as tainted</span>
+s.tainted?        <span class="co"># true: it is tainted</span>
+s.upcase.tainted? <span class="co"># true: derived objects are tainted</span>
+s[<span class="dv">3</span>,<span class="dv">4</span>].tainted?   <span class="co"># true: substrings are tainted</span></code></pre></div>

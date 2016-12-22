@@ -1,0 +1,79 @@
+<p><a href="http://travis-ci.org/sinatra/sinatra-contrib"><img src="https://secure.travis-ci.org/sinatra/sinatra-contrib.png" alt="Build Status" /></a></p>
+<p>Collection of common Sinatra extensions, semi-officially supported.</p>
+<h1 id="goals">Goals</h1>
+<ul>
+<li>For every future Sinatra release, have at least one fully compatible release</li>
+<li>High code quality, high test coverage</li>
+<li>Include plugins people usually ask for a lot</li>
+</ul>
+<h1 id="included-extensions">Included extensions</h1>
+<h2 id="common-extensions">Common Extensions</h2>
+<p>These are common extension which will not add significant overhead or change any behavior of already existing APIs. They do not add any dependencies not already installed with this gem.</p>
+<p>Currently included:</p>
+<ul>
+<li><p><code>sinatra/capture</code>: Let's you capture the content of blocks in templates.</p></li>
+<li><p><code>sinatra/config_file</code>: Allows loading configuration from yaml files.</p></li>
+<li><p><code>sinatra/content_for</code>: Adds Rails-style <code>content_for</code> helpers to Haml, Erb, Erubis and Slim.</p></li>
+<li><p><code>sinatra/cookies</code>: A <code>cookies</code> helper for reading and writing cookies.</p></li>
+<li><p><code>sinatra/engine_tracking</code>: Adds methods like <code>haml?</code> that allow helper methods to check whether they are called from within a template.</p></li>
+<li><p><code>sinatra/json</code>: Adds a <code>#json</code> helper method to return JSON documents.</p></li>
+<li><p><code>sinatra/link_header</code>: Helpers for generating <code>link</code> HTML tags and corresponding <code>Link</code> HTTP headers. Adds <code>link</code>, <code>stylesheet</code> and <code>prefetch</code> helper methods.</p></li>
+<li><p><code>sinatra/multi_route</code>: Adds ability to define one route block for multiple routes and multiple or custom HTTP verbs.</p></li>
+<li><p><code>sinatra/namespace</code>: Adds namespace support to Sinatra.</p></li>
+<li><p><code>sinatra/respond_with</code>: Choose action and/or template automatically depending on the incoming request. Adds helpers <code>respond_to</code> and <code>respond_with</code>.</p></li>
+<li><p><code>sinatra/custom_logger</code>: This extension allows you to define your own logger instance using +logger+ setting. That logger then will be available as #logger helper method in your routes and views.</p></li>
+</ul>
+<h2 id="custom-extensions">Custom Extensions</h2>
+<p>These extensions may add additional dependencies and enhance the behavior of the existing APIs.</p>
+<p>Currently included:</p>
+<ul>
+<li><p><code>sinatra/decompile</code>: Recreates path patterns from Sinatra's internal data structures (used by other extensions).</p></li>
+<li><p><code>sinatra/reloader</code>: Automatically reloads Ruby files on code changes.</p></li>
+</ul>
+<h2 id="other-tools">Other Tools</h2>
+<ul>
+<li><p><code>sinatra/extension</code>: Mixin for writing your own Sinatra extensions.</p></li>
+<li><p><code>sinatra/test_helpers</code>: Helper methods to ease testing your Sinatra application. Partly extracted from Sinatra. Testing framework agnostic</p></li>
+</ul>
+<h1 id="installation">Installation</h1>
+<p>Add <code>gem 'sinatra-contrib'</code> to <em>Gemfile</em>, then execute <code>bundle install</code>.</p>
+<p>If you don't use Bundler, install the gem manually by executing <code>gem install sinatra-contrib</code> in your command line.</p>
+<h1 id="usage">Usage</h1>
+<h2 id="classic-style">Classic Style</h2>
+<p>A single extension (example: sinatra-content-for):</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">require <span class="st">&#39;sinatra&#39;</span>
+require <span class="st">&#39;sinatra/content_for&#39;</span></code></pre></div>
+<p>Common extensions:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">require <span class="st">&#39;sinatra&#39;</span>
+require <span class="st">&#39;sinatra/contrib&#39;</span></code></pre></div>
+<p>All extensions:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">require <span class="st">&#39;sinatra&#39;</span>
+require <span class="st">&#39;sinatra/contrib/all&#39;</span></code></pre></div>
+<h2 id="modular-style">Modular Style</h2>
+<p>A single extension (example: sinatra-content-for):</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">require <span class="st">&#39;sinatra/base&#39;</span>
+require <span class="st">&#39;sinatra/content_for&#39;</span>
+require <span class="st">&#39;sinatra/namespace&#39;</span>
+
+<span class="kw">class</span> <span class="dt">MyApp</span> &lt; <span class="dt">Sinatra</span>::<span class="dt">Base</span>
+  <span class="co"># Note: Some modules are extensions, some helpers, see the specific</span>
+  <span class="co"># documentation or the source</span>
+  helpers <span class="dt">Sinatra</span>::<span class="dt">ContentFor</span>
+  register <span class="dt">Sinatra</span>::<span class="dt">Namespace</span>
+<span class="kw">end</span></code></pre></div>
+<p>Common extensions:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">require <span class="st">&#39;sinatra/base&#39;</span>
+require <span class="st">&#39;sinatra/contrib&#39;</span>
+
+<span class="kw">class</span> <span class="dt">MyApp</span> &lt; <span class="dt">Sinatra</span>::<span class="dt">Base</span>
+  register <span class="dt">Sinatra</span>::<span class="dt">Contrib</span>
+<span class="kw">end</span></code></pre></div>
+<p>All extensions:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">require <span class="st">&#39;sinatra/base&#39;</span>
+require <span class="st">&#39;sinatra/contrib/all&#39;</span>
+
+<span class="kw">class</span> <span class="dt">MyApp</span> &lt; <span class="dt">Sinatra</span>::<span class="dt">Base</span>
+  register <span class="dt">Sinatra</span>::<span class="dt">Contrib</span>
+<span class="kw">end</span></code></pre></div>
+<h2 id="documentation">Documentation</h2>
+<p>For more info check the <a href="http://www.sinatrarb.com/contrib/">official docs</a> and <a href="http://rubydoc.info/gems/sinatra-contrib/1.4.0/frames">api docs</a>.</p>

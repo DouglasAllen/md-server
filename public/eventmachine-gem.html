@@ -1,0 +1,65 @@
+<h1 id="about-eventmachine-code-climate">About EventMachine <a href="https://codeclimate.com/github/eventmachine/eventmachine"><img src="https://codeclimate.com/github/eventmachine/eventmachine.png" alt="Code Climate" /></a></h1>
+<h2 id="what-is-eventmachine">What is EventMachine</h2>
+<p>EventMachine is an event-driven I/O and lightweight concurrency library for Ruby. It provides event-driven I/O using the <a href="http://en.wikipedia.org/wiki/Reactor_pattern">Reactor pattern</a>, much like <a href="http://www.jboss.org/netty">JBoss Netty</a>, <a href="http://mina.apache.org/">Apache MINA</a>, Python's <a href="http://twistedmatrix.com">Twisted</a>, <a href="http://nodejs.org">Node.js</a>, libevent and libev.</p>
+<p>EventMachine is designed to simultaneously meet two key needs:</p>
+<ul>
+<li>Extremely high scalability, performance and stability for the most demanding production environments.</li>
+<li>An API that eliminates the complexities of high-performance threaded network programming, allowing engineers to concentrate on their application logic.</li>
+</ul>
+<p>This unique combination makes EventMachine a premier choice for designers of critical networked applications, including Web servers and proxies, email and IM production systems, authentication/authorization processors, and many more.</p>
+<p>EventMachine has been around since the early 2000s and is a mature and battle tested library.</p>
+<h2 id="what-eventmachine-is-good-for">What EventMachine is good for?</h2>
+<ul>
+<li>Scalable event-driven servers. Examples: <a href="http://code.macournoyer.com/thin/">Thin</a> or <a href="https://github.com/postrank-labs/goliath/">Goliath</a>.</li>
+<li>Scalable asynchronous clients for various protocols, RESTful APIs and so on. Examples: <a href="https://github.com/igrigorik/em-http-request">em-http-request</a> or <a href="https://github.com/ruby-amqp/amqp">amqp gem</a>.</li>
+<li>Efficient network proxies with custom logic. Examples: <a href="https://github.com/mojombo/proxymachine/">Proxymachine</a>.</li>
+<li>File and network monitoring tools. Examples: <a href="https://github.com/jordansissel/eventmachine-tail">eventmachine-tail</a> and <a href="https://github.com/logstash/logstash">logstash</a>.</li>
+</ul>
+<h2 id="what-platforms-are-supported-by-eventmachine">What platforms are supported by EventMachine?</h2>
+<p>EventMachine supports Ruby &gt;= 1.8.7 and &lt;= 2.2 REE, JRuby and <strong>works well on Windows</strong> as well as many operating systems from the Unix family (Linux, Mac OS X, BSD flavors).</p>
+<h2 id="install-the-gem">Install the gem</h2>
+<p>Install it with <a href="https://rubygems.org/">RubyGems</a></p>
+<pre><code>gem install eventmachine</code></pre>
+<p>or add this to your Gemfile if you use <a href="http://gembundler.com/">Bundler</a>:</p>
+<pre><code>gem &quot;eventmachine&quot;</code></pre>
+<h2 id="getting-started">Getting started</h2>
+<p>For an introduction to EventMachine, check out:</p>
+<ul>
+<li><a href="http://www.igvita.com/2008/05/27/ruby-eventmachine-the-speed-demon/">blog post about EventMachine by Ilya Grigorik</a>.</li>
+<li><a href="http://everburning.com/news/eventmachine-introductions/">EventMachine Introductions by Dan Sinclair</a>.</li>
+</ul>
+<h3 id="server-example-echo-server">Server example: Echo server</h3>
+<p>Here's a fully-functional echo server written with EventMachine:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">require <span class="st">&#39;eventmachine&#39;</span>
+
+<span class="kw">module</span> <span class="dt">EchoServer</span>
+  <span class="kw">def</span> post_init
+    puts <span class="st">&quot;-- someone connected to the echo server!&quot;</span>
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> receive_data data
+    send_data <span class="st">&quot;&gt;&gt;&gt;you sent: </span><span class="ot">#{</span>data<span class="ot">}</span><span class="st">&quot;</span>
+    close_connection <span class="kw">if</span> data =~ <span class="ot">/quit/i</span>
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> unbind
+    puts <span class="st">&quot;-- someone disconnected from the echo server!&quot;</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+
+    <span class="co"># Note that this will block current thread.</span>
+<span class="dt">EventMachine</span>.run {
+  <span class="dt">EventMachine</span>.start_server <span class="st">&quot;127.0.0.1&quot;</span>, <span class="dv">8081</span>, <span class="dt">EchoServer</span>
+}</code></pre></div>
+<h2 id="eventmachine-documentation">EventMachine documentation</h2>
+<p>Currently we only have <a href="http://rdoc.info/github/eventmachine/eventmachine/frames">reference documentation</a> and a <a href="https://github.com/eventmachine/eventmachine/wiki">wiki</a>.</p>
+<h2 id="community-and-where-to-get-help">Community and where to get help</h2>
+<ul>
+<li>Join the <a href="http://groups.google.com/group/eventmachine">mailing list</a> (Google Group)</li>
+<li>Join IRC channel #eventmachine on irc.freenode.net</li>
+</ul>
+<h2 id="license-and-copyright">License and copyright</h2>
+<p>EventMachine is copyrighted free software made available under the terms of either the GPL or Ruby's License.</p>
+<p>Copyright: (C) 2006-07 by Francis Cianfrocca. All Rights Reserved.</p>
+<h2 id="alternatives">Alternatives</h2>
+<p>If you are unhappy with EventMachine and want to use Ruby, check out <a href="https://celluloid.io/">Celluloid</a>.</p>

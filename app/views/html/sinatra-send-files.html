@@ -1,0 +1,44 @@
+<h3 id="sending-files">Sending Files</h3>
+<p>To return the contents of a file as the response, you can use the <code>send_file</code> helper method:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  send_file <span class="st">&#39;foo.png&#39;</span>
+<span class="kw">end</span></code></pre></div>
+<p>It also takes options:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">send_file <span class="st">&#39;foo.png&#39;</span>, <span class="st">:type</span> =&gt; <span class="st">:jpg</span></code></pre></div>
+<p>The options are:</p>
+<dl>
+<dt>
+filename
+</dt>
+<pre><code>&lt;dd&gt;File name to be used in the response, defaults to the real file name.&lt;/dd&gt;</code></pre>
+<dt>
+last_modified
+</dt>
+<pre><code>&lt;dd&gt;Value for Last-Modified header, defaults to the file&#39;s mtime.&lt;/dd&gt;</code></pre>
+<dt>
+type
+</dt>
+<pre><code>&lt;dd&gt;Value for Content-Type header, guessed from the file extension if
+missing.&lt;/dd&gt;</code></pre>
+<dt>
+disposition
+</dt>
+<pre><code>&lt;dd&gt;
+  Value for Content-Disposition header, possible values: &lt;tt&gt;nil&lt;/tt&gt;
+  (default), &lt;tt&gt;:attachment&lt;/tt&gt; and &lt;tt&gt;:inline&lt;/tt&gt;
+&lt;/dd&gt;</code></pre>
+<dt>
+length
+</dt>
+<pre><code>&lt;dd&gt;Value for Content-Length header, defaults to file size.&lt;/dd&gt;</code></pre>
+<dt>
+status
+</dt>
+<pre><code>&lt;dd&gt;
+  Status code to be sent. Useful when sending a static file as an error page.
+
+  If supported by the Rack handler, other means than streaming from the Ruby
+  process will be used. If you use this helper method, Sinatra will
+  automatically handle range requests.
+&lt;/dd&gt;</code></pre>
+</dl>

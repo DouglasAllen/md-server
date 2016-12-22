@@ -1,0 +1,229 @@
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co">############################</span>
+<span class="co">#                          #</span>
+<span class="co">#  sinatra_application.rb  #</span>
+<span class="co">#                          #</span>
+<span class="co">############################</span>
+
+require <span class="st">&#39;sinatra&#39;</span>
+
+set <span class="st">:root</span>, <span class="dt">File</span>.dirname(<span class="dv">__FILE__</span>)
+
+enable <span class="st">:sessions</span>
+
+<span class="kw">def</span> require_logged_in
+  redirect(<span class="st">&#39;/sessions/new&#39;</span>) <span class="kw">unless</span> is_authenticated?
+<span class="kw">end</span>
+
+<span class="kw">def</span> is_authenticated?
+  <span class="kw">return</span> !!session[<span class="st">:user_id</span>]
+<span class="kw">end</span>
+
+get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  erb <span class="st">:login</span>
+<span class="kw">end</span>
+
+get <span class="st">&#39;/sessions/new&#39;</span> <span class="kw">do</span>
+  erb <span class="st">:login</span>
+<span class="kw">end</span>
+
+post <span class="st">&#39;/sessions&#39;</span> <span class="kw">do</span>
+  session[<span class="st">:user_id</span>] = params[<span class="st">&quot;user_id&quot;</span>]
+  redirect(<span class="st">&#39;/secrets&#39;</span>)
+<span class="kw">end</span>
+
+get <span class="st">&#39;/secrets&#39;</span> <span class="kw">do</span>
+  require_logged_in
+  erb <span class="st">:secrets</span>
+<span class="kw">end</span>
+
+
+<span class="co">####################################</span>
+<span class="co">#                                  #</span>
+<span class="co">#  sinatra_modular_application.rb  #</span>
+<span class="co">#                                  #</span>
+<span class="co">####################################</span>
+
+require <span class="st">&#39;sinatra/base&#39;</span>
+
+<span class="kw">class</span> <span class="dt">SimpleApp</span> &lt; <span class="dt">Sinatra</span>::<span class="dt">Base</span>
+
+  set <span class="st">:root</span>, <span class="dt">File</span>.dirname(<span class="dv">__FILE__</span>)
+
+  enable <span class="st">:sessions</span>
+
+  <span class="kw">def</span> require_logged_in
+    redirect(<span class="st">&#39;/sessions/new&#39;</span>) <span class="kw">unless</span> is_authenticated?
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> is_authenticated?
+    <span class="kw">return</span> !!session[<span class="st">:user_id</span>]
+  <span class="kw">end</span>
+
+  get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+    erb <span class="st">:login</span>
+  <span class="kw">end</span>
+
+  get <span class="st">&#39;/sessions/new&#39;</span> <span class="kw">do</span>
+    erb <span class="st">:login</span>
+  <span class="kw">end</span>
+
+  post <span class="st">&#39;/sessions&#39;</span> <span class="kw">do</span>
+    session[<span class="st">:user_id</span>] = params[<span class="st">&quot;user_id&quot;</span>]
+  <span class="kw">end</span>
+
+  get <span class="st">&#39;/secrets&#39;</span> <span class="kw">do</span>
+    require_logged_in
+    erb <span class="st">:secrets</span>
+  <span class="kw">end</span>
+
+<span class="kw">end</span>
+
+
+<span class="co">###############</span>
+<span class="co">#  config.ru  #</span>
+<span class="co">###############</span>
+
+require <span class="dt">File</span>.dirname(<span class="dv">__FILE__</span>) + <span class="st">&#39;/app&#39;</span>
+
+run <span class="dt">SimpleApp</span>
+
+
+<span class="co">############</span>
+<span class="co">#  app.rb  #</span>
+<span class="co">############</span>
+
+require <span class="st">&#39;sinatra/base&#39;</span>
+
+<span class="kw">class</span> <span class="dt">SimpleApp</span> &lt; <span class="dt">Sinatra</span>::<span class="dt">Base</span>
+
+  set <span class="st">:root</span>, <span class="dt">File</span>.dirname(<span class="dv">__FILE__</span>)
+
+  enable <span class="st">:sessions</span>
+
+  <span class="kw">def</span> require_logged_in
+    redirect(<span class="st">&#39;/sessions/new&#39;</span>) <span class="kw">unless</span> is_authenticated?
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> is_authenticated?
+    <span class="kw">return</span> !!session[<span class="st">:user_id</span>]
+  <span class="kw">end</span>
+
+  show_login = lambda <span class="kw">do</span>
+    erb <span class="st">:login</span>
+  <span class="kw">end</span>
+
+  receive_login = lambda <span class="kw">do</span>
+    session[<span class="st">:user_id</span>] = params[<span class="st">&quot;user_id&quot;</span>]
+    redirect <span class="st">&#39;/secrets&#39;</span>
+  <span class="kw">end</span>
+
+  show_secrets = lambda <span class="kw">do</span>
+    require_logged_in
+    erb <span class="st">:secrets</span>
+  <span class="kw">end</span>
+
+  get  <span class="st">&#39;/&#39;</span>,             &amp;show_login
+  get  <span class="st">&#39;/sessions/new&#39;</span>, &amp;show_login
+  post <span class="st">&#39;/sessions&#39;</span>,     &amp;receive_login
+  get  <span class="st">&#39;/secrets&#39;</span>,      &amp;show_secrets
+
+<span class="kw">end</span>
+
+
+<span class="co">############</span>
+<span class="co">#  app.rb  #</span>
+<span class="co">############</span>
+
+require <span class="st">&#39;sinatra/base&#39;</span>
+
+require_relative <span class="st">&#39;helpers&#39;</span>
+require_relative <span class="st">&#39;routes/secrets&#39;</span>
+require_relative <span class="st">&#39;routes/sessions&#39;</span>
+
+<span class="kw">class</span> <span class="dt">SimpleApp</span> &lt; <span class="dt">Sinatra</span>::<span class="dt">Base</span>
+
+  set <span class="st">:root</span>, <span class="dt">File</span>.dirname(<span class="dv">__FILE__</span>)
+
+  enable <span class="st">:sessions</span>
+
+  helpers <span class="dt">Sinatra</span>::<span class="dt">SampleApp</span>::<span class="dt">Helpers</span>
+
+  register <span class="dt">Sinatra</span>::<span class="dt">SampleApp</span>::<span class="dt">Routing</span>::<span class="dt">Sessions</span>
+  register <span class="dt">Sinatra</span>::<span class="dt">SampleApp</span>::<span class="dt">Routing</span>::<span class="dt">Secrets</span>
+
+<span class="kw">end</span>
+
+
+<span class="co">################</span>
+<span class="co">#  helpers.rb  #</span>
+<span class="co">################</span>
+
+<span class="kw">module</span> <span class="dt">Sinatra</span>
+  <span class="kw">module</span> <span class="dt">SampleApp</span>
+    <span class="kw">module</span> <span class="dt">Helpers</span>
+
+      <span class="kw">def</span> require_logged_in
+        redirect(<span class="st">&#39;/sessions/new&#39;</span>) <span class="kw">unless</span> is_authenticated?
+      <span class="kw">end</span>
+
+      <span class="kw">def</span> is_authenticated?
+        <span class="kw">return</span> !!session[<span class="st">:user_id</span>]
+      <span class="kw">end</span>
+
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+
+
+<span class="co">#######################</span>
+<span class="co">#  routes/secrets.rb  #</span>
+<span class="co">#######################</span>
+
+<span class="kw">module</span> <span class="dt">Sinatra</span>
+  <span class="kw">module</span> <span class="dt">SampleApp</span>
+    <span class="kw">module</span> <span class="dt">Routing</span>
+      <span class="kw">module</span> <span class="dt">Secrets</span>
+
+        <span class="kw">def</span> <span class="dv">self</span>.registered(app)
+          show_secrets = lambda <span class="kw">do</span>
+            require_logged_in
+            erb <span class="st">:secrets</span>
+          <span class="kw">end</span>
+
+          app.get <span class="st">&#39;/secrets&#39;</span>, &amp;show_secrets
+        <span class="kw">end</span>
+
+      <span class="kw">end</span>
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+
+
+<span class="co">########################</span>
+<span class="co">#  routes/sessions.rb  #</span>
+<span class="co">########################</span>
+
+<span class="kw">module</span> <span class="dt">Sinatra</span>
+  <span class="kw">module</span> <span class="dt">SampleApp</span>
+    <span class="kw">module</span> <span class="dt">Routing</span>
+      <span class="kw">module</span> <span class="dt">Sessions</span>
+
+        <span class="kw">def</span> <span class="dv">self</span>.registered(app)
+          show_login = lambda <span class="kw">do</span>
+            erb <span class="st">:login</span>
+          <span class="kw">end</span>
+
+          receive_login = lambda <span class="kw">do</span>
+            session[<span class="st">:user_id</span>] = params[<span class="st">&quot;user_id&quot;</span>]
+            redirect <span class="st">&#39;/secrets&#39;</span>
+          <span class="kw">end</span>
+
+          app.get  <span class="st">&#39;/&#39;</span>,             &amp;show_login
+          app.get  <span class="st">&#39;/sessions/new&#39;</span>, &amp;show_login
+          app.post <span class="st">&#39;/sessions&#39;</span>,     &amp;receive_login
+        <span class="kw">end</span>
+
+      <span class="kw">end</span>
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>

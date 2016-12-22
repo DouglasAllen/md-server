@@ -1,0 +1,681 @@
+<h1 id="the-ruby-programming-language">The Ruby Programming Language</h1>
+<h2 id="chapter-6">CHAPTER 6</h2>
+<h3 id="methods-procs-lambdas-and-closures">Methods, Procs, Lambdas, and Closures</h3>
+<h4 id="defining-simple-methods">6.1 Defining Simple Methods</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># Define a method named &#39;factorial&#39; with a single parameter &#39;n&#39;</span>
+<span class="kw">def</span> factorial(n)
+  <span class="kw">if</span> n &lt; <span class="dv">1</span>                <span class="co"># Test the argument value for validity</span>
+    raise <span class="st">&quot;argument must be &gt; 0&quot;</span>
+  <span class="kw">elsif</span> n == <span class="dv">1</span>            <span class="co"># If the argument is 1</span>
+    <span class="dv">1</span>                     <span class="co"># then the value of the method invocation is 1</span>
+  <span class="kw">else</span>                    <span class="co"># Otherwise, the factorial of n is n times</span>
+    n * factorial(n<span class="dv">-1</span>)    <span class="co"># the factorial of n-1</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="method-return-value">6.1.1 Method Return Value</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">def</span> factorial(n)
+  raise <span class="st">&quot;bad argument&quot;</span> <span class="kw">if</span> n &lt; <span class="dv">1</span>
+  <span class="kw">return</span> <span class="dv">1</span> <span class="kw">if</span> n == <span class="dv">1</span>
+  n * factorial(n<span class="dv">-1</span>)
+<span class="kw">end</span>
+<span class="co">################################</span>
+<span class="co"># Convert the Cartesian point (x,y) to polar (magnitude, angle) coordinates</span>
+<span class="kw">def</span> polar(x,y)
+  <span class="kw">return</span> <span class="dt">Math</span>.hypot(y,x), <span class="dt">Math</span>.atan2(y,x)
+<span class="kw">end</span>
+<span class="co">################################</span>
+<span class="co"># Convert polar coordinates to Cartesian coordinates</span>
+<span class="kw">def</span> cartesian(magnitude, angle)
+  [magnitude*<span class="dt">Math</span>.cos(angle), magnitude*<span class="dt">Math</span>.sin(angle)]
+<span class="kw">end</span>
+<span class="co">################################</span>
+distance, theta = polar(x,y)
+x,y = cartesian(distance,theta)</code></pre></div>
+<h4 id="invoking-a-method-on-an-object">6.1.3 Invoking a Method on an Object</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">first = text.index(pattern)</code></pre></div>
+<h4 id="defining-singleton-methods">6.1.4 Defining Singleton Methods</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">o = <span class="st">&quot;message&quot;</span>    <span class="co"># A string is an object</span>
+<span class="kw">def</span> o.printme    <span class="co"># Define a singleton method for this object</span>
+  puts <span class="dv">self</span>
+<span class="kw">end</span>
+o.printme        <span class="co"># Invoke the singleton </span></code></pre></div>
+<h4 id="undefining-methods">6.1.5 Undefining Methods</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">def</span> sum(x,y); x+y; <span class="kw">end</span>      <span class="co"># Define a method</span>
+puts sum(<span class="dv">1</span>,<span class="dv">2</span>)               <span class="co"># Use it</span>
+<span class="kw">undef</span> sum                   <span class="co"># And undefine it</span></code></pre></div>
+<h4 id="operator-methods">6.2.1 Operator Methods</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">def</span> +(other)               <span class="co"># Define binary plus operator: x+y is x.+(y)</span>
+  <span class="dv">self</span>.concatenate(other)
+<span class="kw">end</span>       </code></pre></div>
+<h4 id="method-aliases">6.2.2 Method Aliases</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">alias</span> aka also_known_as   <span class="co"># alias new_name existing_name</span>
+<span class="co">################################</span>
+<span class="kw">def</span> hello                       <span class="co"># A nice simple method</span>
+  puts <span class="st">&quot;Hello World&quot;</span>            <span class="co"># Suppose we want to augment it...</span>
+<span class="kw">end</span>
+
+<span class="kw">alias</span> original_hello hello      <span class="co"># Give the method a backup name</span>
+
+<span class="kw">def</span> hello                       <span class="co"># Now we define a new method with the old name</span>
+  puts <span class="st">&quot;Your attention please&quot;</span>  <span class="co"># That does some stuff</span>
+  original_hello                <span class="co"># Then calls the original method</span>
+  puts <span class="st">&quot;This has been a test&quot;</span>   <span class="co"># Then does some more stuff</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="optional-parentheses">6.3.1 Optional Parentheses</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">puts <span class="st">&quot;Hello World&quot;</span>
+puts(<span class="st">&quot;Hello World&quot;</span>)
+<span class="co">################################</span>
+greeting = <span class="st">&quot;Hello&quot;</span>
+size = greeting.length
+<span class="co">################################</span>
+size = greeting.length()
+<span class="co">################################</span>
+x = <span class="dv">3</span>              <span class="co"># x is a number</span>
+x.between? <span class="dv">1</span>,<span class="dv">5</span>     <span class="co"># same as x.between?(1,5)</span>
+<span class="co">################################</span>
+<span class="kw">def</span> sum x, y
+  x+y
+<span class="kw">end</span></code></pre></div>
+<h4 id="required-parentheses">6.3.2 Required Parentheses</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">puts sum <span class="dv">2</span>, <span class="dv">2</span>
+<span class="co">################################</span>
+puts sum(<span class="dv">2</span>,<span class="dv">2</span>)
+<span class="co">################################</span>
+puts(sum <span class="dv">2</span>,<span class="dv">2</span>)   <span class="co"># Does this mean puts(sum(2,2)) or puts(sum(2), 2)?</span>
+<span class="co">################################</span>
+puts factorial x   <span class="co"># This can only mean puts(factorial(x))</span>
+<span class="co">################################</span>
+puts <span class="dv">4</span>, sum <span class="dv">2</span>,<span class="dv">2</span>   <span class="co"># Error: does the second comma go with the 1st or 2nd method?</span>
+[sum <span class="dv">2</span>,<span class="dv">2</span>]         <span class="co"># Error: two array elements or one?</span>
+<span class="co">################################</span>
+square(<span class="dv">2+2</span>)*<span class="dv">2</span>    <span class="co"># square(4)*2 = 16*2 = 32</span>
+square (<span class="dv">2+2</span>)*<span class="dv">2</span>   <span class="co"># square(4*2) = square(8) = 64</span>
+<span class="co">################################</span>
+square((<span class="dv">2+2</span>)*<span class="dv">2</span>)
+<span class="co">################################</span>
+puts(sum <span class="dv">2</span>,<span class="dv">2</span>)   <span class="co"># Does this mean puts(sum(2,2)) or puts(sum(2), 2)?</span>
+<span class="co">################################</span>
+puts (sum <span class="dv">2</span>,<span class="dv">2</span>)   </code></pre></div>
+<h4 id="parameter-defaults">6.4.1 Parameter Defaults</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">def</span> prefix(s, len=<span class="dv">1</span>)
+  s[<span class="dv">0</span>,len]
+<span class="kw">end</span>
+<span class="co">################################</span>
+prefix(<span class="st">&quot;Ruby&quot;</span>, <span class="dv">3</span>)    <span class="co"># =&gt; &quot;Rub&quot;</span>
+prefix(<span class="st">&quot;Ruby&quot;</span>)       <span class="co"># =&gt; &quot;R&quot;</span>
+<span class="co">################################</span>
+<span class="co"># Return the last character of s or the substring from index to the end</span>
+<span class="kw">def</span> suffix(s, index=s.size<span class="dv">-1</span>)
+  s[index, s.size-index]
+<span class="kw">end</span>
+<span class="co">################################</span>
+<span class="co"># Append the value x to the array a, return a.</span>
+<span class="co"># If no array is specified, start with an empty one.</span>
+<span class="kw">def</span> append(x, a=[])
+  a &lt;&lt; x
+<span class="kw">end</span></code></pre></div>
+<h4 id="variable-length-argument-lists-and-arrays">6.4.2 Variable-Length Argument Lists and Arrays</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># Return the largest of the one or more arguments passed</span>
+<span class="kw">def</span> max(first, *rest)
+  <span class="co"># Assume that the required first argument is the largest</span>
+  max = first
+  <span class="co"># Now loop through each of the optional arguments looking for bigger ones</span>
+  rest.each {|x| max = x <span class="kw">if</span> x &gt; max }
+  <span class="co"># Return the largest one we found</span>
+  max
+<span class="kw">end</span>
+<span class="co">################################</span>
+max(<span class="dv">1</span>)       <span class="co"># first=1, rest=[]   </span>
+max(<span class="dv">1</span>,<span class="dv">2</span>)     <span class="co"># first=1, rest=[2]  </span>
+max(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>)   <span class="co"># first=1, rest=[2,3]</span></code></pre></div>
+<h4 id="passing-arrays-to-methods">6.4.2.1 Passing arrays to methods</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">data = [<span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">1</span>]
+m = max(*data)   <span class="co"># first = 3, rest=[2,1] =&gt; 3</span>
+<span class="co">################################</span>
+m = max(data)   <span class="co"># first = [3,2,1], rest=[] =&gt; [3,2,1]</span>
+<span class="co">################################</span>
+<span class="co"># Convert the point (x,y) to Polar coordinates, then back to Cartesian</span>
+x,y = cartesian(*polar(x, y))
+<span class="co">################################</span>
+max(*<span class="st">&quot;hello world&quot;</span>.each_char)  <span class="co"># =&gt; &#39;w&#39;</span></code></pre></div>
+<h4 id="hashes-for-named-arguments">6.4.4 Hashes for Named Arguments</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># This method returns an array a of n numbers. For any index i, 0 &lt;= i &lt; n,</span>
+<span class="co"># the value of element a[i] is m*i+c. Arguments n, m, and c are passed</span>
+<span class="co"># as keys in a hash, so that it is not necessary to remember their order.</span>
+<span class="kw">def</span> sequence(args)
+  <span class="co"># Extract the arguments from the hash.</span>
+  <span class="co"># Note the use of the || operator to specify defaults used</span>
+  <span class="co"># if the hash does not define a key that we are interested in.</span>
+  n = args[<span class="st">:n</span>] || <span class="dv">0</span>
+  m = args[<span class="st">:m</span>] || <span class="dv">1</span>
+  c = args[<span class="st">:c</span>] || <span class="dv">0</span>
+
+  a = []                      <span class="co"># Start with an empty array</span>
+  n.times {|i| a &lt;&lt; m*i+c }   <span class="co"># Calculate the value of each array element</span>
+  a                           <span class="co"># Return the array</span>
+<span class="kw">end</span>
+<span class="co">################################</span>
+sequence({<span class="st">:n=</span>&gt;<span class="dv">3</span>, <span class="st">:m=</span>&gt;<span class="dv">5</span>})      <span class="co"># =&gt; [0, 5, 10]</span>
+<span class="co">################################</span>
+sequence(<span class="st">:m=</span>&gt;<span class="dv">3</span>, <span class="st">:n=</span>&gt;<span class="dv">5</span>)        <span class="co"># =&gt; [0, 3, 6, 9, 12]</span>
+<span class="co">################################</span>
+<span class="co"># Ruby 1.9 hash syntax</span>
+sequence c:<span class="dv">1</span>, m:<span class="dv">3</span>, n:<span class="dv">5</span>        <span class="co"># =&gt; [1, 4, 7, 10, 13]</span>
+<span class="co">################################</span>
+sequence {<span class="st">:m=</span>&gt;<span class="dv">3</span>, <span class="st">:n=</span>&gt;<span class="dv">5</span>}       <span class="co"># Syntax error!</span></code></pre></div>
+<h4 id="block-arguments">6.4.5 Block Arguments</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># Generate a sequence of n numbers m*i + c and pass them to the block</span>
+<span class="kw">def</span> sequence2(n, m, c) 
+  i = <span class="dv">0</span>
+  <span class="kw">while</span>(i &lt; n)         <span class="co"># loop n times</span>
+    <span class="kw">yield</span> i*m + c      <span class="co"># pass next element of the sequence to the block</span>
+    i += <span class="dv">1</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+
+<span class="co"># Here is how you might use this version of the method</span>
+sequence2(<span class="dv">5</span>, <span class="dv">2</span>, <span class="dv">2</span>) {|x| puts x }  <span class="co"># Print numbers 2, 4, 6, 8, 10</span>
+<span class="co">################################</span>
+<span class="kw">def</span> sequence3(n, m, c, &amp;b) <span class="co"># Explicit argument to get block as a Proc</span>
+  i = <span class="dv">0</span>
+  <span class="kw">while</span>(i &lt; n)
+    b.call(i*m + c)        <span class="co"># Invoke the Proc with its call method</span>
+    i += <span class="dv">1</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+
+<span class="co"># Note that the block is still passed outside of the parentheses</span>
+sequence3(<span class="dv">5</span>, <span class="dv">2</span>, <span class="dv">2</span>) {|x| puts x }
+<span class="co">################################</span>
+<span class="co"># This version expects an explicitly-created Proc object, not a block</span>
+<span class="kw">def</span> sequence4(n, m, c, b)  <span class="co"># No ampersand used for argument b</span>
+  i = <span class="dv">0</span>
+  <span class="kw">while</span>(i &lt; n)
+    b.call(i*m + c)        <span class="co"># Proc is called explicitly</span>
+    i += <span class="dv">1</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+
+p = <span class="dt">Proc</span>.new {|x| puts x }  <span class="co"># Explicitly create a Proc object </span>
+sequence4(<span class="dv">5</span>, <span class="dv">2</span>, <span class="dv">2</span>, p)       <span class="co"># And pass it as an ordinary argument</span>
+<span class="co">################################</span>
+<span class="kw">def</span> sequence5(args, &amp;b) <span class="co"># Pass arguments as a hash and follow with a block</span>
+  n, m, c = args[<span class="st">:n</span>], args[<span class="st">:m</span>], args[<span class="st">:c</span>]
+  i = <span class="dv">0</span>
+  <span class="kw">while</span>(i &lt; n)
+    b.call(i*m + c)
+    i += <span class="dv">1</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+
+<span class="co"># Expects one or more arguments, followed by a block</span>
+<span class="kw">def</span> max(first, *rest, &amp;block) 
+  max = first
+  rest.each {|x| max = x <span class="kw">if</span> x &gt; max }
+  block.call(max)
+  max
+<span class="kw">end</span></code></pre></div>
+<h4 id="using-in-method-invocation">6.4.5.1 Using &amp; in method invocation</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">a, b = [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>], [<span class="dv">4</span>,<span class="dv">5</span>]                     <span class="co"># Start with some data.</span>
+sum = a.inject(<span class="dv">0</span>) {|total,x| total+x }    <span class="co"># =&gt; 6. Sum elements of a.</span>
+sum = b.inject(sum) {|total,x| total+x }  <span class="co"># =&gt; 15. Add the elements of b in.</span>
+<span class="co">################################</span>
+a, b = [<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>], [<span class="dv">4</span>,<span class="dv">5</span>]                     <span class="co"># Start with some data.</span>
+summation = <span class="dt">Proc</span>.new {|total,x| total+x } <span class="co"># A Proc object for summations.</span>
+sum = a.inject(<span class="dv">0</span>, &amp;summation)             <span class="co"># =&gt; 6</span>
+sum = b.inject(sum, &amp;summation)           <span class="co"># =&gt; 15</span>
+<span class="co">################################</span>
+words = [<span class="st">&#39;and&#39;</span>, <span class="st">&#39;but&#39;</span>, <span class="st">&#39;car&#39;</span>]     <span class="co"># An array of words</span>
+uppercase = words.map &amp;<span class="st">:upcase</span>    <span class="co"># Convert to uppercase with String.upcase</span>
+upper = words.map {|w| w.upcase } <span class="co"># This is the equivalent code with a block</span></code></pre></div>
+<h4 id="creating-procs">6.5.1 Creating Procs</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># This method creates a proc from a block</span>
+<span class="kw">def</span> makeproc(&amp;p)  <span class="co"># Convert associated block to a Proc and store in p</span>
+  p               <span class="co"># Return the Proc object</span>
+<span class="kw">end</span>
+<span class="co">################################</span>
+adder = makeproc {|x,y| x+y }
+<span class="co">################################</span>
+sum = adder.call(<span class="dv">2</span>,<span class="dv">2</span>)  <span class="co"># =&gt; 4</span></code></pre></div>
+<h4 id="proc.new">6.5.1.1 Proc.new</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">p = <span class="dt">Proc</span>.new {|x,y| x+y }
+<span class="co">################################</span>
+<span class="kw">def</span> invoke(&amp;b)     <span class="kw">def</span> invoke
+  b.call             <span class="dt">Proc</span>.new.call
+<span class="kw">end</span>                <span class="kw">end</span></code></pre></div>
+<h4 id="kernel.lambda">6.5.1.2 Kernel.lambda</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">is_positive = lambda {|x| x &gt; <span class="dv">0</span> }</code></pre></div>
+<h4 id="lambda-literals">6.5.1.4 Lambda Literals</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">succ = lambda {|x| x<span class="dv">+1</span>}
+<span class="co">################################</span>
+succ = -&gt;(x){ x<span class="dv">+1</span> }
+<span class="co">################################</span>
+succ.call(<span class="dv">2</span>)    <span class="co"># =&gt; 3</span>
+<span class="co">################################</span>
+<span class="co"># This lambda takes 2 args and declares 3 local vars</span>
+f = -&gt;(x,y; i,j,k) { ... }
+<span class="co">################################</span>
+zoom = -&gt;(x,y,factor=<span class="dv">2</span>) { [x*factor, y*factor] }
+<span class="co">################################</span>
+succ = -&gt;x { x<span class="dv">+1</span> }
+f = -&gt; x,y; i,j,k { ... }
+zoom = -&gt;x,y,factor=<span class="dv">2</span> { [x*factor, y*factor] }
+<span class="co">################################</span>
+-&gt;{}
+<span class="co">################################</span>
+<span class="kw">def</span> compose(f,g)            <span class="co"># Compose 2 lambdas </span>
+  -&gt;(x) { f.call(g.call(x)) }
+<span class="kw">end</span>
+succOfSquare = compose(-&gt;x{x<span class="dv">+1</span>}, -&gt;x{x*x})
+succOfSquare.call(<span class="dv">4</span>)        <span class="co"># =&gt; 17: Computes (4*4)+1</span>
+<span class="co">################################</span>
+data.sort {|a,b| b-a }   <span class="co"># The block version</span>
+data.sort &amp;-&gt;(a,b){ b-a } <span class="co"># The lambda literal version</span></code></pre></div>
+<h4 id="invoking-procs-and-lambdas">6.5.2 Invoking Procs and Lambdas</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">f = <span class="dt">Proc</span>.new {|x,y| <span class="fl">1.0</span>/(<span class="fl">1.0</span>/x + <span class="fl">1.0</span>/y) }
+z = f.call(x,y)
+<span class="co">################################</span>
+z = f[x,y]
+<span class="co">################################</span>
+z = f.(x,y)</code></pre></div>
+<h4 id="the-arity-of-a-proc">6.5.3 The Arity of a Proc</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">lambda{||}.arity        <span class="co"># =&gt; 0. No arguments expected</span>
+lambda{|x| x}.arity     <span class="co"># =&gt; 1. One argument expected</span>
+lambda{|x,y| x+y}.arity <span class="co"># =&gt; 2. Two arguments expected</span>
+<span class="co">################################</span>
+lambda {|*args|}.arity        <span class="co"># =&gt; -1.  ~-1 = -(-1)-1 = 0 arguments required</span>
+lambda {|first, *rest|}.arity <span class="co"># =&gt; -2.  ~-2 = -(-2)-1 = 1 argument required</span>
+<span class="co">################################</span>
+puts lambda {}.arity  <span class="co"># &amp;#x2013;1 in Ruby 1.8; 0 in Ruby 1.9</span></code></pre></div>
+<h4 id="proc-equality">6.5.4 Proc Equality</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">lambda {|x| x*x } == lambda {|x| x*x }  <span class="co"># =&gt; false</span>
+<span class="co">################################</span>
+p = lambda {|x| x*x }
+q = p.dup
+p == q                      <span class="co"># =&gt; true: the two procs are equal</span>
+p.object_id == q.object_id  <span class="co"># =&gt; false: they are not the same object</span></code></pre></div>
+<h4 id="return-in-blocks-procs-and-lambdas">6.5.5.1 Return in blocks, procs, and lambdas</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">def</span> test
+  puts <span class="st">&quot;entering method&quot;</span>
+  <span class="dv">1</span>.times { puts <span class="st">&quot;entering block&quot;</span>; <span class="kw">return</span> }  <span class="co"># Makes test method return</span>
+  puts <span class="st">&quot;exiting method&quot;</span>  <span class="co"># This line is never executed</span>
+<span class="kw">end</span>
+test
+<span class="co">################################</span>
+<span class="kw">def</span> test
+  puts <span class="st">&quot;entering method&quot;</span>
+  p = <span class="dt">Proc</span>.new { puts <span class="st">&quot;entering proc&quot;</span>; <span class="kw">return</span> } 
+  p.call                 <span class="co"># Invoking the proc makes method return</span>
+  puts <span class="st">&quot;exiting method&quot;</span>  <span class="co"># This line is never executed</span>
+<span class="kw">end</span>
+test
+<span class="co">################################</span>
+<span class="kw">def</span> procBuilder(message)            <span class="co"># Create and return a proc</span>
+  <span class="dt">Proc</span>.new { puts message; <span class="kw">return</span> } <span class="co"># return returns from procBuilder</span>
+  <span class="co"># but procBuilder has already returned here!</span>
+<span class="kw">end</span>
+
+<span class="kw">def</span> test
+  puts <span class="st">&quot;entering method&quot;</span>
+  p = procBuilder(<span class="st">&quot;entering proc&quot;</span>)
+  p.call                 <span class="co"># Prints &quot;entering proc&quot; and raises LocalJumpError!</span>
+  puts <span class="st">&quot;exiting method&quot;</span>  <span class="co"># This line is never executed</span>
+<span class="kw">end</span>
+test
+<span class="co">################################</span>
+<span class="kw">def</span> test
+  puts <span class="st">&quot;entering method&quot;</span>
+  p = lambda { puts <span class="st">&quot;entering lambda&quot;</span>; <span class="kw">return</span> } 
+  p.call                 <span class="co"># Invoking the lambda does not make the method return</span>
+  puts <span class="st">&quot;exiting method&quot;</span>  <span class="co"># This line *is* executed now</span>
+<span class="kw">end</span>
+test
+<span class="co">################################</span>
+<span class="kw">def</span> lambdaBuilder(message)        <span class="co"># Create and return a lambda</span>
+  lambda { puts message; <span class="kw">return</span> } <span class="co"># return returns from the lambda</span>
+<span class="kw">end</span>
+<span class="co">################################</span>
+<span class="kw">def</span> test
+  puts <span class="st">&quot;entering method&quot;</span>
+  l = lambdaBuilder(<span class="st">&quot;entering lambda&quot;</span>)
+  l.call                 <span class="co"># Prints &quot;entering lambda&quot; </span>
+  puts <span class="st">&quot;exiting method&quot;</span>  <span class="co"># This line is executed</span>
+<span class="kw">end</span>
+test</code></pre></div>
+<h4 id="break-in-blocks-procs-and-lambdas">6.5.5.2 Break in blocks, procs and lambdas</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">def</span> test
+  puts <span class="st">&quot;entering test method&quot;</span>
+  proc = <span class="dt">Proc</span>.new { puts <span class="st">&quot;entering proc&quot;</span>; <span class="kw">break</span> }
+  proc.call                    <span class="co"># LocalJumpError: iterator has already returned</span>
+  puts <span class="st">&quot;exiting test method&quot;</span>
+<span class="kw">end</span>
+test
+<span class="co">################################</span>
+<span class="kw">def</span> iterator(&amp;proc)
+  puts <span class="st">&quot;entering iterator&quot;</span>
+  proc.call  <span class="co"># invoke the proc</span>
+  puts <span class="st">&quot;exiting iterator&quot;</span>   <span class="co"># Never executed if the proc breaks</span>
+<span class="kw">end</span>
+
+<span class="kw">def</span> test
+  iterator { puts <span class="st">&quot;entering proc&quot;</span>; <span class="kw">break</span> }
+<span class="kw">end</span>
+test
+<span class="co">################################</span>
+<span class="kw">def</span> test
+  puts <span class="st">&quot;entering test method&quot;</span>
+  lambda = lambda { puts <span class="st">&quot;entering lambda&quot;</span>; <span class="kw">break</span>; puts <span class="st">&quot;exiting lambda&quot;</span> }
+  lambda.call  
+  puts <span class="st">&quot;exiting test method&quot;</span>
+<span class="kw">end</span>
+test</code></pre></div>
+<h4 id="argument-passing-to-procs-and-lambdas">6.5.5.4 Argument passing to procs and lambdas</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">p = <span class="dt">Proc</span>.new {|x,y| print x,y }
+p.call(<span class="dv">1</span>)       <span class="co"># x,y=1:     nil used for missing rvalue:  Prints 1nil</span>
+p.call(<span class="dv">1</span>,<span class="dv">2</span>)     <span class="co"># x,y=1,2:   2 lvalues, 2 rvalues:         Prints 12</span>
+p.call(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>)   <span class="co"># x,y=1,2,3: extra rvalue discarded:       Prints 12</span>
+p.call([<span class="dv">1</span>,<span class="dv">2</span>])   <span class="co"># x,y=[1,2]: array automatically unpacked: Prints 12</span>
+<span class="co">################################</span>
+l = lambda {|x,y| print x,y }
+l.call(<span class="dv">1</span>,<span class="dv">2</span>)     <span class="co"># This works</span>
+l.call(<span class="dv">1</span>)       <span class="co"># Wrong number of arguments</span>
+l.call(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>)   <span class="co"># Wrong number of arguments</span>
+l.call([<span class="dv">1</span>,<span class="dv">2</span>])   <span class="co"># Wrong number of arguments</span>
+l.call(*[<span class="dv">1</span>,<span class="dv">2</span>])  <span class="co"># Works: explicit splat to unpack the array</span></code></pre></div>
+<h4 id="closures">6.6 Closures</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># multiply each element of the data array by n</span>
+<span class="kw">def</span> multiply(data, n)
+  data.collect {|x| x*n }
+<span class="kw">end</span>
+
+puts multiply([<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>], <span class="dv">2</span>)   <span class="co"># Prints 2,4,6</span>
+<span class="co">################################</span>
+<span class="co"># Return a lambda that retains or &quot;closes over&quot; the argument n</span>
+<span class="kw">def</span> multiplier(n) 
+  lambda {|data| data.collect{|x| x*n } }
+<span class="kw">end</span>
+doubler = multiplier(<span class="dv">2</span>)     <span class="co"># Get a lambda that knows how to double</span>
+puts doubler.call([<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>])  <span class="co"># Prints 2,4,6</span></code></pre></div>
+<h4 id="closures-and-shared-variables">6.6.1 Closures and Shared Variables</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># Return a pair of lambdas that share access to a local variable.</span>
+<span class="kw">def</span> accessor_pair(initialValue=<span class="dv">nil</span>)
+  value = initialValue  <span class="co"># A local variable shared by the returned lambdas.</span>
+  getter = lambda { value }          <span class="co"># Return value of local variable.</span>
+  setter = lambda {|x| value = x }   <span class="co"># Change value of local variable.</span>
+  <span class="kw">return</span> getter,setter               <span class="co"># Return pair of lambdas to caller.</span>
+<span class="kw">end</span>
+<span class="co">################################</span>
+getX, setX = accessor_pair(<span class="dv">0</span>) <span class="co"># Create accessor lambdas for initial value 0.</span>
+puts getX[]        <span class="co"># Prints 0. Note square brackets instead of call.</span>
+setX[<span class="dv">10</span>]           <span class="co"># Change the value through one closure.</span>
+puts getX[]        <span class="co"># Prints 10. The change is visible through the other.</span>
+
+<span class="co"># Return an array of lambdas that multiply by the arguments</span>
+<span class="kw">def</span> multipliers(*args)
+  x = <span class="dv">nil</span>
+  args.map {|x| lambda {|y| x*y }}
+<span class="kw">end</span>
+
+double,triple = multipliers(<span class="dv">2</span>,<span class="dv">3</span>)
+puts double.call(<span class="dv">2</span>)    <span class="co"># Prints 6 in Ruby 1.8</span></code></pre></div>
+<h4 id="closures-and-bindings">6.6.2 Closures and Bindings</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># Return a lambda that retains or &quot;closes over&quot; the argument n</span>
+<span class="kw">def</span> multiplier(n) 
+  lambda {|data| data.collect{|x| x*n } }
+<span class="kw">end</span>
+doubler = multiplier(<span class="dv">2</span>)     <span class="co"># Get a lambda that knows how to double</span>
+puts doubler.call([<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>])  <span class="co"># Prints 2,4,6</span>
+<span class="co">################################</span>
+eval(<span class="st">&quot;n=3&quot;</span>, doubler.binding) <span class="co"># Or doubler.binding.eval(&quot;n=3&quot;) in Ruby 1.9</span>
+puts doubler.call([<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>])   <span class="co"># Now this prints 3,6,9!</span>
+<span class="co">################################</span>
+eval(<span class="st">&quot;n=3&quot;</span>, doubler)</code></pre></div>
+<h4 id="method-objects">6.7 Method Objects</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">m = <span class="dv">0</span>.method(<span class="st">:succ</span>)  <span class="co"># A Method representing the succ method of Fixnum 0</span>
+<span class="co">################################</span>
+puts m.call    <span class="co"># Same as puts 0.succ. Or use puts m[].</span>
+<span class="co">################################</span>
+<span class="kw">def</span> square(x); x*x; <span class="kw">end</span>
+puts (<span class="dv">1</span>..<span class="dv">10</span>).map(&amp;method(<span class="st">:square</span>))</code></pre></div>
+<h4 id="unbound-method-objects">6.7.1 Unbound Method Objects</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">unbound_plus = <span class="dt">Fixnum</span>.instance_method(<span class="st">&quot;+&quot;</span>)
+<span class="co">################################</span>
+plus_2 = unbound_plus.bind(<span class="dv">2</span>)   <span class="co"># Bind the method to the object 2</span>
+<span class="co">################################</span>
+sum = plus_2.call(<span class="dv">2</span>)    <span class="co"># =&gt; 4</span>
+<span class="co">################################</span>
+plus_3 = plus_2.unbind.bind(<span class="dv">3</span>)</code></pre></div>
+<h4 id="functional-programming">6.8 Functional Programming</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># Compute the average and standard deviation of an array of numbers</span>
+mean = a.inject {|x,y| x+y } / a.size
+sumOfSquares = a.map{|x| (x-mean)**<span class="dv">2</span> }.inject{|x,y| x+y }
+standardDeviation = <span class="dt">Math</span>.sqrt(sumOfSquares/(a.size<span class="dv">-1</span>))</code></pre></div>
+<h4 id="applying-a-function-to-an-enumerable">6.8.1 Applying a Function to an Enumerable</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># This module defines methods and operators for functional programming.</span>
+<span class="kw">module</span> <span class="dt">Functional</span>
+
+  <span class="co"># Apply this function to each element of the specified Enumerable,</span>
+  <span class="co"># returning an array of results. This is the reverse of Enumerable.map.</span>
+  <span class="co"># Use | as an operator alias. Read &quot;|&quot; as &quot;over&quot; or &quot;applied over&quot;.</span>
+  <span class="co"># </span>
+  <span class="co"># Example:</span>
+  <span class="co">#   a = [[1,2],[3,4]]</span>
+  <span class="co">#   sum = lambda {|x,y| x+y}</span>
+  <span class="co">#   sums = sum|a   # =&gt; [3,7]</span>
+  <span class="kw">def</span> apply(enum)
+    enum.map &amp;<span class="dv">self</span>
+  <span class="kw">end</span>
+  <span class="kw">alias</span> | apply
+
+  <span class="co"># Use this function to &quot;reduce&quot; an enumerable to a single quantity.</span>
+  <span class="co"># This is the inverse of Enumerable.inject.</span>
+  <span class="co"># Use &lt;= as an operator alias.</span>
+  <span class="co"># Mnemonic: &lt;= looks like a needle for injections</span>
+  <span class="co"># Example:</span>
+  <span class="co">#   data = [1,2,3,4]</span>
+  <span class="co">#   sum = lambda {|x,y| x+y}</span>
+  <span class="co">#   total = sum&lt;=data   # =&gt; 10</span>
+  <span class="kw">def</span> reduce(enum)
+    enum.inject &amp;<span class="dv">self</span>
+  <span class="kw">end</span>
+  <span class="kw">alias</span> &lt;= reduce
+<span class="kw">end</span>
+
+<span class="co"># Add these functional programming methods to Proc and Method classes.</span>
+<span class="kw">class</span> <span class="dt">Proc</span>; include <span class="dt">Functional</span>; <span class="kw">end</span>
+<span class="kw">class</span> <span class="dt">Method</span>; include <span class="dt">Functional</span>; <span class="kw">end</span>
+<span class="co">################################</span>
+sum = lambda {|x,y| x+y }        <span class="co"># A function to add two numbers</span>
+mean = (sum&lt;=a)/a.size           <span class="co"># Or sum.reduce(a) or a.inject(&amp;sum)</span>
+deviation = lambda {|x| x-mean } <span class="co"># Function to compute difference from mean</span>
+square = lambda {|x| x*x }       <span class="co"># Function to square a number</span>
+standardDeviation = <span class="dt">Math</span>.sqrt((sum&lt;=square|(deviation|a))/(a.size<span class="dv">-1</span>))</code></pre></div>
+<h4 id="composing-functions">6.8.2 Composing Functions</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">module</span> <span class="dt">Functional</span>
+  <span class="co"># Return a new lambda that computes self[f[args]].</span>
+  <span class="co"># Use * as an operator alias for compose.</span>
+  <span class="co"># Examples, using the * alias for this method.</span>
+  <span class="co"># </span>
+  <span class="co"># f = lambda {|x| x*x }</span>
+  <span class="co"># g = lambda {|x| x+1 }</span>
+  <span class="co"># (f*g)[2]   # =&gt; 9</span>
+  <span class="co"># (g*f)[2]   # =&gt; 5</span>
+  <span class="co"># </span>
+  <span class="co"># def polar(x,y)</span>
+  <span class="co">#   [Math.hypot(y,x), Math.atan2(y,x)]</span>
+  <span class="co"># end</span>
+  <span class="co"># def cartesian(magnitude, angle)</span>
+  <span class="co">#   [magnitude*Math.cos(angle), magnitude*Math.sin(angle)]</span>
+  <span class="co"># end</span>
+  <span class="co"># p,c = method :polar, method :cartesian</span>
+  <span class="co"># (c*p)[3,4]  # =&gt; [3,4]</span>
+  <span class="co"># </span>
+  <span class="kw">def</span> compose(f)
+    <span class="kw">if</span> <span class="dv">self</span>.respond_to?(<span class="st">:arity</span>) &amp;&amp; <span class="dv">self</span>.arity == <span class="dv">1</span>
+      lambda {|*args| <span class="dv">self</span>[f[*args]] }
+    <span class="kw">else</span>
+      lambda {|*args| <span class="dv">self</span>[*f[*args]] }
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+
+  <span class="co"># * is the natural operator for function composition.</span>
+  <span class="kw">alias</span> * compose
+<span class="kw">end</span>
+<span class="co">################################</span>
+standardDeviation = <span class="dt">Math</span>.sqrt((sum&lt;=square*deviation|a)/(a.size<span class="dv">-1</span>))</code></pre></div>
+<h4 id="partially-applying-functions">6.8.3 Partially Applying Functions</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">product = lambda {|x, y| x*y }       <span class="co"># A function of two arguments</span>
+double = lambda {|x| product(<span class="dv">2</span>,x) }  <span class="co"># Apply one argument</span>
+<span class="co">################################</span>
+<span class="kw">module</span> <span class="dt">Functional</span>
+  <span class="co">#</span>
+  <span class="co"># Return a lambda equivalent to this one with one or more initial </span>
+  <span class="co"># arguments applied. When only a single argument</span>
+  <span class="co"># is being specified, the &gt;&gt; alias may be simpler to use.</span>
+  <span class="co"># Example:</span>
+  <span class="co">#   product = lambda {|x,y| x*y}</span>
+  <span class="co">#   doubler = lambda &gt;&gt; 2</span>
+  <span class="co">#</span>
+  <span class="kw">def</span> apply_head(*first)
+    lambda {|*rest| <span class="dv">self</span>[*first.concat(rest)]}
+  <span class="kw">end</span>
+
+  <span class="co">#</span>
+  <span class="co"># Return a lambda equivalent to this one with one or more final arguments</span>
+  <span class="co"># applied. When only a single argument is being specified,</span>
+  <span class="co"># the &lt;&lt; alias may be simpler.</span>
+  <span class="co"># Example:</span>
+  <span class="co">#  difference = lambda {|x,y| x-y }</span>
+  <span class="co">#  decrement = difference &lt;&lt; 1</span>
+  <span class="co">#</span>
+  <span class="kw">def</span> apply_tail(*last)
+    lambda {|*rest| <span class="dv">self</span>[*rest.concat(last)]}
+  <span class="kw">end</span>
+
+  <span class="co"># Here are operator alternatives for these methods. The angle brackets</span>
+  <span class="co"># point to the side on which the argument is shifted in.</span>
+  <span class="kw">alias</span> &gt;&gt; apply_head    <span class="co"># g = f &gt;&gt; 2 -- set first arg to 2</span>
+  <span class="kw">alias</span> &lt;&lt; apply_tail    <span class="co"># g = f &lt;&lt; 2 -- set last arg to 2</span>
+<span class="kw">end</span>
+<span class="co">################################</span>
+difference = lambda {|x,y| x-y }  <span class="co"># Compute difference of two numbers</span>
+deviation = difference&lt;&lt;<span class="kw">mean</span><span class="ot">      # Apply second argument</span></code></pre></div>
+<h4 id="memoizing-functions">6.8.4 Memoizing Functions</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">module</span> <span class="dt">Functional</span>
+  <span class="co">#</span>
+  <span class="co"># Return a new lambda that caches the results of this function and </span>
+  <span class="co"># only calls the function when new arguments are supplied.</span>
+  <span class="co">#</span>
+  <span class="kw">def</span> memoize
+    cache = {}  <span class="co"># An empty cache. The lambda captures this in its closure.</span>
+    lambda {|*args|
+      <span class="co"># notice that the hash key is the entire array of arguments!</span>
+      <span class="kw">unless</span> cache.has_key?(args)  <span class="co"># If no cached result for these args</span>
+        cache[args] = <span class="dv">self</span>[*args]  <span class="co"># Compute and cache the result</span>
+      <span class="kw">end</span>
+      cache[args]                  <span class="co"># Return result from cache</span>
+    }
+  <span class="kw">end</span>
+  <span class="co"># A (probably unnecessary) unary + operator for memoization</span>
+  <span class="co"># Mnemonic: the + operator means &quot;improved&quot;</span>
+  <span class="kw">alias</span> +@ memoize        <span class="co"># cached_f = +f</span>
+<span class="kw">end</span>
+<span class="co">################################</span>
+<span class="co"># A memoized recursive factorial function</span>
+factorial = lambda {|x| <span class="kw">return</span> <span class="dv">1</span> <span class="kw">if</span> x==<span class="dv">0</span>; x*factorial[x<span class="dv">-1</span>]; }.memoize
+<span class="co"># Or, using the unary operator syntax</span>
+factorial = +lambda {|x| <span class="kw">return</span> <span class="dv">1</span> <span class="kw">if</span> x==<span class="dv">0</span>; x*factorial[x<span class="dv">-1</span>]; }
+<span class="co">################################</span>
+factorial = lambda {|x| <span class="kw">return</span> <span class="dv">1</span> <span class="kw">if</span> x==<span class="dv">0</span>; x*factorial[x<span class="dv">-1</span>]; }
+cached_factorial = +factorial <span class="co"># Recursive calls aren&#39;t cached!</span></code></pre></div>
+<h4 id="symbols-methods-and-procs">6.8.5 Symbols, Methods, and Procs</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># Increment an array of integers with the Fixnum.succ method</span>
+[<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>].map(&amp;<span class="st">:succ</span>)  <span class="co"># =&gt; [2,3,4]</span>
+<span class="co">################################</span>
+[<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>].map {|n| n.succ }
+<span class="co">################################</span>
+<span class="kw">class</span> <span class="dt">Symbol</span>
+  <span class="kw">def</span> to_proc
+    lambda {|receiver, *args| receiver.send(<span class="dv">self</span>, *args)}
+  <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="co">################################</span>
+<span class="kw">class</span> <span class="dt">Symbol</span>
+  <span class="kw">def</span> to_proc
+    lambda {|receiver, *args| receiver.method(<span class="dv">self</span>)[*args]}
+  <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="co">################################</span>
+<span class="kw">class</span> <span class="dt">Module</span>
+  <span class="co"># Access instance methods with array notation. Returns UnboundMethod,</span>
+  <span class="kw">alias</span> [] instance_method
+<span class="kw">end</span>
+<span class="co">################################</span>
+<span class="dt">String</span>[<span class="st">:reverse</span>].bind(<span class="st">&quot;hello&quot;</span>).call   <span class="co"># =&gt; &quot;olleh&quot;</span>
+<span class="co">################################</span>
+<span class="kw">class</span> <span class="dt">UnboundMethod</span>
+  <span class="co"># Allow [] as an alternative to bind.  </span>
+  <span class="kw">alias</span> [] bind
+<span class="kw">end</span>
+<span class="co">################################</span>
+<span class="dt">String</span>[<span class="st">:reverse</span>][<span class="st">&quot;hello&quot;</span>][]   <span class="co"># =&gt; &quot;olleh&quot;</span>
+<span class="co">################################</span>
+<span class="kw">class</span> <span class="dt">Module</span>
+  <span class="co"># Define a instance method with name sym and body f.</span>
+  <span class="co"># Example: String[:backwards] = lambda { reverse }</span>
+  <span class="kw">def</span> []=(sym, f)
+    <span class="dv">self</span>.instance_eval { define_method(sym, f) }
+  <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="co">################################</span>
+<span class="dt">Enumerable</span>[<span class="st">:average</span>] = lambda <span class="kw">do</span>
+  sum, n = <span class="fl">0.0</span>, <span class="dv">0</span>
+  <span class="dv">self</span>.each {|x| sum += x; n += <span class="dv">1</span> }
+  <span class="kw">if</span> n == <span class="dv">0</span>
+    <span class="dv">nil</span>
+  <span class="kw">else</span>
+    sum/n
+  <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="co">################################</span>
+<span class="co">#</span>
+<span class="co"># Add [] and []= operators to the Symbol class for accessing and setting</span>
+<span class="co"># singleton methods of objects. Read : as &quot;method&quot; and [] as &quot;of&quot;.</span>
+<span class="co"># So :m[o] reads &quot;method m of o&quot;.</span>
+<span class="co">#</span>
+<span class="kw">class</span> <span class="dt">Symbol</span>
+  <span class="co"># Return the Method of obj named by this symbol. This may be a singleton</span>
+  <span class="co"># method of obj (such as a class method) or an instance method defined</span>
+  <span class="co"># by obj.class or inherited from a superclass.</span>
+  <span class="co"># Examples:</span>
+  <span class="co">#   creator = :new[Object]  # Class method Object.new</span>
+  <span class="co">#   doubler = :*[2]         # * method of Fixnum 2</span>
+  <span class="co">#</span>
+  <span class="kw">def</span> [](obj)
+    obj.method(<span class="dv">self</span>)
+  <span class="kw">end</span>
+  
+  <span class="co"># Define a singleton method on object o, using Proc or Method f as its body.</span>
+  <span class="co"># This symbol is used as the name of the method.</span>
+  <span class="co"># Examples:</span>
+  <span class="co">#</span>
+  <span class="co">#  :singleton[o] = lambda { puts &quot;this is a singleton method of o&quot; }</span>
+  <span class="co">#  :class_method[String] = lambda { puts &quot;this is a class method&quot; }</span>
+  <span class="co"># </span>
+  <span class="co"># Note that you can&#39;t create instance methods this way. See Module.[]=</span>
+  <span class="co">#</span>
+  <span class="kw">def</span> []=(o,f)
+    <span class="co"># We can&#39;t use self in the block below, as it is evaluated in the </span>
+    <span class="co"># context of a different object. So we have to assign self to a variable.</span>
+    sym = <span class="dv">self</span>
+    <span class="co"># This is the object we define singleton methods on.</span>
+    eigenclass = (<span class="kw">class</span> &lt;&lt; o; <span class="dv">self</span> <span class="kw">end</span>)
+    <span class="co"># define_method is private, so we have to use instance_eval to execute it.</span>
+    eigenclass.instance_eval { define_method(sym, f) }
+  <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="co">################################</span>
+dashes = :*[<span class="st">&#39;-&#39;</span>]       <span class="co"># Method * of &#39;-&#39;</span>
+puts dashes[<span class="dv">10</span>]        <span class="co"># Prints &quot;----------&quot;</span>
+
+y = (:+[<span class="dv">1</span>]*:*[<span class="dv">2</span>])[x]   <span class="co"># Another way to write y = 2*x + 1</span></code></pre></div>

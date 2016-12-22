@@ -1,0 +1,5 @@
+<h3 id="generating-urls">Generating URLs</h3>
+<p>For generating URLs you should use the <code>url</code> helper method, for instance, in Haml:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="ot">%</span>a<span class="ot">{</span><span class="st">:href =&gt; url(&#39;/foo&#39;)</span><span class="ot">}</span> foo</code></pre></div>
+<p>It takes reverse proxies and Rack routers into account, if present.</p>
+<p>This method is also aliased to <code>to</code> (see below for an example).</p>

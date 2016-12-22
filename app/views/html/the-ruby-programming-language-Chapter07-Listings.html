@@ -1,0 +1,852 @@
+<h1 id="the-ruby-programming-language">The Ruby Programming Language</h1>
+<h2 id="chapter-7">CHAPTER 7</h2>
+<h3 id="classes-and-modules">Classes and Modules</h3>
+<h4 id="creating-the-class">7.1.1 Creating the Class</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">Point</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="instantiating-a-point">7.1.2 Instantiating a Point</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">p = <span class="dt">Point</span>.new
+<span class="co">###########################</span>
+p.class       <span class="co"># =&gt; Point</span>
+p.is_a? <span class="dt">Point</span> <span class="co"># =&gt; true</span></code></pre></div>
+<h4 id="initializing-a-point">7.1.3 Initializing a Point</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">Point</span>
+  <span class="kw">def</span> initialize(x,y)
+    <span class="ot">@x</span>, <span class="ot">@y</span> = x, y
+  <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+p = <span class="dt">Point</span>.new(<span class="dv">0</span>,<span class="dv">0</span>)
+<span class="co">###########################</span>
+<span class="co"># Incorrect code!</span>
+<span class="kw">class</span> <span class="dt">Point</span>
+  <span class="ot">@x</span> = <span class="dv">0</span>   <span class="co"># Create instance variable @x and assign a default. WRONG!</span>
+  <span class="ot">@y</span> = <span class="dv">0</span>   <span class="co"># Create instance variable @y and assign a default. WRONG!</span>
+
+  <span class="kw">def</span> initialize(x,y)
+    <span class="ot">@x</span>, <span class="ot">@y</span> = x, y   <span class="co"># Now initialize previously created @x and @y.</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="defining-a-to_s-method">7.1.4 Defining a to_s Method</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">Point</span>
+  <span class="kw">def</span> initialize(x,y)
+    <span class="ot">@x</span>, <span class="ot">@y</span> = x, y
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> to_s        <span class="co"># Return a String that represents this point</span>
+    <span class="st">&quot;(</span><span class="ot">#@x</span><span class="st">,</span><span class="ot">#@y</span><span class="st">)&quot;</span>   <span class="co"># Just interpolate the instance variables into a string</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+p = new <span class="dt">Point</span>(<span class="dv">1</span>,<span class="dv">2</span>)   <span class="co"># Create a new Point object</span>
+puts p               <span class="co"># Displays &quot;(1,2)&quot;</span></code></pre></div>
+<h4 id="accessors-and-attributes">7.1.5 Accessors and Attributes</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">Point</span>
+  <span class="kw">def</span> initialize(x,y)
+    <span class="ot">@x</span>, <span class="ot">@y</span> = x, y
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> x           <span class="co"># The accessor (or getter) method for @x</span>
+    <span class="ot">@x</span>
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> y           <span class="co"># The accessor method for @y</span>
+    <span class="ot">@y</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+p = <span class="dt">Point</span>.new(<span class="dv">1</span>,<span class="dv">2</span>)
+q = <span class="dt">Point</span>.new(p.x*<span class="dv">2</span>, p.y*<span class="dv">3</span>)
+<span class="co">###########################</span>
+<span class="kw">class</span> <span class="dt">MutablePoint</span>
+  <span class="kw">def</span> initialize(x,y); <span class="ot">@x</span>, <span class="ot">@y</span> = x, y; <span class="kw">end</span>
+
+  <span class="kw">def</span> x; <span class="ot">@x</span>; <span class="kw">end</span>       <span class="co"># The getter method for @x</span>
+  <span class="kw">def</span> y; <span class="ot">@y</span>; <span class="kw">end</span>       <span class="co"># The getter method for @y</span>
+
+  <span class="kw">def</span> x=(value)        <span class="co"># The setter method for @x</span>
+    <span class="ot">@x</span> = value
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> y=(value)        <span class="co"># The setter method for @y</span>
+    <span class="ot">@y</span> = value
+  <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+p = <span class="dt">Point</span>.new(<span class="dv">1</span>,<span class="dv">1</span>)
+p.x = <span class="dv">0</span>
+p.y = <span class="dv">0</span>
+<span class="co">###########################</span>
+<span class="kw">class</span> <span class="dt">Point</span>
+  <span class="ot">attr_accessor</span> <span class="st">:x</span>, <span class="st">:y</span> <span class="co"># Define accessor methods for our instance variables</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">class</span> <span class="dt">Point</span>
+  <span class="ot">attr_reader</span> <span class="st">:x</span>, <span class="st">:y</span>  <span class="co"># Define reader methods for our instance variables</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="ot">attr_reader</span> <span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>
+<span class="co">###########################</span>
+attr <span class="st">:x</span>        <span class="co"># Define a trivial getter method x for @x</span>
+attr <span class="st">:y</span>, <span class="dv">true</span>  <span class="co"># Define getter and setter methods for @y</span></code></pre></div>
+<h4 id="defining-operators">7.1.6 Defining Operators</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">Point</span>
+  <span class="ot">attr_reader</span> <span class="st">:x</span>, <span class="st">:y</span>   <span class="co"># Define accessor methods for our instance variables</span>
+
+  <span class="kw">def</span> initialize(x,y)
+    <span class="ot">@x</span>,<span class="ot">@y</span> = x, y
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> +(other)         <span class="co"># Define + to do vector addition</span>
+    <span class="dt">Point</span>.new(<span class="ot">@x</span> + other.x, <span class="ot">@y</span> + other.y)
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> -@               <span class="co"># Define unary minus to negate both coordinates</span>
+    <span class="dt">Point</span>.new(-<span class="ot">@x</span>, -<span class="ot">@y</span>)
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> *(scalar)        <span class="co"># Define * to perform scalar multiplication</span>
+    <span class="dt">Point</span>.new(<span class="ot">@x</span>*scalar, <span class="ot">@y</span>*scalar)
+  <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="dt">NoMethodError</span>: undefined method <span class="st">&#39;x&#39;</span> <span class="kw">for</span> <span class="dv">3</span><span class="st">:Fixnum</span>
+        from .<span class="ot">/point.rb:37:in &#39;+&#39;</span>
+<span class="ot">###########################</span>
+<span class="ot">def +(other)</span>
+<span class="ot">  raise TypeError, &quot;Point argument expected&quot; unless other.is_a? Point</span>
+<span class="ot">  Point.new(@x + other.x, @y + other.y)</span>
+<span class="ot">end</span>
+<span class="ot">###########################</span>
+<span class="ot">def +(other)</span>
+<span class="ot">  raise TypeError, &quot;Point-like argument expected&quot; unless</span>
+<span class="ot">    other.respond_to? :x and other.respond_to? :y</span>
+<span class="ot">  Point.new(@x + other.x, @y + other.y)</span>
+<span class="ot">end</span>
+<span class="ot">###########################</span>
+<span class="ot">def +(other)         # Assume that other looks like a Point</span>
+<span class="ot">  Point.new(@x + other.x, @y + other.y)</span>
+<span class="ot">rescue               # If anything goes wrong above</span>
+<span class="ot">  raise TypeError,   # Then raise our own exception</span>
+<span class="ot">    &quot;Point addition with an argument that does not quack like a Point!&quot;</span>
+<span class="ot">end</span>
+<span class="ot">###########################</span>
+<span class="ot"># If we try passing a Point to the * method of an Integer, it will call</span>
+<span class="ot"># this method on the Point and then will try to multiply the elements of </span>
+<span class="ot"># the array. Instead of doing type conversion, we switch the order of</span>
+<span class="ot"># the operands, so that we invoke the * method defined above.</span>
+<span class="ot">def coerce(other)</span>
+<span class="ot">  [self, other]</span>
+<span class="ot">end</span></code></pre></div>
+<h4 id="array-and-hash-access-with">7.1.7 Array and Hash Access with [ ]</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># Define [] method to allow a Point to look like an array or</span>
+<span class="co"># a hash with keys :x and :y</span>
+<span class="kw">def</span> [](index)
+  <span class="kw">case</span> index
+  <span class="kw">when</span> <span class="dv">0</span>, -<span class="dv">2</span>: <span class="ot">@x</span>         <span class="co"># Index 0 (or -2) is the X coordinate</span>
+  <span class="kw">when</span> <span class="dv">1</span>, -<span class="dv">1</span>: <span class="ot">@y</span>         <span class="co"># Index 1 (or -1) is the Y coordinate</span>
+  <span class="kw">when</span> <span class="st">:x</span>, <span class="st">&quot;x&quot;</span>: <span class="ot">@x</span>       <span class="co"># Hash keys as symbol or string for X</span>
+  <span class="kw">when</span> <span class="st">:y</span>, <span class="st">&quot;y&quot;</span>: <span class="ot">@y</span>       <span class="co"># Hash keys as symbol or string for Y</span>
+  <span class="kw">else</span> <span class="dv">nil</span>               <span class="co"># Arrays and hashes just return nil on bad indexes</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="enumerating-coordinates">7.1.8 Enumerating Coordinates</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># This iterator passes the X coordinate to the associated block, and then</span>
+<span class="co"># passes the Y coordinate, and then returns. It allows us to enumerate</span>
+<span class="co"># a point as if it were an array with two elements. This each method is</span>
+<span class="co"># required by the Enumerable module.</span>
+<span class="kw">def</span> each
+  <span class="kw">yield</span> <span class="ot">@x</span>
+  <span class="kw">yield</span> <span class="ot">@y</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+p = <span class="dt">Point</span>.new(<span class="dv">1</span>,<span class="dv">2</span>)
+p.each {|x| print x }   <span class="co"># Prints &quot;12&quot;</span>
+<span class="co">###########################</span>
+include <span class="dt">Enumerable</span>
+<span class="co">###########################</span>
+<span class="co"># Is the point P at the origin?</span>
+p.all? {|x| x == <span class="dv">0</span> } <span class="co"># True if the block is true for all elements</span></code></pre></div>
+<h4 id="point-equality">7.1.9 Point Equality</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">def</span> ==(o)               <span class="co"># Is self == o?</span>
+  <span class="kw">if</span> o.is_a? <span class="dt">Point</span>      <span class="co"># If o is a Point object</span>
+    <span class="ot">@x</span>==o.x &amp;&amp; <span class="ot">@y</span>==o.y  <span class="co"># then compare the fields.</span>
+  <span class="kw">elsif</span>                 <span class="co"># If o is not a Point</span>
+    <span class="dv">false</span>               <span class="co"># then, by definition, self != o.</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">def</span> ==(o)                  <span class="co"># Is self == o?</span>
+  <span class="ot">@x</span> == o.x &amp;&amp; <span class="ot">@y</span> == o.y   <span class="co"># Assume o has proper x and y methods</span>
+<span class="kw">rescue</span>                     <span class="co"># If that assumption fails</span>
+  <span class="dv">false</span>                    <span class="co"># Then self != o</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">class</span> <span class="dt">Point</span>
+  <span class="kw">alias</span> eql? ==
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">def</span> eql?(o)             
+  <span class="kw">if</span> o.instance_of? <span class="dt">Point</span>      
+    <span class="ot">@x</span>.eql?(o.x) &amp;&amp; <span class="ot">@y</span>.eql?(o.y)
+  <span class="kw">elsif</span>
+    <span class="dv">false</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">def</span> hash
+  <span class="ot">@x</span>.hash + <span class="ot">@y</span>.hash
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">def</span> hash
+  code = <span class="dv">17</span>
+  code = <span class="dv">37</span>*code + <span class="ot">@x</span>.hash
+  code = <span class="dv">37</span>*code + <span class="ot">@y</span>.hash
+  <span class="co"># Add lines like this for each significant instance variable</span>
+  code  <span class="co"># Return the resulting code</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="ordering-points">7.1.10 Ordering Points</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">include <span class="dt">Comparable</span>   <span class="co"># Mix in methods from the Comparable module.</span>
+
+<span class="co"># Define an ordering for points based on their distance from the origin.</span>
+<span class="co"># This method is required by the Comparable module.</span>
+<span class="kw">def</span> &lt;=&gt;(other)
+  <span class="kw">return</span> <span class="dv">nil</span> <span class="kw">unless</span> other.instance_of? <span class="dt">Point</span>
+  <span class="ot">@x</span>**<span class="dv">2</span> + <span class="ot">@y</span>**<span class="dv">2</span> &lt;=&gt; other.x**<span class="dv">2</span> + other.y**<span class="dv">2</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+p,q = <span class="dt">Point</span>.new(<span class="dv">1</span>,<span class="dv">0</span>), <span class="dt">Point</span>.new(<span class="dv">0</span>,<span class="dv">1</span>)
+p == q        <span class="co"># =&gt; false: p is not equal to q</span>
+p &lt; q         <span class="co"># =&gt; false: p is not less than q</span>
+p &gt; q         <span class="co"># =&gt; false: p is not greater than q</span></code></pre></div>
+<h4 id="a-mutable-point">7.1.11 A Mutable Point</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="ot">attr_accessor</span> <span class="st">:x</span>, <span class="st">:y</span>
+<span class="co">###########################</span>
+<span class="kw">def</span> add!(p)          <span class="co"># Add p to self, return modified self</span>
+  <span class="ot">@x</span> += p.x
+  <span class="ot">@y</span> += p.y
+  <span class="dv">self</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">def</span> add(p)           <span class="co"># A nonmutating version of add!</span>
+  q = <span class="dv">self</span>.dup       <span class="co"># Make a copy of self</span>
+  q.add!(p)          <span class="co"># Invoke the mutating method on the copy</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="quick-and-easy-mutable-classes">7.1.12 Quick and Easy Mutable Classes</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">Struct</span>.new(<span class="st">&quot;Point&quot;</span>, <span class="st">:x</span>, <span class="st">:y</span>)  <span class="co"># Creates new class Struct::Point</span>
+<span class="dt">Point</span> = <span class="dt">Struct</span>.new(<span class="st">:x</span>, <span class="st">:y</span>)   <span class="co"># Creates new class, assigns to Point</span>
+<span class="co">###########################</span>
+C = <span class="dt">Class</span>.new   <span class="co"># A new class with no body, assigned to a constant</span>
+c = C.new       <span class="co"># Create an instance of the class</span>
+c.class.to_s    <span class="co"># =&gt; &quot;C&quot;: constant name becomes class name</span>
+<span class="co">###########################</span>
+p = <span class="dt">Point</span>.new(<span class="dv">1</span>,<span class="dv">2</span>)   <span class="co"># =&gt; #&lt;struct Point x=1, y=2&gt;</span>
+p.x                  <span class="co"># =&gt; 1 </span>
+p.y                  <span class="co"># =&gt; 2</span>
+p.x = <span class="dv">3</span>              <span class="co"># =&gt; 3</span>
+p.x                  <span class="co"># =&gt; 3</span>
+<span class="co">###########################</span>
+p[<span class="st">:x</span>] = <span class="dv">4</span>             <span class="co"># =&gt; 4: same as p.x =</span>
+p[<span class="st">:x</span>]                 <span class="co"># =&gt; 4: same as p.x</span>
+p[<span class="dv">1</span>]                  <span class="co"># =&gt; 2: same as p.y</span>
+p.each {|c| print c}  <span class="co"># prints &quot;42&quot;</span>
+p.each_pair {|n,c| print n,c }   <span class="co"># prints &quot;x4y2&quot;</span>
+<span class="co">###########################</span>
+q = <span class="dt">Point</span>.new(<span class="dv">4</span>,<span class="dv">2</span>)
+q == p        <span class="co"># =&gt; true</span>
+h = {q =&gt; <span class="dv">1</span>}  <span class="co"># Create a hash using q as a key</span>
+h[p]          <span class="co"># =&gt; 1: extract value using p as key</span>
+q.to_s        <span class="co"># =&gt; &quot;#&lt;struct Point x=4, y=2&gt;&quot;</span>
+<span class="co">###########################</span>
+<span class="dt">Point</span> = <span class="dt">Struct</span>.new(<span class="st">:x</span>, <span class="st">:y</span>)   <span class="co"># Create new class, assign to Point</span>
+<span class="kw">class</span> <span class="dt">Point</span>                  <span class="co"># Open Point class for new methods</span>
+  <span class="kw">def</span> add!(other)            <span class="co"># Define an add! method</span>
+    <span class="dv">self</span>.x += other.x
+    <span class="dv">self</span>.y += other.y
+    <span class="dv">self</span>
+  <span class="kw">end</span>
+
+  include <span class="dt">Comparable</span>         <span class="co"># Include a module for the class</span>
+  <span class="kw">def</span> &lt;=&gt;(other)             <span class="co"># Define the &lt;=&gt; operator</span>
+    <span class="kw">return</span> <span class="dv">nil</span> <span class="kw">unless</span> other.instance_of? <span class="dt">Point</span>
+    <span class="dv">self</span>.x**<span class="dv">2</span> + <span class="dv">self</span>.y**<span class="dv">2</span> &lt;=&gt; other.x**<span class="dv">2</span> + other.y**<span class="dv">2</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="dt">Point</span> = <span class="dt">Struct</span>.new(<span class="st">:x</span>, <span class="st">:y</span>)  <span class="co"># Define mutable class</span>
+<span class="kw">class</span> <span class="dt">Point</span>                 <span class="co"># Open the class</span>
+  <span class="kw">undef</span> x=,y=,[]=           <span class="co"># Undefine mutator methods</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="a-class-method">7.1.13 A Class Method</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">total = <span class="dt">Point</span>.sum(p1, p2, p3)  <span class="co"># p1, p2 and p3 are Point objects</span>
+<span class="co">###########################</span>
+<span class="kw">class</span> <span class="dt">Point</span>
+  <span class="ot">attr_reader</span> <span class="st">:x</span>, <span class="st">:y</span>     <span class="co"># Define accessor methods for our instance variables</span>
+
+  <span class="kw">def</span> <span class="dt">Point</span>.sum(*points) <span class="co"># Return the sum of an arbitrary number of points</span>
+    x = y = <span class="dv">0</span>
+    points.each {|p| x += p.x; y += p.y }
+    <span class="dt">Point</span>.new(x,y)
+  <span class="kw">end</span>
+
+  <span class="co"># ...the rest of class omitted here...</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">def</span> <span class="dv">self</span>.sum(*points)  <span class="co"># Return the sum of an arbitrary number of points</span>
+  x = y = <span class="dv">0</span>
+  points.each {|p| x += p.x; y += p.y }
+  <span class="dt">Point</span>.new(x,y)
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="co"># Open up the Point object so we can add methods to it</span>
+<span class="kw">class</span> &lt;&lt; <span class="dt">Point</span>      <span class="co"># Syntax for adding methods to a single object</span>
+  <span class="kw">def</span> sum(*points)  <span class="co"># This is the class method Point.sum</span>
+    x = y = <span class="dv">0</span>
+    points.each {|p| x += p.x; y += p.y }
+    <span class="dt">Point</span>.new(x,y)
+  <span class="kw">end</span>
+
+  <span class="co"># Other class methods can be defined here</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">class</span> <span class="dt">Point</span>
+  <span class="co"># Instance methods go here</span>
+
+  <span class="kw">class</span> &lt;&lt; <span class="dv">self</span>
+    <span class="co"># Class methods go here</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="constants">7.1.14 Constants</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">Point</span>
+  <span class="kw">def</span> initialize(x,y)  <span class="co"># Initialize method</span>
+    <span class="ot">@x</span>,<span class="ot">@y</span> = x, y 
+  <span class="kw">end</span>
+
+  <span class="dt">ORIGIN</span> = <span class="dt">Point</span>.new(<span class="dv">0</span>,<span class="dv">0</span>)
+  <span class="dt">UNIT_X</span> = <span class="dt">Point</span>.new(<span class="dv">1</span>,<span class="dv">0</span>)
+  <span class="dt">UNIT_Y</span> = <span class="dt">Point</span>.new(<span class="dv">0</span>,<span class="dv">1</span>)
+
+  <span class="co"># Rest of class definition goes here</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="dt">Point</span>::<span class="dt">UNIT_X</span> + <span class="dt">Point</span>::<span class="dt">UNIT_Y</span>   <span class="co"># =&gt; (1,1)</span>
+<span class="co">###########################</span>
+<span class="dt">Point</span>::<span class="dt">NEGATIVE_UNIT_X</span> = <span class="dt">Point</span>.new(-<span class="dv">1</span>,<span class="dv">0</span>)</code></pre></div>
+<h4 id="class-variables">7.1.15 Class Variables</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">Point</span>
+  <span class="co"># Initialize our class variables in the class definition itself</span>
+  <span class="ot">@@n</span> = <span class="dv">0</span>              <span class="co"># How many points have been created</span>
+  <span class="ot">@@totalX</span> = <span class="dv">0</span>         <span class="co"># The sum of all X coordinates</span>
+  <span class="ot">@@totalY</span> = <span class="dv">0</span>         <span class="co"># The sum of all Y coordinates</span>
+
+  <span class="kw">def</span> initialize(x,y)  <span class="co"># Initialize method</span>
+    <span class="ot">@x</span>,<span class="ot">@y</span> = x, y       <span class="co"># Sets initial values for instance variables</span>
+
+    <span class="co"># Use the class variables in this instance method to collect data</span>
+    <span class="ot">@@n</span> += <span class="dv">1</span>           <span class="co"># Keep track of how many Points have been created</span>
+    <span class="ot">@@totalX</span> += x      <span class="co"># Add these coordinates to the totals</span>
+    <span class="ot">@@totalY</span> += y
+  <span class="kw">end</span>
+
+  <span class="co"># A class method to report the data we collected</span>
+  <span class="kw">def</span> <span class="dv">self</span>.report
+    <span class="co"># Here we use the class variables in a class method</span>
+    puts <span class="st">&quot;Number of points created: </span><span class="ot">#@@n</span><span class="st">&quot;</span>
+    puts <span class="st">&quot;Average X coordinate: </span><span class="ot">#{@@totalX</span>.to_f/<span class="ot">@@n}</span><span class="st">&quot;</span>
+    puts <span class="st">&quot;Average Y coordinate: </span><span class="ot">#{@@totalY</span>.to_f/<span class="ot">@@n}</span><span class="st">&quot;</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="class-instance-variables">7.1.16 Class Instance Variables</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">Point</span>
+  <span class="co"># Initialize our class instance variables in the class definition itself</span>
+  <span class="ot">@n</span> = <span class="dv">0</span>              <span class="co"># How many points have been created</span>
+  <span class="ot">@totalX</span> = <span class="dv">0</span>         <span class="co"># The sum of all X coordinates</span>
+  <span class="ot">@totalY</span> = <span class="dv">0</span>         <span class="co"># The sum of all Y coordinates</span>
+
+  <span class="kw">def</span> initialize(x,y) <span class="co"># Initialize method </span>
+    <span class="ot">@x</span>,<span class="ot">@y</span> = x, y      <span class="co"># Sets initial values for instance variables</span>
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> <span class="dv">self</span>.new(x,y)   <span class="co"># Class method to create new Point objects</span>
+    <span class="co"># Use the class instance variables in this class method to collect data</span>
+    <span class="ot">@n</span> += <span class="dv">1</span>           <span class="co"># Keep track of how many Points have been created</span>
+    <span class="ot">@totalX</span> += x      <span class="co"># Add these coordinates to the totals</span>
+    <span class="ot">@totalY</span> += y
+
+    <span class="dv">super</span>             <span class="co"># Invoke the real definition of new to create a Point</span>
+                      <span class="co"># More about super later in the chapter</span>
+  <span class="kw">end</span>
+
+  <span class="co"># A class method to report the data we collected</span>
+  <span class="kw">def</span> <span class="dv">self</span>.report
+    <span class="co"># Here we use the class instance variables in a class method</span>
+    puts <span class="st">&quot;Number of points created: </span><span class="ot">#@n</span><span class="st">&quot;</span>
+    puts <span class="st">&quot;Average X coordinate: </span><span class="ot">#{@totalX</span>.to_f/<span class="ot">@n}</span><span class="st">&quot;</span>
+    puts <span class="st">&quot;Average Y coordinate: </span><span class="ot">#{@totalY</span>.to_f/<span class="ot">@n}</span><span class="st">&quot;</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">class</span> &lt;&lt; <span class="dv">self</span>
+  <span class="ot">attr_accessor</span> <span class="st">:n</span>, <span class="st">:totalX</span>, <span class="st">:totalY</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="method-visibility-public-protected-private">7.2 Method Visibility: Public, Protected, Private</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">Point</span>
+  <span class="co"># public methods go here</span>
+
+  <span class="co"># The following methods are protected</span>
+  <span class="kw">protected</span>
+
+  <span class="co"># protected methods go here</span>
+
+  <span class="co"># The following methods are private</span>
+  <span class="kw">private</span>
+
+  <span class="co"># private methods go here</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">class</span> <span class="dt">Widget</span>
+  <span class="kw">def</span> x                       <span class="co"># Accessor method for @x</span>
+    <span class="ot">@x</span>
+  <span class="kw">end</span>
+  <span class="kw">protected</span> <span class="st">:x</span>                <span class="co"># Make it protected</span>
+
+  <span class="kw">def</span> utility_method          <span class="co"># Define a method</span>
+    <span class="dv">nil</span>
+  <span class="kw">end</span>
+  <span class="kw">private</span> <span class="st">:utility_method</span>     <span class="co"># And make it private</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">private_class_method</span> <span class="st">:new</span>
+<span class="co">###########################</span>
+w = <span class="dt">Widget</span>.new                      <span class="co"># Create a Widget</span>
+w.send <span class="st">:utility_method</span>              <span class="co"># Invoke private method!</span>
+w.instance_eval { utility_method }  <span class="co"># Another way to invoke it</span>
+w.instance_eval { <span class="ot">@x</span> }              <span class="co"># Read instance variable of w</span></code></pre></div>
+<h4 id="subclassing-and-inheritance">7.3 Subclassing and Inheritance</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">Point3D</span> &lt; <span class="dt">Point</span>    <span class="co"># Define class Point3D as a subclass of Point</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">class</span> <span class="dt">Point3D</span> &lt; <span class="dt">Struct</span>.new(<span class="st">&quot;Point3D&quot;</span>, <span class="st">:x</span>, <span class="st">:y</span>, <span class="st">:z</span>)
+  <span class="co"># Superclass struct gives us accessor methods, ==, to_s, etc.</span>
+  <span class="co"># Add point-specific methods here</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="inheriting-methods">7.3.1 Inheriting Methods</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">p2 = <span class="dt">Point</span>.new(<span class="dv">1</span>,<span class="dv">2</span>)
+p3 = <span class="dt">Point3D</span>.new(<span class="dv">1</span>,<span class="dv">2</span>)
+print p2.to_s, p2.class   <span class="co"># prints &quot;(1,2)Point&quot;</span>
+print p3.to_s, p3.class   <span class="co"># prints &quot;(1,2)Point3D&quot;</span></code></pre></div>
+<h4 id="overriding-methods">7.3.2 Overriding Methods</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">o = <span class="dt">Object</span>.new
+puts o.to_s      <span class="co"># Prints something like &quot;#&lt;Object:0xb7f7fce4&gt;&quot;</span>
+<span class="co">###########################</span>
+<span class="co"># Greet the World</span>
+<span class="kw">class</span> <span class="dt">WorldGreeter</span>
+  <span class="kw">def</span> greet                      <span class="co"># Display a greeting</span>
+    puts <span class="st">&quot;</span><span class="ot">#{</span>greeting<span class="ot">}</span><span class="st"> </span><span class="ot">#{</span>who<span class="ot">}</span><span class="st">&quot;</span>
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> greeting                   <span class="co"># What greeting to use</span>
+    <span class="st">&quot;Hello&quot;</span>
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> who                        <span class="co"># Who to greet</span>
+    <span class="st">&quot;World&quot;</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+
+<span class="co"># Greet the world in Spanish</span>
+<span class="kw">class</span> <span class="dt">SpanishWorldGreeter</span> &lt; <span class="dt">WorldGreeter</span>
+  <span class="kw">def</span> greeting                   <span class="co"># Override the greeting</span>
+    <span class="st">&quot;Hola&quot;</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+
+<span class="co"># We call a method defined in WorldGreeter, which calls the overridden</span>
+<span class="co"># version of greeting in SpanishWorldGreeter, and prints &quot;Hola World&quot;</span>
+<span class="dt">SpanishWorldGreeter</span>.new.greet
+<span class="co">###########################</span>
+<span class="co"># This class is abstract; it doesn&#39;t define greeting or who</span>
+<span class="co"># No special syntax is required: any class that invokes methods that are</span>
+<span class="co"># intended for a subclass to implement is abstract.</span>
+<span class="kw">class</span> <span class="dt">AbstractGreeter</span>
+  <span class="kw">def</span> greet
+    puts <span class="st">&quot;</span><span class="ot">#{</span>greeting<span class="ot">}</span><span class="st"> </span><span class="ot">#{</span>who<span class="ot">}</span><span class="st">&quot;</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+
+<span class="co"># A concrete subclass</span>
+<span class="kw">class</span> <span class="dt">WorldGreeter</span> &lt; <span class="dt">AbstractGreeter</span>
+  <span class="kw">def</span> greeting; <span class="st">&quot;Hello&quot;</span>; <span class="kw">end</span>
+  <span class="kw">def</span> who; <span class="st">&quot;World&quot;</span>; <span class="kw">end</span>
+<span class="kw">end</span>
+
+<span class="dt">WorldGreeter</span>.new.greet  <span class="co"># Displays &quot;Hello World&quot;</span></code></pre></div>
+<h4 id="augmenting-behavior-by-chaining">7.3.3 Augmenting Behavior by Chaining</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">Point3D</span> &lt; <span class="dt">Point</span>
+  <span class="kw">def</span> initialize(x,y,z)
+    <span class="co"># Pass our first two arguments along to the superclass initialize method</span>
+    <span class="dv">super</span>(x,y)
+    <span class="co"># And deal with the third argument ourself</span>
+    <span class="ot">@z</span> = z;
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="inheritance-and-instance-variables">7.3.5 Inheritance and Instance Variables</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">Point3D</span> &lt; <span class="dt">Point</span>
+  <span class="kw">def</span> initialize(x,y,z)
+    <span class="dv">super</span>(x,y)
+    <span class="ot">@z</span> = z;
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> to_s
+    <span class="st">&quot;(</span><span class="ot">#@x</span><span class="st">, </span><span class="ot">#@y</span><span class="st">, </span><span class="ot">#@z</span><span class="st">)&quot;</span>  <span class="co"># Variables @x and @y inherited?</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="dt">Point3D</span>.new(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>).to_s  <span class="co"># =&gt; &quot;(1, 2, 3)&quot;</span></code></pre></div>
+<h4 id="inheritance-and-class-variables">7.3.6 Inheritance and Class Variables</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> A
+  <span class="ot">@@value</span> = <span class="dv">1</span>                   <span class="co"># A class variable</span>
+  <span class="kw">def</span> A.value; <span class="ot">@@value</span>; <span class="kw">end</span>     <span class="co"># An accessor method for it</span>
+<span class="kw">end</span>
+print A.value                   <span class="co"># Display value of A&#39;s class variable</span>
+<span class="kw">class</span> B &lt; A; <span class="ot">@@value</span> = <span class="dv">2</span>; <span class="kw">end</span>   <span class="co"># Subclass alters shared class variable</span>
+print A.value                   <span class="co"># Superclass sees altered value</span>
+<span class="kw">class</span> C &lt; A; <span class="ot">@@value</span> = <span class="dv">3</span>; <span class="kw">end</span>   <span class="co"># Another alters shared variable again</span>
+print B.value                   <span class="co"># 1st subclass sees value from 2nd subclass</span></code></pre></div>
+<h4 id="inheritance-of-constants">7.3.7 Inheritance of Constants</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">ORIGIN</span> = <span class="dt">Point3D</span>.new(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>)</code></pre></div>
+<h4 id="new-allocate-and-initialize">7.4.1 new, allocate, and initialize</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">def</span> new(*args)
+  o = <span class="dv">self</span>.allocate   <span class="co"># Create a new object of this class</span>
+  o.initialize(*args) <span class="co"># Call the object&#39;s initialize method with our args</span>
+  o                   <span class="co"># Return new object; ignore return value of initialize</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="factory-methods">7.4.2 Factory Methods</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">Point</span>
+  <span class="co"># Initialize a Point with two or three coordinates</span>
+  <span class="kw">def</span> initialize(x, y, z=<span class="dv">nil</span>)
+    <span class="ot">@x</span>,<span class="ot">@y</span>,<span class="ot">@z</span> = x, y, z
+  <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">class</span> <span class="dt">Point</span>
+  <span class="co"># Define an initialize method as usual...</span>
+  <span class="kw">def</span> initialize(x,y)  <span class="co"># Expects Cartesian coordinates</span>
+    <span class="ot">@x</span>,<span class="ot">@y</span> = x,y
+  <span class="kw">end</span>
+
+  <span class="co"># But make the factory method new private</span>
+  <span class="kw">private_class_method</span> <span class="st">:new</span>
+
+  <span class="kw">def</span> <span class="dt">Point</span>.cartesian(x,y)  <span class="co"># Factory method for Cartesian coordinates</span>
+    new(x,y)  <span class="co"># We can still call new from other class methods</span>
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> <span class="dt">Point</span>.polar(r, theta) <span class="co"># Factory method for polar coordinates</span>
+    new(r*<span class="dt">Math</span>.cos(theta), r*<span class="dt">Math</span>.sin(theta))
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="dup-clone-and-initialize_copy">7.4.3 dup, clone, and initialize_copy</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">Point</span>                 <span class="co"># A point in n-space</span>
+  <span class="kw">def</span> initialize(*coords)   <span class="co"># Accept an arbitrary # of coordinates</span>
+    <span class="ot">@coords</span> = coords        <span class="co"># Store the coordinates in an array</span>
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> initialize_copy(orig) <span class="co"># If someone copies this Point object</span>
+    <span class="ot">@coords</span> = <span class="ot">@coords</span>.dup   <span class="co"># Make a copy of the coordinates array, too</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">class</span> <span class="dt">Season</span>
+  <span class="dt">NAMES</span> =<span class="ot"> %w{</span><span class="st"> Spring Summer Autumn Winter </span><span class="ot">}</span>  <span class="co"># Array of season names</span>
+  <span class="dt">INSTANCES</span> = []                             <span class="co"># Array of Season objects</span>
+
+  <span class="kw">def</span> initialize(n)  <span class="co"># The state of a season is just its </span>
+    <span class="ot">@n</span> = n           <span class="co"># index in the NAMES and INSTANCES arrays</span>
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> to_s           <span class="co"># Return the name of a season </span>
+    <span class="dt">NAMES</span>[<span class="ot">@n</span>]
+  <span class="kw">end</span>
+
+  <span class="co"># This code creates instances of this class to represent the seasons </span>
+  <span class="co"># and defines constants to refer to those instances.</span>
+  <span class="co"># Note that we must do this after initialize is defined.</span>
+  <span class="dt">NAMES</span>.each_with_index <span class="kw">do</span> |name,index|
+    instance = new(index)         <span class="co"># Create a new instance</span>
+    <span class="dt">INSTANCES</span>[index] = instance   <span class="co"># Save it in an array of instances</span>
+    const_set name, instance      <span class="co"># Define a constant to refer to it</span>
+  <span class="kw">end</span>
+
+  <span class="co"># Now that we have created all the instances we&#39;ll ever need, we must</span>
+  <span class="co"># prevent any other instances from being created</span>
+  <span class="kw">private_class_method</span> <span class="st">:new</span>,<span class="st">:allocate</span>  <span class="co"># Make the factory methods private</span>
+  <span class="kw">private</span> <span class="st">:dup</span>, <span class="st">:clone</span>                 <span class="co"># Make copying methods private</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="marshal_dump-and-marshal_load">7.4.4 marshal_dump and marshal_load</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">Point</span>                  <span class="co"># A point in n-space</span>
+  <span class="kw">def</span> initialize(*coords)    <span class="co"># Accept an arbitrary # of coordinates</span>
+    <span class="ot">@coords</span> = coords         <span class="co"># Store the coordinates in an array</span>
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> marshal_dump           <span class="co"># Pack coords into a string and marshal that</span>
+    <span class="ot">@coords</span>.pack(<span class="st">&quot;w*&quot;</span>)
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> marshal_load(s)        <span class="co"># Unpack coords from unmarshaled string</span>
+    <span class="ot">@coords</span> = s.unpack(<span class="st">&quot;w*&quot;</span>) <span class="co"># and use them to initialize the object</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">class</span> <span class="dt">Season</span>
+  <span class="co"># We want to allow Season objects to be marshaled, but we don&#39;t</span>
+  <span class="co"># want new instances to be created when they are unmarshaled.</span>
+  <span class="kw">def</span> _dump(limit)         <span class="co"># Custom marshaling method</span>
+    <span class="ot">@n</span>.to_s                <span class="co"># Return index as a string</span>
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> <span class="dv">self</span>._load(s)        <span class="co"># Custom unmarshaling method</span>
+    <span class="dt">INSTANCES</span>[<span class="dt">Integer</span>(s)]  <span class="co"># Return an existing instance</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="the-singleton-pattern">7.4.5 The Singleton Pattern</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">require <span class="st">&#39;singleton&#39;</span>           <span class="co"># Singleton module is not built-in</span>
+
+<span class="kw">class</span> <span class="dt">PointStats</span>              <span class="co"># Define a class</span>
+  include <span class="dt">Singleton</span>           <span class="co"># Make it a singleton</span>
+
+  <span class="kw">def</span> initialize              <span class="co"># A normal initialization method</span>
+    <span class="ot">@n</span>, <span class="ot">@totalX</span>, <span class="ot">@totalY</span> = <span class="dv">0</span>, <span class="fl">0.0</span>, <span class="fl">0.0</span>
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> record(point)           <span class="co"># Record a new point</span>
+    <span class="ot">@n</span> += <span class="dv">1</span>
+    <span class="ot">@totalX</span> += point.x
+    <span class="ot">@totalY</span> += point.y
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> report                  <span class="co"># Report point statistics</span>
+    puts <span class="st">&quot;Number of points created: </span><span class="ot">#@n</span><span class="st">&quot;</span>
+    puts <span class="st">&quot;Average X coordinate: </span><span class="ot">#{@totalX</span>/<span class="ot">@n}</span><span class="st">&quot;</span>
+    puts <span class="st">&quot;Average Y coordinate: </span><span class="ot">#{@totalY</span>/<span class="ot">@n}</span><span class="st">&quot;</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">def</span> initialize(x,y)
+  <span class="ot">@x</span>,<span class="ot">@y</span> = x,y
+  <span class="dt">PointStats</span>.instance.record(<span class="dv">self</span>)
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="dt">PointStats</span>.instance.report</code></pre></div>
+<h4 id="modules-as-namespaces">7.5.1 Modules as Namespaces</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">def</span> base64_encode
+<span class="kw">end</span>
+
+<span class="kw">def</span> base64_decode
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">module</span> <span class="dt">Base64</span>
+  <span class="kw">def</span> <span class="dv">self</span>.encode
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> <span class="dv">self</span>.decode
+  <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">module</span> <span class="dt">Base64</span>
+  <span class="kw">def</span> <span class="dt">Base64</span>.encode
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> <span class="dt">Base64</span>.decode
+  <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="co"># This is how we invoke the methods of the Base64 module</span>
+text = <span class="dt">Base64</span>.encode(data)
+data = <span class="dt">Base64</span>.decode(text)
+<span class="co">###########################</span>
+<span class="kw">module</span> <span class="dt">Base64</span>
+  <span class="dt">DIGITS</span> = <span class="st">&#39;ABCDEFGHIJKLMNOPQRSTUVWXYZ&#39;</span> \
+           <span class="st">&#39;abcdefghijklmnopqrstuvwxyz&#39;</span> \
+           <span class="st">&#39;0123456789+/&#39;</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="nested-namespaces">7.5.1.1 Nested namespaces</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">module</span> <span class="dt">Base64</span>
+  <span class="dt">DIGITS</span> = <span class="st">&#39;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/&#39;</span>
+
+  <span class="kw">class</span> <span class="dt">Encoder</span>
+    <span class="kw">def</span> encode
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+
+  <span class="kw">class</span> <span class="dt">Decoder</span>
+    <span class="kw">def</span> decode
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+
+  <span class="co"># A utility function for use by both classes</span>
+  <span class="kw">def</span> <span class="dt">Base64</span>.helper
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="modules-as-mixins">7.5.2 Modules As Mixins</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">Point</span>
+  include <span class="dt">Comparable</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">class</span> <span class="dt">Point</span>
+  include(<span class="dt">Comparable</span>)
+<span class="kw">end</span>
+<span class="co">###########################</span>
+include <span class="dt">Enumerable</span>, <span class="dt">Comparable</span>
+<span class="co">###########################</span>
+<span class="st">&quot;text&quot;</span>.is_a? <span class="dt">Comparable</span>         <span class="co"># =&gt; true</span>
+<span class="dt">Enumerable</span> === <span class="st">&quot;text&quot;</span>           <span class="co"># =&gt; true in Ruby 1.8, false in 1.9</span>
+<span class="co">###########################</span>
+<span class="st">&quot;text&quot;</span>.instance_of? <span class="dt">Comparable</span>  <span class="co"># =&gt; false</span>
+<span class="co">###########################</span>
+<span class="kw">module</span> <span class="dt">Iterable</span>       <span class="co"># Classes that define next can include this module</span>
+  include <span class="dt">Enumerable</span>          <span class="co"># Define iterators on top of each</span>
+  <span class="kw">def</span> each                    <span class="co"># And define each on top of next</span>
+    loop { <span class="kw">yield</span> <span class="dv">self</span>.next }
+  <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+countdown = <span class="dt">Object</span>.new       <span class="co"># A plain old object</span>
+<span class="kw">def</span> countdown.each           <span class="co"># The each iterator as a singleton method</span>
+  <span class="kw">yield</span> <span class="dv">3</span>
+  <span class="kw">yield</span> <span class="dv">2</span>
+  <span class="kw">yield</span> <span class="dv">1</span>
+<span class="kw">end</span>
+countdown.extend(<span class="dt">Enumerable</span>) <span class="co"># Now the object has all Enumerable methods  </span>
+print countdown.sort         <span class="co"># Prints &quot;[1, 2, 3]&quot;</span></code></pre></div>
+<h4 id="includable-namespace-modules">7.5.3 Includable Namespace Modules</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">Math</span>.sin(<span class="dv">0</span>)    <span class="co"># =&gt; 0.0: Math is a namespace </span>
+include <span class="st">&#39;Math&#39;</span> <span class="co"># The Math namespace can be included</span>
+sin(<span class="dv">0</span>)         <span class="co"># =&gt; 0.0: Now we have easy access to the functions</span></code></pre></div>
+<h4 id="the-load-path">7.6.1 The Load Path</h4>
+<pre class="rdoc"><code>/usr/lib/site_ruby/1.8
+/usr/lib/site_ruby/1.8/i386-linux
+/usr/lib/site_ruby
+/usr/lib/ruby/1.8
+/usr/lib/ruby/1.8/i386-linux
+.
+###########################
+/usr/local/lib/ruby/gems/1.9/gems/rake-0.7.3/lib
+/usr/local/lib/ruby/gems/1.9/gems/rake-0.7.3/bin
+/usr/local/lib/ruby/site_ruby/1.9
+/usr/local/lib/ruby/site_ruby/1.9/i686-linux
+/usr/local/lib/ruby/site_ruby
+/usr/local/lib/ruby/vendor_ruby/1.9
+/usr/local/lib/ruby/vendor_ruby/1.9/i686-linux
+/usr/local/lib/ruby/vendor_ruby
+/usr/local/lib/ruby/1.9
+/usr/local/lib/ruby/1.9/i686-linux
+.
+###########################</code></pre>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># Remove the current directory from the load path</span>
+<span class="dt">$:</span>.pop <span class="kw">if</span> <span class="dt">$:</span>.last == <span class="st">&#39;.&#39;</span>  
+
+<span class="co"># Add the installation directory for the current program to </span>
+<span class="co"># the beginning of the load path</span>
+<span class="dt">$LOAD_PATH</span>.unshift <span class="dt">File</span>.expand_path(<span class="dt">$PROGRAM_NAME</span>)
+
+<span class="co"># Add the value of an environment variable to the end of the path</span>
+<span class="dt">$LOAD_PATH</span> &lt;&lt; <span class="dt">ENV</span>[<span class="st">&#39;MY_LIBRARY_DIRECTORY&#39;</span>]</code></pre></div>
+<h4 id="wrapped-loads">7.6.2.1 Wrapped loads</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">$Util</span> = <span class="dt">Util</span>   <span class="co"># Store a reference to this module in a global variable</span>
+<span class="co">###########################</span>
+<span class="kw">if</span> <span class="dt">Module</span>.nesting.size &gt; <span class="dv">0</span>       <span class="co"># If we&#39;re loaded into a wrapper module</span>
+  <span class="dt">$wrapper</span> = <span class="dt">Module</span>.nesting[<span class="dv">0</span>]   <span class="co"># Pass the module back to the loading code</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="autoloading-modules">7.6.3 Autoloading Modules</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># Require &#39;socket&#39; if and when the TCPSocket is first used</span>
+autoload <span class="st">:TCPSocket</span>, <span class="st">&quot;socket&quot;</span></code></pre></div>
+<h4 id="singleton-methods-and-the-eigenclass">7.7 Singleton Methods and the Eigenclass</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">def</span> <span class="dt">Point</span>.sum
+  <span class="co"># Method body goes here</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">class</span> &lt;&lt; <span class="dt">Point</span>
+  <span class="kw">def</span> class_method1      <span class="co"># This is an instance method of the eigenclass.</span>
+  <span class="kw">end</span>                    <span class="co"># It is also a class method of Point.</span>
+
+  <span class="kw">def</span> class_method2
+  <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">class</span> <span class="dt">Point</span>
+  <span class="co"># instance methods go here</span>
+
+  <span class="kw">class</span> &lt;&lt; <span class="dv">self</span>
+    <span class="co"># class methods go here as instance methods of the eigenclass</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">class</span> <span class="dt">Point</span>            <span class="co"># Create or open the class Point</span>
+<span class="kw">class</span> <span class="dt">Point3D</span> &lt; <span class="dt">Point</span>  <span class="co"># Create a subclass of Point</span>
+<span class="kw">class</span> &lt;&lt; <span class="dt">Point</span>         <span class="co"># Open the eigenclass of the object Point</span>
+<span class="co">###########################</span>
+eigenclass = <span class="kw">class</span> &lt;&lt; o; <span class="dv">self</span>; <span class="kw">end</span>
+<span class="co">###########################</span>
+<span class="kw">class</span> <span class="dt">Object</span>
+  <span class="kw">def</span> eigenclass
+    <span class="kw">class</span> &lt;&lt; <span class="dv">self</span>; <span class="dv">self</span>; <span class="kw">end</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<h4 id="method-lookup">7.8 Method Lookup</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">message = <span class="st">&quot;hello&quot;</span>
+message.world
+<span class="co">###########################</span>
+<span class="dt">NoMethodError</span>: undefined method <span class="st">&#39;world&#39;</span> <span class="kw">for</span> <span class="st">&quot;hello&quot;:String</span></code></pre></div>
+<h4 id="class-method-lookup">7.8.1 Class Method Lookup</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> C
+<span class="kw">end</span>
+<span class="co">###########################</span>
+c = C.new
+<span class="co">###########################</span>
+<span class="kw">def</span> <span class="dt">Integer</span>.parse(text)
+  text.to_i
+<span class="kw">end</span>
+<span class="co">###########################</span>
+n = <span class="dt">Fixnum</span>.parse(<span class="st">&quot;1&quot;</span>)</code></pre></div>
+<h4 id="constant-lookup">7.9 Constant Lookup</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">module</span> <span class="dt">Kernel</span>
+  <span class="co"># Constants defined in Kernel</span>
+  A = B = C = D = E = F = <span class="st">&quot;defined in kernel&quot;</span>
+<span class="kw">end</span>
+
+<span class="co"># Top-level or &quot;global&quot; constants defined in Object</span>
+A = B = C = D = E = <span class="st">&quot;defined at toplevel&quot;</span>
+
+<span class="kw">class</span> <span class="dt">Super</span>
+  <span class="co"># Constants defined in a superclass</span>
+  A = B = C = D = <span class="st">&quot;defined in superclass&quot;</span>
+<span class="kw">end</span>
+
+<span class="kw">module</span> <span class="dt">Included</span>
+  <span class="co"># Constants defined in an included module</span>
+  A = B = C = <span class="st">&quot;defined in included module&quot;</span>
+<span class="kw">end</span>
+
+<span class="kw">module</span> <span class="dt">Enclosing</span>
+  <span class="co"># Constants defined in an enclosing module</span>
+  A = B = <span class="st">&quot;defined in enclosing module&quot;</span>
+
+  <span class="kw">class</span> <span class="dt">Local</span> &lt; <span class="dt">Super</span>
+    include <span class="dt">Included</span>
+
+    <span class="co"># Locally defined constant</span>
+    A = <span class="st">&quot;defined locally&quot;</span>
+
+    <span class="co"># The list of modules searched, in the order searched</span>
+    <span class="co"># [Enclosing::Local, Enclosing, Included, Super, Object, Kernel]</span>
+    search = (<span class="dt">Module</span>.nesting + <span class="dv">self</span>.ancestors + <span class="dt">Object</span>.ancestors).uniq
+
+    puts A  <span class="co"># Prints &quot;defined locally&quot;</span>
+    puts B  <span class="co"># Prints &quot;defined in enclosing module&quot;</span>
+    puts C  <span class="co"># Prints &quot;defined in included module&quot;</span>
+    puts D  <span class="co"># Prints &quot;defined in superclass&quot;</span>
+    puts E  <span class="co"># Prints &quot;defined at toplevel&quot;</span>
+    puts F  <span class="co"># Prints &quot;defined in kernel&quot;</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>

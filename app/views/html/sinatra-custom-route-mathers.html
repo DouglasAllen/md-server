@@ -1,0 +1,31 @@
+<h2 id="custom-route-matchers">Custom Route Matchers</h2>
+<p>As shown above, Sinatra ships with built-in support for using String patterns and regular expressions as route matches. However, it does not stop there. You can easily define your own matchers:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">AllButPattern</span>
+  <span class="dt">Match</span> = <span class="dt">Struct</span>.new(<span class="st">:captures</span>)
+
+  <span class="kw">def</span> initialize(except)
+    <span class="ot">@except</span>   = except
+    <span class="ot">@captures</span> = <span class="dt">Match</span>.new([])
+  <span class="kw">end</span>
+
+  <span class="kw">def</span> match(str)
+    <span class="ot">@captures</span> <span class="kw">unless</span> <span class="ot">@except</span> === str
+  <span class="kw">end</span>
+<span class="kw">end</span>
+
+<span class="kw">def</span> all_but(pattern)
+  <span class="dt">AllButPattern</span>.new(pattern)
+<span class="kw">end</span>
+
+get all_but(<span class="st">&quot;/index&quot;</span>) <span class="kw">do</span>
+  <span class="co"># ...</span>
+<span class="kw">end</span></code></pre></div>
+<p>Note that the above example might be over-engineered, as it can also be expressed as:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="ot">//</span> <span class="kw">do</span>
+  pass <span class="kw">if</span> request.path_info == <span class="st">&quot;/index&quot;</span>
+  <span class="co"># ...</span>
+<span class="kw">end</span></code></pre></div>
+<p>Or, using negative look ahead:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="ot">%r{^(?!/index$)}</span> <span class="kw">do</span>
+  <span class="co"># ...</span>
+<span class="kw">end</span></code></pre></div>

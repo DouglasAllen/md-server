@@ -1,0 +1,27 @@
+<h1 id="shotgun">Shotgun</h1>
+<p>This is an automatic reloading version of the rackup command that's shipped with Rack. It can be used as an alternative to the complex reloading logic provided by web frameworks or in environments that don't support application reloading.</p>
+<p>The shotgun command starts one of Rack's supported servers (e.g., mongrel, thin, webrick) and listens for requests but does not load any part of the actual application. Each time a request is received, it forks, loads the application in the child process, processes the request, and exits the child process. The result is clean, application-wide reloading of all source files and templates on each request.</p>
+<h2 id="usage">Usage</h2>
+<p>Installation:</p>
+<pre class="shell"><code>  gem install shotgun</code></pre>
+<p>Starting a server with a rackup file:</p>
+<pre class="shell"><code>  shotgun config.ru</code></pre>
+<p>Using Thin and starting on port 6000 instead of 9393 (default):</p>
+<pre class="shell"><code>  shotgun --server=thin --port=6000 config.ru</code></pre>
+<p>Running Sinatra apps:</p>
+<pre class="shell"><code>  shotgun hello.rb</code></pre>
+<p>See 'shotgun --help' for more advanced usage.</p>
+<h2 id="compatibility">Compatibility</h2>
+<p>Because of the underlying technique used, Shotgun is only compatible with systems that support <code>fork(2)</code> (probably just MRI on POSIX systems).</p>
+<h2 id="caveats">Caveats</h2>
+<ul>
+<li><p>For performance reasons, Shotgun automatically includes middleware to serve static files (similar to <code>Rack::Static</code>). If you rely on Rack serving static assets, then do include <code>Rack::Static</code> yourself.</p></li>
+<li><p>If you use Sinatra, you may need to <a href="https://groups.google.com/forum/#!topic/sinatrarb/pUFSoyQXyQs">set the session secret manually</a>.</p></li>
+<li><p>Similar to a Rackup file (<code>config.ru</code>), you can't use <code>require_relative</code> in your preload files (<code>shotgun.rb</code>).</p></li>
+</ul>
+<h2 id="links">Links</h2>
+<p><a href="http://github.com/rtomayko/shotgun">Shotgun</a></p>
+<p><a href="http://rack.rubyforge.org/">Rack</a></p>
+<p><a href="http://www.sinatrarb.com/">Sinatra</a></p>
+<p>The reloading system in Ian Bicking's webware framework served as inspiration for the approach taken in Shotgun. Ian lays down the pros and cons of this approach in the following article:</p>
+<p>http://ianbicking.org/docs/Webware_reload.html</p>

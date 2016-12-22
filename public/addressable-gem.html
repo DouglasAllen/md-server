@@ -1,0 +1,93 @@
+<h1 id="addressable">Addressable</h1>
+<dl>
+<dt>
+Homepage
+</dt>
+<dd>
+<a href="https://github.com/sporkmonger/addressable">github.com/sporkmonger/addressable</a>
+</dd>
+<dt>
+Author
+</dt>
+<dd>
+<a href="mailto:bob@sporkmonger.com">Bob Aman</a>
+</dd>
+<dt>
+Copyright
+</dt>
+<dd>
+Copyright © Bob Aman
+</dd>
+<dt>
+License
+</dt>
+<dd>
+Apache 2.0
+</dd>
+</dl>
+<p><a href="https://rubygems.org/gems/addressable"><img src="http://img.shields.io/gem/dt/addressable.svg" alt="Gem Version" /></a> <a href="http://travis-ci.org/sporkmonger/addressable"><img src="https://secure.travis-ci.org/sporkmonger/addressable.png?branch=master" alt="Build Status" /></a> <a href="https://gemnasium.com/sporkmonger/addressable"><img src="https://gemnasium.com/sporkmonger/addressable.png?travis" alt="Dependency Status" /></a> <a href="https://coveralls.io/r/sporkmonger/addressable"><img src="https://img.shields.io/coveralls/sporkmonger/addressable.svg" alt="Test Coverage Status" /></a> <a href="http://inch-ci.org/github/sporkmonger/addressable"><img src="http://inch-ci.org/github/sporkmonger/addressable.svg?branch=master" alt="Documentation Coverage Status" /></a> <a href="https://www.gittip.com/sporkmonger/" title="Support Open Source Development w/ Gittip"><img src="http://img.shields.io/gittip/sporkmonger.png" alt="Gittip Donate" /></a></p>
+<h1 id="description">Description</h1>
+<p>Addressable is a replacement for the URI implementation that is part of Ruby's standard library. It more closely conforms to RFC 3986, RFC 3987, and RFC 6570 (level 4), providing support for IRIs and URI templates.</p>
+<h1 id="reference">Reference</h1>
+<ul>
+<li>{Addressable::URI}</li>
+<li>{Addressable::Template}</li>
+</ul>
+<h1 id="example-usage">Example usage</h1>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">require <span class="st">&quot;addressable/uri&quot;</span>
+
+uri = <span class="dt">Addressable</span>::<span class="dt">URI</span>.parse(<span class="st">&quot;http://example.com/path/to/resource/&quot;</span>)
+uri.scheme
+<span class="co">#=&gt; &quot;http&quot;</span>
+uri.host
+<span class="co">#=&gt; &quot;example.com&quot;</span>
+uri.path
+<span class="co">#=&gt; &quot;/path/to/resource/&quot;</span>
+
+uri = <span class="dt">Addressable</span>::<span class="dt">URI</span>.parse(<span class="st">&quot;http://www.詹姆斯.com/&quot;</span>)
+uri.normalize
+<span class="co">#=&gt; #&lt;Addressable::URI:0xc9a4c8 URI:http://www.xn--8ws00zhy3a.com/&gt;</span></code></pre></div>
+<h1 id="uri-templates">URI Templates</h1>
+<p>For more details, see <a href="https://www.rfc-editor.org/rfc/rfc6570.txt">RFC 6570</a>.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">
+require <span class="st">&quot;addressable/template&quot;</span>
+
+template = <span class="dt">Addressable</span>::<span class="dt">Template</span>.new(<span class="st">&quot;http://example.com/{?query*}/&quot;</span>)
+template.expand({
+  <span class="st">&quot;query&quot;</span> =&gt; {
+    <span class="st">&#39;foo&#39;</span> =&gt; <span class="st">&#39;bar&#39;</span>,
+    <span class="st">&#39;color&#39;</span> =&gt; <span class="st">&#39;red&#39;</span>
+  }
+})
+<span class="co">#=&gt; #&lt;Addressable::URI:0xc9d95c URI:http://example.com/?foo=bar&amp;color=red&gt;</span>
+
+template = <span class="dt">Addressable</span>::<span class="dt">Template</span>.new(<span class="st">&quot;http://example.com/{?one,two,three}&quot;</span>)
+template.partial_expand({<span class="st">&quot;one&quot;</span> =&gt; <span class="st">&quot;1&quot;</span>, <span class="st">&quot;three&quot;</span> =&gt; <span class="dv">3</span>}).pattern
+<span class="co">#=&gt; &quot;http://example.com/?one=1{&amp;two}&amp;three=3&quot;</span>
+
+template = <span class="dt">Addressable</span>::<span class="dt">Template</span>.new(
+  <span class="st">&quot;http://{host}{/segments*}/{?one,two,bogus}{#fragment}&quot;</span>
+)
+uri = <span class="dt">Addressable</span>::<span class="dt">URI</span>.parse(
+  <span class="st">&quot;http://example.com/a/b/c/?one=1&amp;two=2#foo&quot;</span>
+)
+template.extract(uri)
+<span class="co">#=&gt;</span>
+<span class="co"># {</span>
+<span class="co">#   &quot;host&quot; =&gt; &quot;example.com&quot;,</span>
+<span class="co">#   &quot;segments&quot; =&gt; [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;],</span>
+<span class="co">#   &quot;one&quot; =&gt; &quot;1&quot;,</span>
+<span class="co">#   &quot;two&quot; =&gt; &quot;2&quot;,</span>
+<span class="co">#   &quot;fragment&quot; =&gt; &quot;foo&quot;</span>
+<span class="co"># }</span></code></pre></div>
+<h1 id="install">Install</h1>
+<pre class="console"><code>$&gt; gem install addressable</code></pre>
+<p>You may optionally turn on native IDN support by installing libidn and the idn gem:</p>
+<pre class="console"><code>$&gt; sudo apt-get install idn # Debian/Ubuntu
+$&gt; brew install libidn # OS X
+$&gt; gem install idn-ruby</code></pre>
+<h1 id="semantic-versioning">Semantic Versioning</h1>
+<p>This project uses sementic versioning. You can (and should) specify your dependency using a pessimistic version constraint covering the major and minor values:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">spec.add_dependency <span class="st">&#39;addressable&#39;</span>, <span class="st">&#39;~&gt; 2.5&#39;</span></code></pre></div>
+<p>If you need a specific bug fix, you can also specify minimum tiny versions without preventing updates to the latest minor release:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">spec.add_dependency <span class="st">&#39;addressable&#39;</span>, <span class="st">&#39;~&gt; 2.3&#39;</span>, <span class="st">&#39;&gt;= 2.3.7&#39;</span></code></pre></div>

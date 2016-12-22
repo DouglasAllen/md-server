@@ -1,0 +1,14 @@
+<h1 id="sinatra">Sinatra</h1>
+<p>Sinatra is a <a href="http://en.wikipedia.org/wiki/Domain-specific_language">DSL</a> for quickly creating web applications in Ruby with minimal effort:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># myapp.rb</span>
+require <span class="st">&#39;sinatra&#39;</span>
+
+get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  <span class="st">&#39;Hello world!&#39;</span>
+<span class="kw">end</span></code></pre></div>
+<p>Install the gem:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">gem install sinatra</code></pre></div>
+<p>And run with:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">ruby myapp.rb</code></pre></div>
+<p>View at: http://localhost:4567</p>
+<p>It is recommended to also run <code>gem install thin</code>, which Sinatra will pick up if available.</p>

@@ -1,0 +1,22 @@
+<h3 id="dealing-with-date-and-time">Dealing with Date and Time</h3>
+<p>Sinatra offers a <code>time_for</code> helper method that generates a Time object from the given value. It is also able to convert <code>DateTime</code>, <code>Date</code> and similar classes:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  pass <span class="kw">if</span> <span class="dt">Time</span>.now &gt; time_for(<span class="st">&#39;Dec 23, 2012&#39;</span>)
+  <span class="st">&quot;still time&quot;</span>
+<span class="kw">end</span></code></pre></div>
+<p>This method is used internally by <code>expires</code>, <code>last_modified</code> and akin. You can therefore easily extend the behavior of those methods by overriding <code>time_for</code> in your application:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">helpers <span class="kw">do</span>
+  <span class="kw">def</span> time_for(value)
+    <span class="kw">case</span> value
+    <span class="kw">when</span> <span class="st">:yesterday</span> <span class="kw">then</span> <span class="dt">Time</span>.now - <span class="dv">24</span>*<span class="dv">60</span>*<span class="dv">60</span>
+    <span class="kw">when</span> <span class="st">:tomorrow</span>  <span class="kw">then</span> <span class="dt">Time</span>.now + <span class="dv">24</span>*<span class="dv">60</span>*<span class="dv">60</span>
+    <span class="kw">else</span> <span class="dv">super</span>
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+
+get <span class="st">&#39;/&#39;</span> <span class="kw">do</span>
+  last_modified <span class="st">:yesterday</span>
+  expires <span class="st">:tomorrow</span>
+  <span class="st">&quot;hello&quot;</span>
+<span class="kw">end</span></code></pre></div>

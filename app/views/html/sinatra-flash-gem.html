@@ -1,0 +1,109 @@
+<h1 id="sinatraflash">Sinatra::Flash</h1>
+<p>This is an implementation of show-'em-once 'flash' messages for the <a href="http://sinatrarb.com">Sinatra</a> Web framework. It offers the following feature set:</p>
+<ul>
+<li>Simplicity (less than 50 significant lines of code)</li>
+<li>Implements the documented <a href="http://api.rubyonrails.org/classes/ActionController/Flash.html">behavior</a> and <a href="http://api.rubyonrails.org/classes/ActionController/Flash/FlashHash.html">public API</a> of the Rails flash that many developers are used to</li>
+<li>Acts entirely like a hash, including iterations and merging</li>
+<li>Optional multiple named flash collections, each with their own message hash, so that different embedded applications can access different sets of messages</li>
+<li>An HTML helper for displaying flash messages with CSS styling</li>
+<li>Verbose documentation in <a href="http://yardoc.org">YARD</a> format</li>
+<li>Full RSpec tests</li>
+</ul>
+<p>The primary catch for experienced Rack developers is that it <em>does not</em> function as standalone Rack middleware. (You could get to the messages inside the session if you needed to, but the message rotation occurs in a Sinatra <code>after</code> hook.) It should function just fine across multiple Sinatra apps, but if you need flash that's accessible from non-Sinatra applications, consider the <a href="http://nakajima.github.com/rack-flash/">Rack::Flash</a> middleware.</p>
+<h2 id="setting-up">Setting Up</h2>
+<p>You should know this part:</p>
+<pre><code>$ gem install sinatra-flash</code></pre>
+<p>(Or <code>sudo gem install</code> if you're the last person on Earth who isn't using <a href="http://rvm.beginrescueend.com">RVM</a> yet.)</p>
+<p>If you're developing a Sinatra <a href="https://sinatra.lighthouseapp.com/projects/9779/tickets/240-sinatrabase-vs-sinatradefault-vs-sinatraapplication">'classic'</a> application, then all you need to do is enable sessions and require the library:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># blah_app.rb</span>
+require <span class="st">&#39;sinatra&#39;</span>
+require <span class="st">&#39;sinatra/flash&#39;</span>
+    
+enable <span class="st">:sessions</span>
+    
+post <span class="st">&#39;/blah&#39;</span> <span class="kw">do</span>
+  <span class="co"># This message won&#39;t be seen until the NEXT Web request that accesses the flash collection</span>
+  flash[<span class="st">:blah</span>] = <span class="st">&quot;You were feeling blah at </span><span class="ot">#{</span><span class="dt">Time</span>.now<span class="ot">}</span><span class="st">.&quot;</span>
+      
+  <span class="co"># Accessing the flash displays messages set from the LAST request</span>
+  <span class="st">&quot;Feeling blah again? That&#39;s too bad. </span><span class="ot">#{</span>flash[<span class="st">:blah</span>]<span class="ot">}</span><span class="st">&quot;</span>
+<span class="kw">end</span></code></pre></div>
+<p>If you're using the <a href="https://sinatra.lighthouseapp.com/projects/9779/tickets/240-sinatrabase-vs-sinatradefault-vs-sinatraapplication">Sinatra::Base</a> style, you also need to register the extension:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># bleh_app.rb</span>
+require <span class="st">&#39;sinatra/base&#39;</span>
+require <span class="st">&#39;sinatra/flash&#39;</span>
+    
+<span class="kw">class</span> <span class="dt">BlehApp</span> &lt; <span class="dt">Sinatra</span>::<span class="dt">Base</span>
+  enable <span class="st">:sessions</span>
+  register <span class="dt">Sinatra</span>::<span class="dt">Flash</span>
+      
+  get <span class="st">&#39;/bleh&#39;</span> <span class="kw">do</span>
+    <span class="kw">if</span> flash[<span class="st">:blah</span>]
+      <span class="co"># The flash collection is cleared after any request that uses it</span>
+      <span class="st">&quot;Have you ever felt blah? Oh yes. </span><span class="ot">#{</span>flash[<span class="st">:blah</span>]<span class="ot">}</span><span class="st"> Remember?&quot;</span>
+    <span class="kw">else</span>
+      <span class="st">&quot;Oh, now you&#39;re only feeling bleh?&quot;</span>
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre></div>
+<p>See the Sinatra documentation on <a href="http://www.sinatrarb.com/extensions-wild.html">using extensions</a> for more detail and rationale.</p>
+<h2 id="styled_flash">styled_flash</h2>
+<p>The gem comes with a handy view helper that iterates through current flash messages and renders them in styled HTML:</p>
+<pre><code># Using HAML, &#39;cause the cool kids are all doing it
+%html
+  %body
+    =styled_flash</code></pre>
+<p>Yields (assuming three flash messages with different keys):</p>
+<pre><code>&lt;html&gt;
+  &lt;body&gt;
+    &lt;div id=&#39;flash&#39;&gt;
+      &lt;div class=&#39;flash info&#39;&gt;I&#39;m sorry, Dave. I&#39;m afraid I can&#39;t do that.&lt;/div&gt;
+      &lt;div class=&#39;flash warning&#39;&gt;This mission is too important for me to allow you to jeopardize it.&lt;/div&gt;
+      &lt;div class=&#39;flash fatal&#39;&gt;Without your space helmet, Dave, you&#39;re going to find reaching the emergency airlock rather difficult.&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+      </code></pre>
+<p>Styling the CSS for the #flash id, the .flash class, or any of the key-based classes is entirely up to you.</p>
+<p>(<em>Side note:</em> This view helper was my initial reason for making this gem. I'd gotten used to pasting this little method in on every Rails project, and when I switched to Sinatra was distraught to discover that <a href="http://nakajima.github.com/rack-flash/">Rack::Flash</a> couldn't do it, because the FlashHash isn't really a hash and you can't iterate it. Reinventing flash was sort of a side effect.)</p>
+<h2 id="advanced-tips">Advanced Tips</h2>
+<h3 id="now-vs.-next">Now vs. Next</h3>
+<p>The flash object acts like a hash, but it's really <em>two</em> hashes:</p>
+<ul>
+<li>The <strong>now</strong> hash displays messages for the current request.</li>
+<li>The <strong>next</strong> hash stores messages to be displayed in the <em>next</em> request.</li>
+</ul>
+<p>When you access the <strong>flash</strong> helper, the <em>now</em> hash is initialized from a session value. (Named <code>:flash</code> by default, but see 'Scoped Flash' below.) Every method except assignment (<code>[]=</code>) is delegated to <em>now</em>; assignments occur on the <em>next</em> hash. At the end of the request, a Sinatra <code>after</code> hook sets the session value to the <em>next</em> hash, effectively rotating it to <em>now</em> for the next request that uses it.</p>
+<p>This is usually what you want, and you don't have to worry about the details. However, you occasionally want to set a message to display during <em>this</em> request, or access values that are coming up. In these cases you can access the <code>.now</code> and <code>.next</code> hashes directly:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># This will be displayed during the current request</span>
+flash.now[<span class="st">:error</span>] = <span class="st">&quot;We&#39;re shutting down now.  Goodbye!&quot;</span>
+    
+<span class="co"># Look at messages upcoming in the next request</span>
+<span class="ot">@weapon</span> = <span class="dt">Stake</span>.new <span class="kw">if</span> flash.next[<span class="st">:warning</span>] == <span class="st">&quot;The vampire is attacking.&quot;</span></code></pre></div>
+<p>In practice, you'll probably want to set <code>.now</code> any time you're displaying errors with an immediate render instead of redirecting. It's hard to think of a common reason to check <code>.next</code> -- but it's there if you want it.</p>
+<h3 id="keep-discard-and-sweep">Keep, Discard, and Sweep</h3>
+<p>These convenience methods allow you to modify the standard rotation cycle, and are based directly on the <a href="http://api.rubyonrails.org/classes/ActionController/Flash/FlashHash.html">Rails flash API</a>:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">flash.keep               <span class="co"># Will show all messages again</span>
+flash.keep(<span class="st">:groundhog</span>)   <span class="co"># Will show the message on key :groundhog again</span>
+flash.discard            <span class="co"># Clears the next messages without showing them</span>
+flash.discard(<span class="st">:amnesia</span>)  <span class="co"># Clears only the message on key :amnesia</span>
+flash.sweep              <span class="co"># Rotates the flash manually, discarding _now_ and moving _next_ into its place</span></code></pre></div>
+<h3 id="sessions">Sessions</h3>
+<p>The basic <em>concept</em> of flash messages relies on having an active session for your application. Sinatra::Flash is built on the assumption that Sinatra's <code>session</code> helper points to something that will persist beyond the current request. You are responsible for ensuring that it does. No other assumptions are made about the session -- you can use any <a href="http://www.sinatrarb.com/faq.html#sessions">session strategy</a> you like.</p>
+<p>(<strong>Note:</strong> Early versions of this extension attempted to detect the absence of a session and create one for you at the last moment. Thanks to <a href="http://github.com/rkh">rkh</a> for <a href="http://github.com/SFEley/sinatra-flash/issues/issue/1">pointing out</a> that this is unreliable in Sinatra. You'll have to be a grownup now )</p>
+<h3 id="scoped-flash">Scoped Flash</h3>
+<p>If one flash collection isn't exciting enough for your application stack, you can have multiple sets of flash messages scoped by a symbol. Each has its own lifecycle and will <em>not</em> be rotated by any Web request that ignores it.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">get <span class="st">&quot;/complicated&quot;</span> <span class="kw">do</span>
+  flash(<span class="st">:one</span>)[<span class="st">:hello</span>] = <span class="st">&quot;This will appear the next time flash(:one) is called&quot;</span>
+  flash(<span class="st">:two</span>).discard(<span class="st">:hello</span>)  <span class="co"># Clear a message someone else set on flash(:two)</span>
+  <span class="st">&quot;A message for you on line three: </span><span class="ot">#{</span>flash(<span class="st">:three</span>)[<span class="st">:hello</span>]<span class="ot">}</span><span class="st">&quot;</span>
+<span class="kw">end</span></code></pre></div>
+<p>Both the <strong>flash</strong> and <strong>styled_flash</strong> helper methods accept such keys as optional parameters. If don't specify one, the default key is <code>:flash</code>. Whatever keys you use will become session keys as well, so take heed that you don't run into naming conflicts.</p>
+<p>Do you need this? Probably not. The principal use case is for complex application stacks in which some messages are only relevant within specific subsystems. If you <em>do</em> use it, be sure to model your message flows carefully, and don't confuse collection keys with message keys.</p>
+<h2 id="credit-support-and-contributions">Credit, Support, and Contributions</h2>
+<p>This extension is the fault of <strong>Stephen Eley</strong>. You can reach me at <a href="mailto:sfeley@gmail.com">sfeley@gmail.com</a>. If you like science fiction stories, I know a <a href="http://escapepod.org">good podcast</a> for them as well.</p>
+<p>If you find bugs, please report them on the <a href="http://github.com/SFEley/sinatra-flash/issues">Github issue tracker</a>.</p>
+<p>The documentation can of course be found on <a href="http://rdoc.info/projects/SFEley/sinatra-flash">RDoc.info</a>.</p>
+<p>Contributions are welcome. I'm not sure how much more <em>must</em> be done on a flash message extension, but I'm sure there's plenty that <em>could</em> be done. Please note that the test suite uses RSpec, and you'll need the <a href="http://github.com/SFEley/sinatra-sessionography">Sessionography</a> helper for testing sessions. (I actually developed Sessionography in order to TDD <em>this</em> gem.)</p>
+<h2 id="license">License</h2>
+<p>This project is licensed under the <strong>Don't Be a Dick License</strong>, version 0.2, and is copyright 2010 by Stephen Eley. See the <a href="http://github.com/SFEley/sinatra-flash/blob/master/LICENSE.markdown">LICENSE.markdown</a> file or the <a href="http://dbad-license.org">DBAD License site</a> for elaboration on not being a dick.</p>

@@ -1,0 +1,34 @@
+a:link {
+    color: #ff0;
+}
+
+
+/*unvisited link */
+
+a:visited {
+    color: #666;
+}
+
+
+/*visited link */
+
+a:hover {
+    color: #ff0;
+}
+
+
+/*mouse over link */
+
+a:active {
+    color: #ff0;
+}
+
+pre {
+    background-color: #000;
+    color: #fff;
+}
+
+p {
+    color: #fff;
+}
+

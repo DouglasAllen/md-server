@@ -1,0 +1,32 @@
+<h2 id="sinatra-recipes"><a href="http://sinatra-recipes.heroku.com"><em>Sinatra Recipes</em></a></h2>
+<p>Community contributed recipes and techniques for the <a href="http://www.sinatrarb.com/">Sinatra Web Framework</a>.</p>
+<h2 id="why-yet-another-doc-project">Why yet another doc project?</h2>
+<p>Quite simply, the Sinatra README and Book have become long in the tooth.</p>
+<p>This project is to extract any redundant and overlap between the two sources, and create a home for user contributed recipes and documentation to take form.</p>
+<h2 id="how-can-i-help">How can I help?</h2>
+<p>Got a recipe or tutorial for <a href="http://www.sinatrarb.com/">Sinatra</a>? Awesome, this is the first place you should go if you're looking to contribute.</p>
+<p>Once you have <a href="http://help.github.com/forking/">forked the project</a> send a <a href="http://help.github.com/pull-requests/">pull request</a>, just be sure to follow the <a href="http://github.com/sinatra/sinatra-recipes/wiki/Style-Guidelines">styling guidelines</a>.</p>
+<p>You can also get a hold of us on <a href="irc://irc.freenode.net/#sinatra">irc</a> or the <a href="http://groups.google.com/group/sinatrarb">mailinglist</a>.</p>
+<p>Don't have any ideas? Check out the existing <a href="https://github.com/sinatra/sinatra-recipes/issues">issue tracker</a> for recipes that have been requested or are in progress.</p>
+<h2 id="heres-the-run-down">Here's the run down</h2>
+<p>To get started you should clone the repository from github:</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">git</span> clone git://github.com/sinatra/sinatra-recipes.git</code></pre></div>
+<p>Now once you <code>cd</code> into <code>sinatra-recipes</code> you should see a few things.</p>
+<p>First you should take note of the application files:</p>
+<pre><code>app.rb # a tiny application for displaying the contributed recipes
+
+config.ru # rackup file for deploying to heroku
+
+Gemfile # dependencies file for bundler to run the app</code></pre>
+<p>If you want to run the application yourself first you need the <code>bundler</code> gem.</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">gem</span> install bundler</code></pre></div>
+<p>If you are on Rubinius make sure that you have the latest bundler version installed. Versions prior to 1.0.10 won't work.</p>
+<pre><code># then install the application dependencies</code></pre>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">bundle</span> install</code></pre></div>
+<p>Once that is complete, you should only need to run <code>rackup</code> in the application root and visit: <a href="http://localhost:9292">localhost:9292</a></p>
+<p>Since the application just maps the flat files, you can browse either the source or the web app to view recipes.</p>
+<p>If you check out the source you will see a few folders listed, in each folder there is a <code>README.md</code> that will briefly explain the topic. This can also be view by going to <code>/p/:topic</code> where <code>topic</code> is the folder you wish to view.</p>
+<p>In each folder there should be a number of recipes pertaining to each topic.</p>
+<h2 id="on-translations">On translations</h2>
+<p>Currently we're not supporting translations in the main repository.</p>
+<p>However, if you'd like to maintain a fork for translating the docs then feel free to do so, and add your fork to the <a href="http://github.com/sinatra/sinatra-recipes/wiki/Translations">list of translations in the wiki</a>.</p>

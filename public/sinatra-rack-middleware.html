@@ -1,0 +1,18 @@
+<h2 id="rack-middleware">Rack Middleware</h2>
+<p>Sinatra rides on <a href="http://rack.github.io/">Rack</a>, a minimal standard interface for Ruby web frameworks. One of Rack's most interesting capabilities for application developers is support for &quot;middleware&quot; -- components that sit between the server and your application monitoring and/or manipulating the HTTP request/response to provide various types of common functionality.</p>
+<p>Sinatra makes building Rack middleware pipelines a cinch via a top-level <code>use</code> method:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">require <span class="st">&#39;sinatra&#39;</span>
+require <span class="st">&#39;my_custom_middleware&#39;</span>
+
+use <span class="dt">Rack</span>::<span class="dt">Lint</span>
+use <span class="dt">MyCustomMiddleware</span>
+
+get <span class="st">&#39;/hello&#39;</span> <span class="kw">do</span>
+  <span class="st">&#39;Hello World&#39;</span>
+<span class="kw">end</span></code></pre></div>
+<p>The semantics of <code>use</code> are identical to those defined for the <a href="http://rubydoc.info/github/rack/rack/master/Rack/Builder">Rack::Builder</a> DSL (most frequently used from rackup files). For example, the <code>use</code> method accepts multiple/variable args as well as blocks:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">use <span class="dt">Rack</span>::<span class="dt">Auth</span>::<span class="dt">Basic</span> <span class="kw">do</span> |username, password|
+  username == <span class="st">&#39;admin&#39;</span> &amp;&amp; password == <span class="st">&#39;secret&#39;</span>
+<span class="kw">end</span></code></pre></div>
+<p>Rack is distributed with a variety of standard middleware for logging, debugging, URL routing, authentication, and session handling. Sinatra uses many of these components automatically based on configuration so you typically don't have to <code>use</code> them explicitly.</p>
+<p>You can find useful middleware in <a href="https://github.com/rack/rack/tree/master/lib/rack">rack</a>, <a href="https://github.com/rack/rack-contrib#readm">rack-contrib</a>, or in the <a href="https://github.com/rack/rack/wiki/List-of-Middleware">Rack wiki</a>.</p>

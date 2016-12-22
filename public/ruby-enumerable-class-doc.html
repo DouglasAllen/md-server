@@ -1,0 +1,573 @@
+<p>http://ruby-doc.org/core-2.2.3/Enumerable.html</p>
+<h2 id="module-enumerable">module Enumerable</h2>
+<p>The Enumerable mixin provides collection classes with several traversal and searching methods, and with the ability to sort. The class must provide a method each, which yields successive members of the collection. If Enumerable#max, #min, or #sort is used, the objects in the collection must also implement a meaningful &lt;=&gt; operator, as these methods rely on an ordering between members of the collection.</p>
+<p>In Files</p>
+<p>enum.c</p>
+<h3 id="public-instance-methods">Public Instance Methods</h3>
+<h3 id="all">all?</h3>
+<p>all? [{|obj| block } ] → true or false</p>
+<p>Passes each element of the collection to the given block. The method returns true if the block never returns false or nil. If the block is not given, Ruby adds an implicit block of {|obj| obj} (that is all? will return true only if none of the collection members are false or nil.)</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="ot">%w{</span><span class="st">ant bear cat</span><span class="ot">}</span>.all? {|word| word.length &gt;= <span class="dv">3</span>}   <span class="co">#=&gt; true</span>
+<span class="ot">%w{</span><span class="st">ant bear cat</span><span class="ot">}</span>.all? {|word| word.length &gt;= <span class="dv">4</span>}   <span class="co">#=&gt; false</span>
+[ <span class="dv">nil</span>, <span class="dv">true</span>, <span class="dv">99</span> ].all?                            <span class="co">#=&gt; false</span></code></pre></div>
+<h3 id="any">any?</h3>
+<p>any? [{|obj| block } ] → true or false</p>
+<p>Passes each element of the collection to the given block. The method returns true if the block ever returns a value other than false or nil. If the block is not given, Ruby adds an implicit block of {|obj| obj} (that is any? will return true if at least one of the collection members is not false or nil.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="ot">%w{</span><span class="st">ant bear cat</span><span class="ot">}</span>.any? {|word| word.length &gt;= <span class="dv">3</span>}   <span class="co">#=&gt; true</span>
+<span class="ot">%w{</span><span class="st">ant bear cat</span><span class="ot">}</span>.any? {|word| word.length &gt;= <span class="dv">4</span>}   <span class="co">#=&gt; true</span>
+[ <span class="dv">nil</span>, <span class="dv">true</span>, <span class="dv">99</span> ].any?                            <span class="co">#=&gt; true</span></code></pre></div>
+<h3 id="chunk">chunk</h3>
+<p>chunk {|elt| ... } → an_enumerator</p>
+<p>chunk(initial_state) {|elt, state| ... } → an_enumerator</p>
+<p>Creates an enumerator for each chunked elements. The consecutive elements which have same block value are chunked.</p>
+<p>The result enumerator yields the block value and an array of chunked elements. So “each” method can be called as follows.</p>
+<p>enum.chunk {|elt| key }.each {|key, ary| ... }</p>
+<p>enum.chunk(initial_state) {|elt, state| key }.each {|key, ary| ... }</p>
+<p>For example, consecutive even numbers and odd numbers can be splitted as follows.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">[<span class="dv">3</span>,<span class="dv">1</span>,<span class="dv">4</span>,<span class="dv">1</span>,<span class="dv">5</span>,<span class="dv">9</span>,<span class="dv">2</span>,<span class="dv">6</span>,<span class="dv">5</span>,<span class="dv">3</span>,<span class="dv">5</span>].chunk {|n|
+                      n.even? }.each {|even, ary|
+                        p [even, ary]}
+<span class="co"># =&gt; [false, [3, 1]]</span>
+<span class="co">#    [true, [4]]</span>
+<span class="co">#    [false, [1, 5, 9]]</span>
+<span class="co">#    [true, [2, 6]]</span>
+<span class="co">#    [false, [5, 3, 5]]</span></code></pre></div>
+<p>This method is especially useful for sorted series of elements. The following example counts words for each initial letter.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">open(<span class="st">&quot;/usr/share/dict/words&quot;</span>, <span class="st">&quot;r:iso-8859-1&quot;</span>) {|f|
+  f.chunk {|line| line.ord }.each {|ch, lines| p [ch.chr, lines.length] }
+}
+    
+<span class="co"># =&gt; [&quot;\n&quot;, 1]</span>
+<span class="co">#    [&quot;A&quot;, 1327]</span>
+<span class="co">#    [&quot;B&quot;, 1372]</span>
+<span class="co">#    [&quot;C&quot;, 1507]</span>
+<span class="co">#    [&quot;D&quot;, 791]</span>
+<span class="co">#    ...</span></code></pre></div>
+<p>The following key values has special meaning:</p>
+<p>nil and :_separator specifies that the elements are dropped.</p>
+<p>:_alone specifies that the element should be chunked as a singleton.</p>
+<p>Other symbols which begins an underscore are reserved.</p>
+<p>nil and :_separator can be used to ignore some elements. For example, the sequence of hyphens in svn log can be eliminated as follows.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">sep = <span class="st">&quot;-&quot;</span>*<span class="dv">72</span> + <span class="st">&quot;\n&quot;</span>
+<span class="dt">IO</span>.popen(<span class="st">&quot;svn log README&quot;</span>) {|f|
+  f.chunk {|line|
+    line != sep || <span class="dv">nil</span>
+          }.each {|_, lines|
+            pp lines
+                 }
+                           }
+
+<span class="co"># =&gt; [&quot;r20018 | knu | 2008-10-29 13:20:42 +0900 (Wed, 29 Oct 2008) | 2 lines\n&quot;, &quot;\n&quot;,</span>
+<span class="co">#     &quot;* README, README.ja: Update the portability section.\n&quot;, &quot;\n&quot;]</span>
+<span class="co">#    [&quot;r16725 | knu | 2008-05-31 23:34:23 +0900 (Sat, 31 May 2008) | 2 lines\n&quot;, &quot;\n&quot;,</span>
+<span class="co">#     &quot;* README, README.ja: Add a note about default C flags.\n&quot;, &quot;\n&quot;]</span>
+<span class="co">#    ...</span></code></pre></div>
+<p>paragraphs separated by empty lines can be parsed as follows.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">File</span>.foreach(<span class="st">&quot;README&quot;</span>).chunk {|line|
+  <span class="ot">/\A\s*\z/</span> !~ line || <span class="dv">nil</span>
+                             }.each {|_, lines|
+                               pp lines
+                                    }</code></pre></div>
+<p>:_alone can be used to pass through bunch of elements. For example, sort consecutive lines formed as Foo#bar and pass other lines, chunk can be used as follows.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">pat = <span class="ot">/\A[A-Z][A-Za-z0-9_]+\#/</span>
+open(filename) {|f|
+  f.chunk {|line| pat =~ line ? <span class="dt">$&amp;</span> : <span class="st">:_alone</span> }.each {|key, lines|
+    <span class="kw">if</span> key != <span class="st">:_alone</span>
+      print lines.sort.join(<span class="st">&#39;&#39;</span>)
+    <span class="kw">else</span>
+      print lines.join(<span class="st">&#39;&#39;</span>)
+    <span class="kw">end</span>
+                                                    }
+               }</code></pre></div>
+<p>If the block needs to maintain state over multiple elements, initial_state argument can be used. If non-nil value is given, it is duplicated for each “each” method invocation of the enumerator. The duplicated object is passed to 2nd argument of the block for “chunk” method.</p>
+<h3 id="collect">collect</h3>
+<p>collect {| obj | block } → array</p>
+<p>collect → an_enumerator</p>
+<p>Returns a new array with the results of running block once for every element in enum.</p>
+<p>If no block is given, an enumerator is returned instead</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">(<span class="dv">1</span>..<span class="dv">4</span>).collect {|i| i*i }   <span class="co">#=&gt; [1, 4, 9, 16]</span>
+(<span class="dv">1</span>..<span class="dv">4</span>).collect { <span class="st">&quot;cat&quot;</span>  }   <span class="co">#=&gt; [&quot;cat&quot;, &quot;cat&quot;, &quot;cat&quot;, &quot;cat&quot;]</span></code></pre></div>
+<h3 id="collect_concat">collect_concat</h3>
+<p>collect_concat {| obj | block } → array</p>
+<p>collect_concat → an_enumerator</p>
+<p>Returns a new array with the concatenated results of running block once for every element in enum.</p>
+<p>If no block is given, an enumerator is returned instead.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">[[<span class="dv">1</span>,<span class="dv">2</span>],[<span class="dv">3</span>,<span class="dv">4</span>]].flat_map {|i| i }   <span class="co">#=&gt; [1, 2, 3, 4]</span></code></pre></div>
+<h3 id="count">count</h3>
+<p>count → int count(item) → int</p>
+<p>count {| obj | block } → int</p>
+<p>Returns the number of items in enum, where size is called if it responds to it, otherwise the items are counted through enumeration. If an argument is given, counts the number of items in enum, for which equals to item. If a block is given, counts the number of elements yielding a true value.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">ary = [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">2</span>]
+ary.count             <span class="co">#=&gt; 4</span>
+ary.count(<span class="dv">2</span>)          <span class="co">#=&gt; 2</span>
+ary.count{|x|x%<span class="dv">2</span>==<span class="dv">0</span>}  <span class="co">#=&gt; 3</span></code></pre></div>
+<h3 id="cycle">cycle</h3>
+<p>cycle(n=nil) {|obj| block } → nil</p>
+<p>cycle(n=nil) → an_enumerator</p>
+<p>Calls block for each element of enum repeatedly n times or forever if none or nil is given. If a non-positive number is given or the collection is empty, does nothing. Returns nil if the loop has finished without getting interrupted.</p>
+<p>Cycle saves elements in an internal array so changes to enum after the first pass have no effect.</p>
+<p>If no block is given, an enumerator is returned instead.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">a = [<span class="st">&quot;a&quot;</span>, <span class="st">&quot;b&quot;</span>, <span class="st">&quot;c&quot;</span>]
+a.cycle {|x| puts x }  <span class="co"># print, a, b, c, a, b, c,.. forever.</span>
+a.cycle(<span class="dv">2</span>) {|x| puts x }  <span class="co"># print, a, b, c, a, b, c.</span></code></pre></div>
+<h3 id="detect">detect</h3>
+<p>detect(ifnone = nil) {| obj | block } → obj or nil</p>
+<p>detect(ifnone = nil) → an_enumerator</p>
+<p>Passes each entry in enum to block. Returns the first for which block is not false. If no object matches, calls ifnone and returns its result when it is specified, or returns nil otherwise.</p>
+<p>If no block is given, an enumerator is returned instead.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">(<span class="dv">1</span>..<span class="dv">10</span>).detect  {|i| i % <span class="dv">5</span> == <span class="dv">0</span> <span class="kw">and</span> i % <span class="dv">7</span> == <span class="dv">0</span> }   <span class="co">#=&gt; nil</span>
+(<span class="dv">1</span>..<span class="dv">100</span>).detect {|i| i % <span class="dv">5</span> == <span class="dv">0</span> <span class="kw">and</span> i % <span class="dv">7</span> == <span class="dv">0</span> }   <span class="co">#=&gt; 35</span></code></pre></div>
+<h3 id="drop">drop</h3>
+<p>drop(n) → array</p>
+<p>Drops first n elements from enum, and returns rest elements in an array.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">a = [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">0</span>]
+a.drop(<span class="dv">3</span>)             <span class="co">#=&gt; [4, 5, 0]</span></code></pre></div>
+<h3 id="drop_while">drop_while</h3>
+<p>drop_while {|arr| block } → array</p>
+<p>drop_while → an_enumerator</p>
+<p>Drops elements up to, but not including, the first element for which the block returns nil or false and returns an array containing the remaining elements.</p>
+<p>If no block is given, an enumerator is returned instead.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">a = [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">0</span>]
+a.drop_while {|i| i &lt; <span class="dv">3</span> }   <span class="co">#=&gt; [3, 4, 5, 0]</span></code></pre></div>
+<h3 id="each_cons">each_cons</h3>
+<p>each_cons(n) {...} → nil</p>
+<p>each_cons(n) → an_enumerator</p>
+<p>Iterates the given block for each array of consecutive elements. If no block is given, returns an enumerator.</p>
+<p>e.g.:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">(<span class="dv">1</span>..<span class="dv">10</span>).each_cons(<span class="dv">3</span>) {|a| p a}</code></pre></div>
+<p>outputs below</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">[<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>]
+[<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>]
+[<span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>]
+[<span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>]
+[<span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">7</span>]
+[<span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">8</span>]
+[<span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">9</span>]
+[<span class="dv">8</span>, <span class="dv">9</span>, <span class="dv">10</span>]</code></pre></div>
+<h3 id="each_entry">each_entry</h3>
+<p>each_entry {|obj| block} → enum</p>
+<p>each_entry → an_enumerator</p>
+<p>Calls block once for each element in self, passing that element as a parameter, converting multiple values from yield to an array.</p>
+<p>If no block is given, an enumerator is returned instead.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">Foo</span>
+  include <span class="dt">Enumerable</span>
+  <span class="kw">def</span> each
+    <span class="kw">yield</span> <span class="dv">1</span>
+    <span class="kw">yield</span> <span class="dv">1</span>,<span class="dv">2</span>
+    <span class="kw">yield</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+
+<span class="dt">Foo</span>.new.each_entry{|o| p o }</code></pre></div>
+<p>produces:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dv">1</span>
+[<span class="dv">1</span>, <span class="dv">2</span>]
+<span class="dv">nil</span></code></pre></div>
+<h3 id="each_slice">each_slice</h3>
+<p>each_slice(n) {...} → nil</p>
+<p>each_slice(n) → an_enumerator</p>
+<p>Iterates the given block for each slice of elements. If no block is given, returns an enumerator.</p>
+<p>e.g.:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">(<span class="dv">1</span>..<span class="dv">10</span>).each_slice(<span class="dv">3</span>) {|a| p a}</code></pre></div>
+<p>outputs below</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">[<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>]
+[<span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>]
+[<span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">9</span>]
+[<span class="dv">10</span>]</code></pre></div>
+<h3 id="each_with_index">each_with_index</h3>
+<p>each_with_index(*args) {|obj, i| block } → enum</p>
+<p>each_with_index(*args) → an_enumerator</p>
+<p>Calls block with two arguments, the item and its index, for each item in enum. Given arguments are passed through to each().</p>
+<p>If no block is given, an enumerator is returned instead.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">hash = <span class="dt">Hash</span>.new
+<span class="ot">%w(</span><span class="st">cat dog wombat</span><span class="ot">)</span>.each_with_index {|item, index|
+  hash[item] = index
+                                   }
+
+hash   <span class="co">#=&gt; {&quot;cat&quot;=&gt;0, &quot;dog&quot;=&gt;1, &quot;wombat&quot;=&gt;2}</span></code></pre></div>
+<h3 id="each_with_object">each_with_object</h3>
+<p>each_with_object(obj) {|(*args), memo_obj| ... } → obj</p>
+<p>each_with_object(obj) → an_enumerator</p>
+<p>Iterates the given block for each element with an arbitrary object given, and returns the initially given object.</p>
+<p>If no block is given, returns an enumerator.</p>
+<p>e.g.:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">evens = (<span class="dv">1</span>..<span class="dv">10</span>).each_with_object([]) {|i, a| a &lt;&lt; i*<span class="dv">2</span> }
+
+<span class="co">#=&gt; [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]</span></code></pre></div>
+<h3 id="entries">entries</h3>
+<p>entries → array</p>
+<p>Returns an array containing the items in enum.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">(<span class="dv">1</span>..<span class="dv">7</span>).entries                       <span class="co">#=&gt; [1, 2, 3, 4, 5, 6, 7]</span>
+{ <span class="st">&#39;a&#39;</span>=&gt;<span class="dv">1</span>, <span class="st">&#39;b&#39;</span>=&gt;<span class="dv">2</span>, <span class="st">&#39;c&#39;</span>=&gt;<span class="dv">3</span> }.entries   <span class="co">#=&gt; [[&quot;a&quot;, 1], [&quot;b&quot;, 2], [&quot;c&quot;, 3]]</span></code></pre></div>
+<h3 id="find">find</h3>
+<p>find(ifnone = nil) {| obj | block } → obj or nil</p>
+<p>find(ifnone = nil) → an_enumerator</p>
+<p>Passes each entry in enum to block. Returns the first for which block is not false. If no object matches, calls ifnone and returns its result when it is specified, or returns nil otherwise.</p>
+<p>If no block is given, an enumerator is returned instead.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">(<span class="dv">1</span>..<span class="dv">10</span>).find  {|i| i % <span class="dv">5</span> == <span class="dv">0</span> <span class="kw">and</span> i % <span class="dv">7</span> == <span class="dv">0</span> }   <span class="co">#=&gt; nil</span>
+(<span class="dv">1</span>..<span class="dv">100</span>).find {|i| i % <span class="dv">5</span> == <span class="dv">0</span> <span class="kw">and</span> i % <span class="dv">7</span> == <span class="dv">0</span> }   <span class="co">#=&gt; 35</span></code></pre></div>
+<h3 id="find_all">find_all</h3>
+<p>find_all {| obj | block } → array</p>
+<p>find_all → an_enumerator</p>
+<p>Returns an array containing all elements of enum for which block is not false (see also Enumerable#reject).</p>
+<p>If no block is given, an enumerator is returned instead.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">(<span class="dv">1</span>..<span class="dv">10</span>).find_all {|i|  i % <span class="dv">3</span> == <span class="dv">0</span> }   <span class="co">#=&gt; [3, 6, 9]</span></code></pre></div>
+<h3 id="find_index">find_index</h3>
+<p>find_index(value) → int or nil</p>
+<p>find_index {| obj | block } → int or nil</p>
+<p>find_index → an_enumerator</p>
+<p>Compares each entry in enum with value or passes to block. Returns the index for the first for which the evaluated value is non-false. If no object matches, returns nil</p>
+<p>If neither block nor argument is given, an enumerator is returned instead.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">(<span class="dv">1</span>..<span class="dv">10</span>).find_index  {|i| i % <span class="dv">5</span> == <span class="dv">0</span> <span class="kw">and</span> i % <span class="dv">7</span> == <span class="dv">0</span> }   <span class="co">#=&gt; nil</span>
+(<span class="dv">1</span>..<span class="dv">100</span>).find_index {|i| i % <span class="dv">5</span> == <span class="dv">0</span> <span class="kw">and</span> i % <span class="dv">7</span> == <span class="dv">0</span> }   <span class="co">#=&gt; 34</span>
+(<span class="dv">1</span>..<span class="dv">100</span>).find_index(<span class="dv">50</span>)                                <span class="co">#=&gt; 49</span></code></pre></div>
+<h3 id="first">first</h3>
+<p>first → obj or nil</p>
+<p>first(n) → an_array</p>
+<p>Returns the first element, or the first n elements, of the enumerable. If the enumerable is empty, the first form returns nil, and the second form returns an empty array.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="ot">%w[</span><span class="st">foo bar baz</span><span class="ot">]</span>.first     <span class="co">#=&gt; &quot;foo&quot;</span>
+<span class="ot">%w[</span><span class="st">foo bar baz</span><span class="ot">]</span>.first(<span class="dv">2</span>)  <span class="co">#=&gt; [&quot;foo&quot;, &quot;bar&quot;]</span>
+<span class="ot">%w[</span><span class="st">foo bar baz</span><span class="ot">]</span>.first(<span class="dv">10</span>) <span class="co">#=&gt; [&quot;foo&quot;, &quot;bar&quot;, &quot;baz&quot;]</span>
+
+[].first                  <span class="co">#=&gt; nil</span></code></pre></div>
+<h3 id="flat_map">flat_map</h3>
+<p>flat_map {| obj | block } → array</p>
+<p>flat_map → an_enumerator</p>
+<p>Returns a new array with the concatenated results of running block once for every element in enum.</p>
+<p>If no block is given, an enumerator is returned instead.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">[[<span class="dv">1</span>,<span class="dv">2</span>],[<span class="dv">3</span>,<span class="dv">4</span>]].flat_map {|i| i }   <span class="co">#=&gt; [1, 2, 3, 4]</span></code></pre></div>
+<h3 id="grep">grep</h3>
+<p>grep(pattern) → array</p>
+<p>grep(pattern) {| obj | block } → array</p>
+<p>Returns an array of every element in enum for which Pattern === element. If the optional block is supplied, each matching element is passed to it, and the block's result is stored in the output array.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">(<span class="dv">1</span>..<span class="dv">100</span>).grep <span class="dv">38</span>..<span class="dv">44</span>   <span class="co">#=&gt; [38, 39, 40, 41, 42, 43, 44]</span>
+c = <span class="dt">IO</span>.constants
+c.grep(<span class="ot">/SEEK/</span>)         <span class="co">#=&gt; [:SEEK_SET, :SEEK_CUR, :SEEK_END]</span>
+res = c.grep(<span class="ot">/SEEK/</span>) {|v| <span class="dt">IO</span>.const_get(v) }
+res                    <span class="co">#=&gt; [0, 1, 2]</span></code></pre></div>
+<h3 id="group_by">group_by</h3>
+<p>group_by {| obj | block } → a_hash</p>
+<p>group_by → an_enumerator</p>
+<p>Returns a hash, which keys are evaluated result from the block, and values are arrays of elements in enum corresponding to the key.</p>
+<p>If no block is given, an enumerator is returned instead.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">(<span class="dv">1</span>..<span class="dv">6</span>).group_by {|i| i%<span class="dv">3</span>}   <span class="co">#=&gt; {0=&gt;[3, 6], 1=&gt;[1, 4], 2=&gt;[2, 5]}</span></code></pre></div>
+<h3 id="include">include?</h3>
+<p>include?(obj) → true or false</p>
+<p>Returns true if any member of enum equals obj. Equality is tested using ==.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">IO</span>.constants.include? <span class="st">:SEEK_SET</span>          <span class="co">#=&gt; true</span>
+<span class="dt">IO</span>.constants.include? <span class="st">:SEEK_NO_FURTHER</span>   <span class="co">#=&gt; false</span></code></pre></div>
+<h3 id="inject">inject</h3>
+<p>inject(initial, sym) → obj</p>
+<p>inject(sym) → obj</p>
+<p>inject(initial) {| memo, obj | block } → obj</p>
+<p>inject {| memo, obj | block } → obj</p>
+<p>Combines all elements of enum by applying a binary operation, specified by a block or a symbol that names a method or operator.</p>
+<p>If you specify a block, then for each element in enum the block is passed an accumulator value (memo)and the element. If you specify a symbol instead, then each element in the collection will be passed to the named method of memo. In either case, the result becomes the new value for memo. At the end of the iteration, the final value of memo is the return value for the method.</p>
+<p>If you do not explicitly specify an initial value for memo, then uses the first element of collection is used as the initial value of memo.</p>
+<p>Examples:</p>
+<p>Sum some numbers</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">(<span class="dv">5</span>..<span class="dv">10</span>).reduce(:+)                            <span class="co">#=&gt; 45</span></code></pre></div>
+<p>Same using a block and inject</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">(<span class="dv">5</span>..<span class="dv">10</span>).inject {|sum, n| sum + n }            <span class="co">#=&gt; 45</span></code></pre></div>
+<p>Multiply some numbers</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">(<span class="dv">5</span>..<span class="dv">10</span>).reduce(<span class="dv">1</span>, :*)                         <span class="co">#=&gt; 151200</span></code></pre></div>
+<p>Same using a block</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">(<span class="dv">5</span>..<span class="dv">10</span>).inject(<span class="dv">1</span>) {|product, n| product * n } <span class="co">#=&gt; 151200</span></code></pre></div>
+<p>find the longest word</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">longest =<span class="ot"> %w{</span><span class="st"> cat sheep bear </span><span class="ot">}</span>.inject <span class="kw">do</span> |memo,word|
+  memo.length &gt; word.length ? memo : word
+<span class="kw">end</span>
+
+longest                                       <span class="co">#=&gt; &quot;sheep&quot;</span></code></pre></div>
+<h3 id="map">map</h3>
+<p>map {| obj | block } → array</p>
+<p>map → an_enumerator</p>
+<p>Returns a new array with the results of running block once for every element in enum.</p>
+<p>If no block is given, an enumerator is returned instead.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">(<span class="dv">1</span>..<span class="dv">4</span>).collect {|i| i*i }   <span class="co">#=&gt; [1, 4, 9, 16]</span>
+(<span class="dv">1</span>..<span class="dv">4</span>).collect { <span class="st">&quot;cat&quot;</span>  }   <span class="co">#=&gt; [&quot;cat&quot;, &quot;cat&quot;, &quot;cat&quot;, &quot;cat&quot;]</span></code></pre></div>
+<h3 id="max">max</h3>
+<p>max → obj</p>
+<p>max {|a,b| block } → obj</p>
+<p>Returns the object in enum with the maximum value. The first form assumes all objects implement Comparable; the second uses the block to return a &lt;=&gt; b.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">a =<span class="ot"> %w(</span><span class="st">albatross dog horse</span><span class="ot">)</span>
+a.max                                  <span class="co">#=&gt; &quot;horse&quot;</span>
+a.max {|a,b| a.length &lt;=&gt; b.length }   <span class="co">#=&gt; &quot;albatross&quot;</span></code></pre></div>
+<h3 id="max_by">max_by</h3>
+<p>max_by {|obj| block } → obj</p>
+<p>max_by → an_enumerator</p>
+<p>Returns the object in enum that gives the maximum value from the given block.</p>
+<p>If no block is given, an enumerator is returned instead.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">a =<span class="ot"> %w(</span><span class="st">albatross dog horse</span><span class="ot">)</span>
+a.max_by {|x| x.length }   <span class="co">#=&gt; &quot;albatross&quot;</span></code></pre></div>
+<h3 id="member">member?</h3>
+<p>member?(obj) → true or false</p>
+<p>Returns true if any member of enum equals obj. Equality is tested using ==.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">IO</span>.constants.member? <span class="st">:SEEK_SET</span>          <span class="co">#=&gt; true</span>
+<span class="dt">IO</span>.constants.member? <span class="st">:SEEK_NO_FURTHER</span>   <span class="co">#=&gt; false</span></code></pre></div>
+<h3 id="min">min</h3>
+<p>min → obj</p>
+<p>min {| a,b | block } → obj</p>
+<p>Returns the object in enum with the minimum value. The first form assumes all objects implement Comparable; the second uses the block to return a &lt;=&gt; b.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">a =<span class="ot"> %w(</span><span class="st">albatross dog horse</span><span class="ot">)</span>
+a.min                                  <span class="co">#=&gt; &quot;albatross&quot;</span>
+a.min {|a,b| a.length &lt;=&gt; b.length }   <span class="co">#=&gt; &quot;dog&quot;</span></code></pre></div>
+<h3 id="min_by">min_by</h3>
+<p>min_by {|obj| block } → obj</p>
+<p>min_by → an_enumerator</p>
+<p>Returns the object in enum that gives the minimum value from the given block.</p>
+<p>If no block is given, an enumerator is returned instead.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">a =<span class="ot"> %w(</span><span class="st">albatross dog horse</span><span class="ot">)</span>
+a.min_by {|x| x.length }   <span class="co">#=&gt; &quot;dog&quot;</span></code></pre></div>
+<h3 id="minmax">minmax</h3>
+<p>minmax → [min,max]</p>
+<p>minmax {|a,b| block } → [min,max]</p>
+<p>Returns two elements array which contains the minimum and the maximum value in the enumerable. The first form assumes all objects implement Comparable; the second uses the block to return a &lt;=&gt; b.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">a =<span class="ot"> %w(</span><span class="st">albatross dog horse</span><span class="ot">)</span>
+a.minmax                                  <span class="co">#=&gt; [&quot;albatross&quot;, &quot;horse&quot;]</span>
+a.minmax {|a,b| a.length &lt;=&gt; b.length }   <span class="co">#=&gt; [&quot;dog&quot;, &quot;albatross&quot;]</span></code></pre></div>
+<h3 id="minmax_by">minmax_by</h3>
+<p>minmax_by → an_enumerator</p>
+<p>Returns two elements array array containing the objects in enum that gives the minimum and maximum values respectively from the given block.</p>
+<p>If no block is given, an enumerator is returned instead.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">a =<span class="ot"> %w(</span><span class="st">albatross dog horse</span><span class="ot">)</span>
+a.minmax_by {|x| x.length }   <span class="co">#=&gt; [&quot;dog&quot;, &quot;albatross&quot;]</span></code></pre></div>
+<h3 id="none">none?</h3>
+<p>none? [{|obj| block }] → true or false</p>
+<p>Passes each element of the collection to the given block. The method returns true if the block never returns true for all elements. If the block is not given, none? will return true only if none of the collection members is true.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="ot">%w{</span><span class="st">ant bear cat</span><span class="ot">}</span>.none? {|word| word.length == <span class="dv">5</span>}  <span class="co">#=&gt; true</span>
+<span class="ot">%w{</span><span class="st">ant bear cat</span><span class="ot">}</span>.none? {|word| word.length &gt;= <span class="dv">4</span>}  <span class="co">#=&gt; false</span>
+[].none?                                          <span class="co">#=&gt; true</span>
+[<span class="dv">nil</span>].none?                                       <span class="co">#=&gt; true</span>
+[<span class="dv">nil</span>,<span class="dv">false</span>].none?                                 <span class="co">#=&gt; true</span></code></pre></div>
+<h3 id="one">one?</h3>
+<p>one? [{|obj| block }] → true or false</p>
+<p>Passes each element of the collection to the given block. The method returns true if the block returns true exactly once. If the block is not given, one? will return true only if exactly one of the collection members is true.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="ot">%w{</span><span class="st">ant bear cat</span><span class="ot">}</span>.one? {|word| word.length == <span class="dv">4</span>}   <span class="co">#=&gt; true</span>
+<span class="ot">%w{</span><span class="st">ant bear cat</span><span class="ot">}</span>.one? {|word| word.length &gt; <span class="dv">4</span>}    <span class="co">#=&gt; false</span>
+<span class="ot">%w{</span><span class="st">ant bear cat</span><span class="ot">}</span>.one? {|word| word.length &lt; <span class="dv">4</span>}    <span class="co">#=&gt; false</span>
+[ <span class="dv">nil</span>, <span class="dv">true</span>, <span class="dv">99</span> ].one?                            <span class="co">#=&gt; false</span>
+[ <span class="dv">nil</span>, <span class="dv">true</span>, <span class="dv">false</span> ].one?                         <span class="co">#=&gt; true</span></code></pre></div>
+<h3 id="partition">partition</h3>
+<p>partition {| obj | block } → [ true_array, false_array ]</p>
+<p>partition → an_enumerator</p>
+<p>Returns two arrays, the first containing the elements of enum for which the block evaluates to true, the second containing the rest.</p>
+<p>If no block is given, an enumerator is returned instead.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">(<span class="dv">1</span>..<span class="dv">6</span>).partition {|v| v.even? }  <span class="co">#=&gt; [[2, 4, 6], [1, 3, 5]]</span></code></pre></div>
+<h3 id="reduce">reduce</h3>
+<p>reduce(initial, sym) → obj</p>
+<p>reduce(sym) → obj</p>
+<p>reduce(initial) {| memo, obj | block } → obj</p>
+<p>reduce {| memo, obj | block } → obj</p>
+<p>Combines all elements of enum by applying a binary operation, specified by a block or a symbol that names a method or operator.</p>
+<p>If you specify a block, then for each element in enum the block is passed an accumulator value (memo) and the element. If you specify a symbol instead, then each element in the collection will be passed to the named method of memo. In either case, the result becomes the new value for memo. At the end of the iteration, the final value of memo is the return value for the method.</p>
+<p>If you do not explicitly specify an initial value for memo, then uses the first element of collection is used as the initial value of memo.</p>
+<p>Examples:</p>
+<p>Sum some numbers</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">(<span class="dv">5</span>..<span class="dv">10</span>).reduce(:+)                            <span class="co">#=&gt; 45</span></code></pre></div>
+<p>Same using a block and inject</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">(<span class="dv">5</span>..<span class="dv">10</span>).inject {|sum, n| sum + n }            <span class="co">#=&gt; 45</span></code></pre></div>
+<p>Multiply some numbers</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">(<span class="dv">5</span>..<span class="dv">10</span>).reduce(<span class="dv">1</span>, :*)                         <span class="co">#=&gt; 151200</span></code></pre></div>
+<p>Same using a block</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">(<span class="dv">5</span>..<span class="dv">10</span>).inject(<span class="dv">1</span>) {|product, n| product * n } <span class="co">#=&gt; 151200</span></code></pre></div>
+<p>find the longest word</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">longest =<span class="ot"> %w{</span><span class="st"> cat sheep bear </span><span class="ot">}</span>.inject <span class="kw">do</span> |memo,word|
+  memo.length &gt; word.length ? memo : word
+<span class="kw">end</span>
+longest                                       <span class="co">#=&gt; &quot;sheep&quot;</span></code></pre></div>
+<h3 id="reject">reject</h3>
+<p>reject {| obj | block } → array</p>
+<p>reject → an_enumerator</p>
+<p>Returns an array for all elements of enum for which block is false (see also Enumerable#find_all).</p>
+<p>If no block is given, an enumerator is returned instead.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">(<span class="dv">1</span>..<span class="dv">10</span>).reject {|i|  i % <span class="dv">3</span> == <span class="dv">0</span> }   <span class="co">#=&gt; [1, 2, 4, 5, 7, 8, 10]</span></code></pre></div>
+<h3 id="reverse_each">reverse_each</h3>
+<p>reverse_each(*args) {|item| block } → enum</p>
+<p>reverse_each(*args) → an_enumerator</p>
+<p>Builds a temporary array and traverses that array in reverse order.</p>
+<p>If no block is given, an enumerator is returned instead.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">(<span class="dv">1</span>..<span class="dv">3</span>).reverse_each {|v| p v }</code></pre></div>
+<p>produces:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dv">3</span>
+<span class="dv">2</span>
+<span class="dv">1</span></code></pre></div>
+<h3 id="select">select</h3>
+<p>select {| obj | block } → array</p>
+<p>select → an_enumerator</p>
+<p>Returns an array containing all elements of enum for which block is not false (see also Enumerable#reject).</p>
+<p>If no block is given, an enumerator is returned instead.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">(<span class="dv">1</span>..<span class="dv">10</span>).select {|i|  i % <span class="dv">3</span> == <span class="dv">0</span> }   <span class="co">#=&gt; [3, 6, 9]</span></code></pre></div>
+<h3 id="slice_before">slice_before</h3>
+<p>slice_before(pattern) → an_enumerator</p>
+<p>slice_before {|elt| bool } → an_enumerator</p>
+<p>slice_before(initial_state) {|elt, state| bool } → an_enumerator</p>
+<p>Creates an enumerator for each chunked elements. The beginnings of chunks are defined by <em>pattern</em> and the block. If _pattern_ === _elt_ returns true or the block returns true for the element, the element is beginning of a chunk.</p>
+<p>The === and block is called from the first element to the last element of _enum_. The result for the first element is ignored.</p>
+<p>The result enumerator yields the chunked elements as an array for <strong>each</strong> method. <strong>each</strong> method can be called as follows.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">enum.slice_before(pattern).each {|ary| ... }
+enum.slice_before {|elt| bool }.each {|ary| ... }
+enum.slice_before(initial_state) {|elt, state| bool }.each {|ary| ... }</code></pre></div>
+<p>Other methods of Enumerator class and Enumerable module, such as map, etc., are also usable.</p>
+<p>For example, iteration over ChangeLog entries can be implemented as follows.</p>
+<p>iterate over ChangeLog entries.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">open(<span class="st">&quot;ChangeLog&quot;</span>) {|f|
+  f.slice_before(<span class="ot">/\A\S/</span>).each {|e| pp e}
+                  }</code></pre></div>
+<p>same as above. block is used instead of pattern argument.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">open(<span class="st">&quot;ChangeLog&quot;</span>) {|f|
+  f.slice_before {|line| <span class="ot">/\A\S/</span> === line }.each {|e| pp e}
+                  }</code></pre></div>
+<p>“svn proplist -R” produces multiline output for each file. They can be chunked as follows:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">IO</span>.popen([{<span class="st">&quot;LC_ALL&quot;</span>=&gt;<span class="st">&quot;C&quot;</span>}, <span class="st">&quot;svn&quot;</span>, <span class="st">&quot;proplist&quot;</span>, <span class="st">&quot;-R&quot;</span>]) {|f|
+  f.lines.slice_before(<span class="ot">/\AProp/</span>).each {|lines| p lines }
+                                                     }
+  
+<span class="co"># =&gt; [&quot;Properties on &#39;.&#39;:\n&quot;, &quot;  svn:ignore\n&quot;, &quot;  svk:merge\n&quot;]</span>
+<span class="co">#    [&quot;Properties on &#39;goruby.c&#39;:\n&quot;, &quot;  svn:eol-style\n&quot;]</span>
+<span class="co">#    [&quot;Properties on &#39;complex.c&#39;:\n&quot;, &quot;  svn:mime-type\n&quot;, &quot;  svn:eol-style\n&quot;]</span>
+<span class="co">#    [&quot;Properties on &#39;regparse.c&#39;:\n&quot;, &quot;  svn:eol-style\n&quot;]</span>
+<span class="co">#    ...</span></code></pre></div>
+<p>If the block needs to maintain state over multiple elements, local variables can be used. For example, three or more consecutive increasing numbers can be squashed as follows:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">a = [<span class="dv">0</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">6</span>,<span class="dv">7</span>,<span class="dv">9</span>]
+prev = a[<span class="dv">0</span>]
+p a.slice_before {|e|
+  prev, prev2 = e, prev
+  prev2 + <span class="dv">1</span> != e
+                 }.map {|es|
+    es.length &lt;= <span class="dv">2</span> ? es.join(<span class="st">&quot;,&quot;</span>) : <span class="st">&quot;</span><span class="ot">#{</span>es.first<span class="ot">}</span><span class="st">-</span><span class="ot">#{</span>es.last<span class="ot">}</span><span class="st">&quot;</span>
+                       }.join(<span class="st">&quot;,&quot;</span>)
+  
+<span class="co"># =&gt; &quot;0,2-4,6,7,9&quot;</span></code></pre></div>
+<p>However local variables are not appropriate to maintain state if the result enumerator is used twice or more. In such case, the last state of the 1st <strong>each</strong> is used in 2nd <strong>each</strong>. _initial_state_ argument can be used to avoid this problem. If non-nil value is given as _initial_state_, it is duplicated for each &quot;each&quot; method invocation of the enumerator. The duplicated object is passed to 2nd argument of the block for <strong>slice_before</strong> method.</p>
+<p>word wrapping. this assumes all characters have same width.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">def</span> wordwrap(words, maxwidth)
+  <span class="co"># if cols is a local variable, 2nd &quot;each&quot; may start with non-zero cols.</span>
+  words.slice_before(<span class="st">cols: </span><span class="dv">0</span>) {|w, h|
+    h[<span class="st">:cols</span>] += <span class="dv">1</span> <span class="kw">if</span> h[<span class="st">:cols</span>] != <span class="dv">0</span>
+    h[<span class="st">:cols</span>] += w.length
+    <span class="kw">if</span> maxwidth &lt; h[<span class="st">:cols</span>]
+      h[<span class="st">:cols</span>] = w.length
+      <span class="dv">true</span>
+    <span class="kw">else</span>
+      <span class="dv">false</span>
+    <span class="kw">end</span>
+                               }
+<span class="kw">end</span>
+  
+text = (<span class="dv">1</span>..<span class="dv">20</span>).to_a.join(<span class="st">&quot; &quot;</span>)
+enum = wordwrap(text.split(<span class="ot">/\s+/</span>), <span class="dv">10</span>)
+puts <span class="st">&quot;-&quot;</span>*<span class="dv">10</span>
+enum.each {|ws| puts ws.join(<span class="st">&quot; &quot;</span>) }
+puts <span class="st">&quot;-&quot;</span>*<span class="dv">10</span>
+  
+<span class="co"># =&gt; ----------</span>
+<span class="co">#    1 2 3 4 5</span>
+<span class="co">#    6 7 8 9 10</span>
+<span class="co">#    11 12 13</span>
+<span class="co">#    14 15 16</span>
+<span class="co">#    17 18 19</span>
+<span class="co">#    20</span>
+<span class="co">#    ----------</span></code></pre></div>
+<p>mbox contains series of mails which start with Unix From line. So each mail can be extracted by slice before Unix From line.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># parse mbox</span>
+open(<span class="st">&quot;mbox&quot;</span>) {|f|
+  f.slice_before {|line|
+    line.start_with? <span class="st">&quot;From &quot;</span>
+                 }.each {|mail|
+                   unix_from = mail.shift
+                   i = mail.index(<span class="st">&quot;\n&quot;</span>)
+                   header = mail[<span class="dv">0</span>...i]
+                   body = mail[(i<span class="dv">+1</span>)..-<span class="dv">1</span>]
+                   body.pop <span class="kw">if</span> body.last == <span class="st">&quot;\n&quot;</span>
+                   fields = header.slice_before {|line| !<span class="st">&quot; \t&quot;</span>.include?(line[<span class="dv">0</span>]) }.to_a
+                   p unix_from
+                   pp fields
+                   pp body
+                         }
+             }</code></pre></div>
+<p>split mails in mbox (slice before Unix From line after an empty line)</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">open(<span class="st">&quot;mbox&quot;</span>) {|f|
+  f.slice_before(<span class="st">emp: </span><span class="dv">true</span>) {|line,h
+    prevemp = h[<span class="st">:emp</span>]
+    h[<span class="st">:emp</span>] = line == <span class="st">&quot;\n&quot;</span>
+    prevemp &amp;&amp; line.start_with?(<span class="st">&quot;From &quot;</span>)
+                            }.each {|mail|
+                              mail.pop <span class="kw">if</span> mail.last == <span class="st">&quot;\n&quot;</span>
+                              pp mail
+                                   }
+             }</code></pre></div>
+<h3 id="sort">sort</h3>
+<p>sort → array</p>
+<p>sort {| a, b | block } → array</p>
+<p>Returns an array containing the items in enum sorted, either according to their own &lt;=&gt; method, or by using the results of the supplied block. The block should return -1, 0, or +1 depending on the comparison between a and b. As of Ruby 1.8, the method Enumerable#sort_by implements a built-in Schwartzian Transform, useful when key computation or comparison is expensive.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="ot">%w(</span><span class="st">rhea kea flea</span><span class="ot">)</span>.sort         <span class="co">#=&gt; [&quot;flea&quot;, &quot;kea&quot;, &quot;rhea&quot;]</span>
+(<span class="dv">1</span>..<span class="dv">10</span>).sort {|a,b| b &lt;=&gt; a}   <span class="co">#=&gt; [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]</span></code></pre></div>
+<h3 id="sort_by">sort_by</h3>
+<p>sort_by {| obj | block } → array</p>
+<p>sort_by → an_enumerator</p>
+<p>Sorts enum using a set of keys generated by mapping the values in enum through the given block.</p>
+<p>If no block is given, an enumerator is returned instead.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="ot">%w{</span><span class="st"> apple pear fig </span><span class="ot">}</span>.sort_by {|word| word.length}
+<span class="co"># =&gt; [&quot;fig&quot;, &quot;pear&quot;, &quot;apple&quot;]</span></code></pre></div>
+<p>The current implementation of sort_by generates an array of tuples containing the original collection element and the mapped value. This makes sort_by fairly expensive when the keysets are simple</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">require <span class="st">&#39;benchmark&#39;</span>
+
+a = (<span class="dv">1</span>..<span class="dv">100000</span>).map {rand(<span class="dv">100000</span>)}
+
+<span class="dt">Benchmark</span>.bm(<span class="dv">10</span>) <span class="kw">do</span> |b|
+  b.report(<span class="st">&quot;Sort&quot;</span>)    { a.sort }
+  b.report(<span class="st">&quot;Sort by&quot;</span>) { a.sort_by {|a| a} }
+<span class="kw">end</span></code></pre></div>
+<p>produces:</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">user     system      total        real
+<span class="dt">Sort</span>        <span class="fl">0.180000</span>   <span class="fl">0.000000</span>   <span class="fl">0.180000</span> (  <span class="fl">0.175469</span>)
+<span class="dt">Sort</span> by     <span class="fl">1.980000</span>   <span class="fl">0.040000</span>   <span class="fl">2.020000</span> (  <span class="fl">2.013586</span>)</code></pre></div>
+<p>However, consider the case where comparing the keys is a non-trivial operation. The following code sorts some files on modification time using the basic sort method.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">files = <span class="dt">Dir</span>[<span class="st">&quot;*&quot;</span>]
+sorted = files.sort {|a,b| <span class="dt">File</span>.new(a).mtime &lt;=&gt; <span class="dt">File</span>.new(b).mtime}
+sorted   <span class="co">#=&gt; [&quot;mon&quot;, &quot;tues&quot;, &quot;wed&quot;, &quot;thurs&quot;]</span></code></pre></div>
+<p>This sort is inefficient: it generates two new File objects during every comparison.</p>
+<p>A slightly better technique is to use the Kernel#test method to generate the modification times directly.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">files = <span class="dt">Dir</span>[<span class="st">&quot;*&quot;</span>]
+sorted = files.sort { |a,b|
+  test(M, a) &lt;=&gt; test(M, b)
+                    }
+sorted   <span class="co">#=&gt; [&quot;mon&quot;, &quot;tues&quot;, &quot;wed&quot;, &quot;thurs&quot;]</span></code></pre></div>
+<p>This still generates many unnecessary Time objects. A more efficient technique is to cache the sort keys (modification times in this case) before the sort. Perl users often call this approach a Schwartzian Transform, after Randal Schwartz. We construct a temporary array, where each element is an array containing our sort key along with the filename. We sort this array, and then extract the filename from the result.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">sorted = <span class="dt">Dir</span>[<span class="st">&quot;*&quot;</span>].collect { |f|
+  [test(M, f), f]
+                          }.sort.collect { |f| f[<span class="dv">1</span>] }
+
+sorted   <span class="co">#=&gt; [&quot;mon&quot;, &quot;tues&quot;, &quot;wed&quot;, &quot;thurs&quot;]</span></code></pre></div>
+<p>This is exactly what sort_by does internally.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">sorted = <span class="dt">Dir</span>[<span class="st">&quot;*&quot;</span>].sort_by {|f| test(M, f)}
+sorted   <span class="co">#=&gt; [&quot;mon&quot;, &quot;tues&quot;, &quot;wed&quot;, &quot;thurs&quot;]</span></code></pre></div>
+<h3 id="take">take</h3>
+<p>take(n) → array</p>
+<p>Returns first n elements from enum.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">a = [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">0</span>]
+a.take(<span class="dv">3</span>)             <span class="co">#=&gt; [1, 2, 3]</span></code></pre></div>
+<h3 id="take_while">take_while</h3>
+<p>take_while {|arr| block } → array</p>
+<p>take_while → an_enumerator</p>
+<p>Passes elements to the block until the block returns nil or false, then stops iterating and returns an array of all prior elements.</p>
+<p>If no block is given, an enumerator is returned instead.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">a = [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">0</span>]
+a.take_while {|i| i &lt; <span class="dv">3</span> }   <span class="co">#=&gt; [1, 2]</span></code></pre></div>
+<h3 id="to_a">to_a</h3>
+<p>to_a → array</p>
+<p>entries → array</p>
+<p>Returns an array containing the items in enum.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">(<span class="dv">1</span>..<span class="dv">7</span>).to_a                       <span class="co">#=&gt; [1, 2, 3, 4, 5, 6, 7]</span>
+{ <span class="st">&#39;a&#39;</span>=&gt;<span class="dv">1</span>, <span class="st">&#39;b&#39;</span>=&gt;<span class="dv">2</span>, <span class="st">&#39;c&#39;</span>=&gt;<span class="dv">3</span> }.to_a   <span class="co">#=&gt; [[&quot;a&quot;, 1], [&quot;b&quot;, 2], [&quot;c&quot;, 3]]</span></code></pre></div>
+<h3 id="zip">zip</h3>
+<p>zip(arg, ...) → an_array_of_array</p>
+<p>zip(arg, ...) {|arr| block } → nil</p>
+<p>Takes one element from enum and merges corresponding elements from each args. This generates a sequence of n-element arrays, where n is one more than the count of arguments. The length of the resulting sequence will be enum#size. If the size of any argument is less than enum#size, nil values are supplied. If a block is given, it is invoked for each output array, otherwise an array of arrays is returned.</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">a = [ <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span> ]
+b = [ <span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">9</span> ]
+
+[<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>].zip(a, b)      <span class="co">#=&gt; [[1, 4, 7], [2, 5, 8], [3, 6, 9]]</span>
+[<span class="dv">1</span>,<span class="dv">2</span>].zip(a,b)         <span class="co">#=&gt; [[1, 4, 7], [2, 5, 8]]</span>
+a.zip([<span class="dv">1</span>,<span class="dv">2</span>],[<span class="dv">8</span>])       <span class="co">#=&gt; [[4, 1, 8], [5, 2, nil], [6, nil, nil]]</span></code></pre></div>
