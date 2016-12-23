@@ -1,5 +1,6 @@
 Just Do It: Learn Sinatra
 ==================
+
 [Just Do It: Learn Sinatra, Part One](http://rubysource.com/just-do-it-learn-sinatra-i/)
 
 [Just Do It: Learn Sinatra, Part Two](http://rubysource.com/just-do-it-learn-sinatra-ii-2/)

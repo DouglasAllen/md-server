@@ -124,6 +124,7 @@ assuming the following in `foo.erb`:
 ```ruby
 Hey <%= yield %>!
 ```
+
 The block passed to `render` is called on `yield`:
 
 ```ruby
